@@ -30,7 +30,6 @@
   .fx-bordeaux:hover{background:rgb(129,53,50)!important}
   .fx-reveal{--reveal:0}
   .fx-reveal:hover{--reveal:1}
-  .fx-resetbtn:hover{color:rgb(94,94,94)!important}
 
   /* --- micro-animations (esprit posé : fondu, pas de rebond, pas de scale agressif) --- */
   @media (prefers-reduced-motion: no-preference){
@@ -1214,9 +1213,9 @@ function ScPieces({ v }) {
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-              <button type="button" className="fx-press fx-resetbtn" onClick={v.resetFilters} style={{ flex: 1, height: 68, padding: '20px 30px', background: 'none', border: 0, color: 'rgb(174,174,174)', cursor: 'pointer', fontSize: 18, fontWeight: 700 }}>Réinitialiser</button>
-              <button type="button" className="fx-bordeaux fx-press" onClick={v.applyFilters} style={{ flex: 1, height: 68, padding: '20px 30px', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 18, fontWeight: 700 }}>Appliquer le(s) filtre(s)</button>
+            <div style={{ display: 'flex', alignItems: 'stretch', gap: 20 }}>
+              <Button variant="secondary" onClick={v.resetFilters} style={{ flex: 1 }}>Réinitialiser</Button>
+              <Button variant="primary" onClick={v.applyFilters} style={{ flex: 1 }}>Appliquer le(s) filtre(s)</Button>
             </div>
           </aside>
         </Fragment>
