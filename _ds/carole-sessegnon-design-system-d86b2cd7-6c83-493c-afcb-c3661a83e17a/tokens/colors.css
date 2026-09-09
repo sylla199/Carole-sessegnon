@@ -1,0 +1,22 @@
+:root{
+/* semantic aliases over Figma primitives (tokens/fig-tokens.css) */
+--surface-page:rgb(255,255,255);
+--surface-cream:rgb(255,251,248);
+--surface-ivory:rgb(252,249,248);
+--surface-dark:var(--color-primary-950);
+--ink:rgb(0,0,0);
+--ink-muted:var(--color-secondary-300);
+--ink-faint:var(--color-secondary-50);
+--ink-on-dark:rgb(255,255,255);
+--line-hairline:rgba(0,0,0,0.15);
+--line-dashed:var(--color-secondary-100);
+--line-default:var(--color-secondary-950);
+--brand-bordeaux:var(--color-primary-950);
+--brand-bordeaux-600:var(--color-primary-600);
+--brand-blush:var(--color-primary-300);
+--brand-bronze:var(--color-tertiary-500);
+--brand-bronze-soft:var(--color-tertiary-300);
+--state-error:var(--color-warning-500);
+--overlay-scrim:rgba(0,0,0,0.4);
+--shadow-color:rgba(0,0,0,0.0784);
+}

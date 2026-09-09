@@ -1,0 +1,57 @@
+/* Generated from Figma Variables. First mode = :root default.
+   FLOAT tokens are unitless — multiply by 1px in calc() where a length is needed. */
+
+:root {
+  --color-primary-100: rgb(239,223,222); /* @kind color */
+  --color-primary-200: rgb(234,203,200); /* @kind color */
+  --color-primary-300: rgb(230,178,173); /* @kind color */
+  --color-primary-400: rgb(216,137,131); /* @kind color */
+  --color-primary-500: rgb(202,106,101); /* @kind color */
+  --color-primary-50: rgb(242,234,233); /* @kind color */
+  --color-primary-600: rgb(184,80,76); /* @kind color */
+  --color-primary-700: rgb(160,60,58); /* @kind color */
+  --color-primary-800: rgb(129,53,50); /* @kind color */
+  --color-primary-900: rgb(103,48,45); /* @kind color */
+  --color-primary-950: rgb(71,29,27); /* @kind color */
+  --color-secondary-100: rgb(164,164,164); /* @kind color */
+  --color-secondary-200: rgb(147,147,147); /* @kind color */
+  --color-secondary-300: rgb(127,127,127); /* @kind color */
+  --color-secondary-400: rgb(94,94,94); /* @kind color */
+  --color-secondary-500: rgb(70,70,70); /* @kind color */
+  --color-secondary-50: rgb(174,174,174); /* @kind color */
+  --color-secondary-600: rgb(49,49,49); /* @kind color */
+  --color-secondary-700: rgb(30,30,30); /* @kind color */
+  --color-secondary-800: rgb(14,14,14); /* @kind color */
+  --color-secondary-900: rgb(4,4,4); /* @kind color */
+  --color-secondary-950: rgb(0,0,0); /* @kind color */
+  --color-tertiary-100: rgb(250,241,235); /* @kind color */
+  --color-tertiary-200: rgb(240,222,210); /* @kind color */
+  --color-tertiary-300: rgb(233,199,176); /* @kind color */
+  --color-tertiary-400: rgb(202,150,114); /* @kind color */
+  --color-tertiary-500: rgb(177,115,69); /* @kind color */
+  --color-tertiary-50: rgb(255,251,248); /* @kind color */
+  --color-tertiary-600: rgb(149,83,28); /* @kind color */
+  --color-tertiary-700: rgb(115,60,8); /* @kind color */
+  --color-tertiary-800: rgb(83,41,4); /* @kind color */
+  --color-tertiary-900: rgb(57,28,4); /* @kind color */
+  --color-tertiary-950: rgb(18,5,0); /* @kind color */
+  --color-warning-100: rgb(255,235,233); /* @kind color */
+  --color-warning-200: rgb(252,214,210); /* @kind color */
+  --color-warning-300: rgb(251,187,181); /* @kind color */
+  --color-warning-400: rgb(254,133,126); /* @kind color */
+  --color-warning-500: rgb(253,83,83); /* @kind color */
+  --color-warning-50: rgb(254,247,246); /* @kind color */
+  --color-warning-600: rgb(210,36,47); /* @kind color */
+  --color-warning-700: rgb(155,24,33); /* @kind color */
+  --color-warning-800: rgb(109,10,18); /* @kind color */
+  --color-warning-900: rgb(73,5,9); /* @kind color */
+  --color-warning-950: rgb(15,0,1); /* @kind color */
+  --radius-radius-2xl: 16;
+  --radius-radius-3xl: 24;
+  --radius-radius-full: 9999;
+  --radius-radius-lg: 8;
+  --radius-radius-md: 4;
+  --radius-radius-none: 0;
+  --radius-radius-sm: 2;
+  --radius-radius-xl: 12;
+}
