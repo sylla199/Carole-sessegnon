@@ -1116,7 +1116,7 @@ function ScPieces({ v }) {
       <div ref={sentinel} aria-hidden="true" style={{ height: 1, margin: '26px 0 0', pointerEvents: 'none' }} />
       <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, padding: '14px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: (vw || 0) + 'px', transform: 'translateX(-50%)', background: 'rgba(255,255,255,.72)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderBottom: '1px solid rgba(0,0,0,.06)', opacity: stuck ? 1 : 0, transition: 'opacity .25s cubic-bezier(.2,0,0,1)', pointerEvents: 'none' }} />
-        <p style={{ position: 'relative', margin: 0, fontSize: 15, color: 'rgb(70,70,70)' }}>Type de pièce : <span style={{ color: 'rgb(0,0,0)' }}>{v.catLabel}</span></p>
+        <p style={{ position: 'relative', margin: 0, fontSize: 15, color: 'rgb(70,70,70)' }}>Type de pièce : <button type="button" onClick={v.toggleFilters} style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: 'rgb(71,29,27)', cursor: 'pointer' }}>{v.catLabel}</button></p>
         <button type="button" onClick={v.toggleFilters} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, borderBottom: '1px solid rgb(0,0,0)', padding: '0 0 5px', color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 15 }}>
           Filtrer
           <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M0 1h16M3 6h10M6 11h4" /></svg>
