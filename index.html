@@ -31,6 +31,27 @@
   .fx-reveal{--reveal:0}
   .fx-reveal:hover{--reveal:1}
   .fx-resetbtn:hover{color:rgb(94,94,94)!important}
+
+  /* --- micro-animations (esprit posé : fondu, pas de rebond, pas de scale agressif) --- */
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .7s cubic-bezier(.2,0,0,1),transform .7s cubic-bezier(.2,0,0,1)}
+    .reveal.in{opacity:1;transform:none}
+  }
+  .ulink{position:relative}
+  .ulink::before{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;opacity:.3}
+  .ulink::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,0,0,1)}
+  .ulink:hover::after,.ulink:focus-visible::after{transform:scaleX(1)}
+  .fx-nudgeL{transition:transform .18s cubic-bezier(.2,0,0,1)}
+  .fx-nudgeL:active{transform:translateX(-3px)}
+  .fx-nudgeR{transition:transform .18s cubic-bezier(.2,0,0,1)}
+  .fx-nudgeR:active{transform:translateX(3px)}
+  @keyframes cs-badge-pulse{0%,100%{opacity:1}20%{opacity:.2}45%{opacity:1}68%{opacity:.35}86%{opacity:1}}
+  .cs-badge-pulse{animation:cs-badge-pulse .85s cubic-bezier(.2,0,0,1)}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1 !important;transform:none !important}
+    .cs-badge-pulse{animation:none}
+    .ulink::after{transition:none}
+  }
 </style>
 </head>
 <body>
@@ -40,6 +61,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.25.6/babel.min.js"></script>
 <script type="text/babel" data-presets="react">
 const { useState, useEffect, useRef, Fragment } = React;
+
+const prefersReduced = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* count-up number: tweens value -> value over ~500ms, cubic ease-out */
+function AnimatedNumber({ value, format }) {
+  const [, tick] = useState(0);
+  const disp = useRef(value), to = useRef(value), raf = useRef(0);
+  useEffect(() => {
+    if (value === to.current) return;
+    to.current = value;
+    if (prefersReduced()) { disp.current = value; tick(x => x + 1); return; }
+    const from = disp.current, t0 = performance.now(), dur = 500;
+    cancelAnimationFrame(raf.current);
+    const step = now => {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      disp.current = Math.round(from + (value - from) * e); tick(x => x + 1);
+      if (k < 1) raf.current = requestAnimationFrame(step);
+    };
+    raf.current = requestAnimationFrame(step);
+  }, [value]);
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+  return <span style={{ fontVariantNumeric: 'tabular-nums' }}>{format ? format(disp.current) : disp.current}</span>;
+}
 
 /* ---------- inline-style-string parser: keeps DS style strings verbatim ---------- */
 function st(str){
@@ -154,13 +198,15 @@ function AccordionItem({ open = false, question, answer, onToggle, className, st
         color: 'var(--ink)', textAlign: 'left'
       }}>
         <span>{question}</span>
-        <svg width="16" height="8" viewBox="0 0 8 4" style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s ease' }}>
+        <svg width="16" height="8" viewBox="0 0 8 4" style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .32s cubic-bezier(.2,0,0,1)' }}>
           <path d="M 4 4 L 3.47 4.53 C 3.763 4.823 4.237 4.823 4.53 4.53 L 4 4 Z M 0 0 L -0.53 0.53 L 3.47 4.53 L 4 4 L 4.53 3.47 L 0.53 -0.53 L 0 0 Z M 4 4 L 4.53 4.53 L 8.53 0.53 L 8 0 L 7.47 -0.53 L 3.47 3.47 L 4 4 Z" fill="var(--ink)" />
         </svg>
       </button>
-      {open && (
-        <p style={{ margin: 0, padding: '0 0 20px 0', fontFamily: 'var(--font-mono)', fontWeight: 400, fontSize: 16, lineHeight: '24px', color: 'var(--ink)' }}>{answer}</p>
-      )}
+      <div style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows .35s cubic-bezier(.2,0,0,1)' }}>
+        <div style={{ overflow: 'hidden', minHeight: 0 }}>
+          <p style={{ margin: 0, padding: '0 0 20px 0', fontFamily: 'var(--font-mono)', fontWeight: 400, fontSize: 16, lineHeight: '24px', color: 'var(--ink)' }}>{answer}</p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -293,7 +339,7 @@ function App() {
     prof: 'infos', mode: 'domicile', ville: 'Abidjan', boutique: 'Riviéra CIAD',
     orderId: '#CS-2026-9482',
     factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
-    secCat: true, secDispo: true, secPrix: true,
+    secCat: true, secDispo: true, secPrix: true, cartBump: 0,
     wide: (typeof window !== 'undefined' && window.innerWidth > 1320), headerH: 112, scrolled: false
   });
 
@@ -305,9 +351,18 @@ function App() {
     setS(p => {
       const line = p.cart.find(l => l.id === id);
       const cart = line ? p.cart.map(l => l.id === id ? { id, qty: l.qty + q } : l) : p.cart.concat([{ id, qty: q }]);
-      return { ...p, cart, route: 'panier' };
+      return { ...p, cart, route: 'panier', cartBump: p.cartBump + 1 };
     });
     try { window.scrollTo(0, 0); } catch (e) {}
+  };
+  /* ajout au panier sans redirection — confirme via le pulse du badge */
+  const addToCart = (id, n) => {
+    const q = n || 1;
+    setS(p => {
+      const line = p.cart.find(l => l.id === id);
+      const cart = line ? p.cart.map(l => l.id === id ? { id, qty: l.qty + q } : l) : p.cart.concat([{ id, qty: q }]);
+      return { ...p, cart, cartBump: p.cartBump + 1 };
+    });
   };
   const qty = (id, d) => setS(p => ({ ...p, cart: p.cart.map(l => l.id === id ? { id, qty: Math.max(1, l.qty + d) } : l) }));
   const remove = id => setS(p => ({ ...p, cart: p.cart.filter(l => l.id !== id) }));
@@ -333,6 +388,22 @@ function App() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => { window.removeEventListener('resize', onR); window.removeEventListener('scroll', onScroll); };
   }, []);
+
+  /* fade-in on scroll for .reveal blocks (savoir-faire, cartes produits, FAQ) */
+  useEffect(() => {
+    const nodes = document.querySelectorAll('#root .reveal:not(.in)');
+    if (!nodes.length) return;
+    if (prefersReduced() || !('IntersectionObserver' in window)) {
+      nodes.forEach(n => n.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver(ents => {
+      ents.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    nodes.forEach(n => io.observe(n));
+    const safety = setTimeout(() => nodes.forEach(n => n.classList.add('in')), 1600);
+    return () => { io.disconnect(); clearTimeout(safety); };
+  }, [s.route, s.pstep, s.step, s.prof]);
 
   /* -------------------- derived values (port of renderVals) -------------------- */
   const dec = PRODUCTS.map(p => {
@@ -519,7 +590,7 @@ function App() {
     secDispo: { open: s.secDispo, rot: s.secDispo ? 'rotate(180deg)' : 'none', toggle: () => setS(st => ({ ...st, secDispo: !st.secDispo })) },
     secPrix: { open: s.secPrix, rot: s.secPrix ? 'rotate(180deg)' : 'none', toggle: () => setS(st => ({ ...st, secPrix: !st.secPrix })) },
     setSort: e => set({ sort: e.target.value }),
-    current, addCurrent: () => add(current.id),
+    current, addCurrent: () => addToCart(current.id, s.pqty), addTotal: current.price * s.pqty,
     accordion: ACC.map((a, i) => ({ title: a.title, body: a.body, open: s.open === i, toggle: () => setS(st => ({ ...st, open: st.open === i ? -1 : i })) })),
     lines, subtotal: fmt(sub),
     hasCart: s.cart.length > 0, cartEmpty: s.cart.length === 0,
@@ -650,7 +721,7 @@ function Shell({ v }) {
             <button type="button" className="fx-dim fx-press" aria-label="Panier" onClick={v.goPanier} style={{ ...iconBtn, position: 'relative' }}>
               <svg width="21" height="23" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth=".9"><path d="M1 5h14l-1 12H2L1 5Z" /><path d="M5.5 5V3.5a2.5 2.5 0 0 1 5 0V5" /></svg>
               {v.hasCart && (
-                <span style={{ position: 'absolute', top: 6, right: 5, minWidth: 16, height: 16, borderRadius: '50%', background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', fontSize: 10, lineHeight: '16px', textAlign: 'center', fontWeight: 500 }}>{v.cartCount}</span>
+                <span key={v.s.cartBump} className={v.s.cartBump ? 'cs-badge-pulse' : undefined} style={{ position: 'absolute', top: 6, right: 5, minWidth: 16, height: 16, borderRadius: '50%', background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', fontSize: 10, lineHeight: '16px', textAlign: 'center', fontWeight: 500 }}>{v.cartCount}</span>
               )}
             </button>
           </div>
@@ -815,7 +886,7 @@ function FAQBlock({ v, center }) {
       <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Foire aux questions</p>
       <h2 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Les questions fréquentes</h2>
       {v.faqItems.map((i, k) => (
-        <AccordionItem key={k} question={i.q} answer={i.a} open={i.open} onToggle={i.toggle} style={{ textAlign: 'left' }} />
+        <AccordionItem key={k} className="reveal" question={i.q} answer={i.a} open={i.open} onToggle={i.toggle} style={{ textAlign: 'left', transitionDelay: (k * 45) + 'ms' }} />
       ))}
     </div>
   );
@@ -831,13 +902,13 @@ function ScAccueil({ v }) {
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
           <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.9)' }}>Maison ivoirienne de maroquinerie</p>
           <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(255,255,255)', maxWidth: '16ch', textWrap: 'pretty' }}>Chaque pièce porte un nom</h1>
-          <button type="button" onClick={v.goPieces} style={{ marginTop: 26, pointerEvents: 'auto', background: 'none', border: 0, borderBottom: '1px solid rgba(255,255,255,.7)', padding: '0 0 6px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15, letterSpacing: '.06em' }}>Découvrir les pièces&nbsp;&nbsp;→</button>
+          <button type="button" className="ulink" onClick={v.goPieces} style={{ marginTop: 26, pointerEvents: 'auto', background: 'none', border: 0, padding: '0 0 6px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15, letterSpacing: '.06em' }}>Découvrir les pièces&nbsp;&nbsp;→</button>
         </div>
       </div>
 
       <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', textAlign: 'center' }}>
         <p style={{ margin: '0 auto', maxWidth: '44ch', fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,2.6vw,32px)', lineHeight: 1.4, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>Née à Abidjan, la Maison travaille le cuir ivoirien pièce par pièce, à la main. Chaque pièce est unique, numérotée, et accompagnée de son passeport digital.</p>
-        <button type="button" onClick={v.goMaison} style={{ marginTop: 30, background: 'none', border: 0, borderBottom: '1px solid rgb(71,29,27)', padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, letterSpacing: '.06em' }}>La Maison&nbsp;&nbsp;→</button>
+        <button type="button" className="ulink" onClick={v.goMaison} style={{ marginTop: 30, background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, letterSpacing: '.06em' }}>La Maison&nbsp;&nbsp;→</button>
       </div>
 
       <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
@@ -857,17 +928,17 @@ function ScAccueil({ v }) {
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, margin: '0 0 40px', flexWrap: 'wrap' }}>
           <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)', maxWidth: '22ch', textWrap: 'pretty' }}>Collection de maroquineries tendances en ce moment</h2>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button type="button" className="fx-bordeaux fx-press" aria-label="Précédent" onClick={v.carPrev} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
+            <button type="button" className="fx-bordeaux fx-nudgeL" aria-label="Précédent" onClick={v.carPrev} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
               <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M15 6H1M6 1 1 6l5 5" /></svg>
             </button>
-            <button type="button" className="fx-bordeaux fx-press" aria-label="Suivant" onClick={v.carNext} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
+            <button type="button" className="fx-bordeaux fx-nudgeR" aria-label="Suivant" onClick={v.carNext} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
               <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M1 6h14M10 1l5 5-5 5" /></svg>
             </button>
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,220px),1fr))', gap: 'clamp(24px,3vw,48px) clamp(16px,2.5vw,32px)' }}>
           {v.carItems.map((p, i) => (
-            <div key={i}>
+            <div key={i} className="reveal" style={{ transitionDelay: (i * 60) + 'ms' }}>
               <Oval p={p} ph="Photo produit — cadrage ovale" />
               <button type="button" className="fx-press99" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
                 <p style={{ margin: '20px 0 0', fontFamily: 'var(--font-display)', fontSize: 22, color: 'rgb(71,29,27)' }}>{p.name}</p>
@@ -883,7 +954,7 @@ function ScAccueil({ v }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 55%)', pointerEvents: 'none' }}></div>
         <div style={{ position: 'absolute', left: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
           <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.2vw,44px)', color: 'rgb(255,255,255)' }}>Les Pièces</h2>
-          <button type="button" onClick={v.goPieces} style={{ marginTop: 16, pointerEvents: 'auto', background: 'none', border: 0, borderBottom: '1px solid rgba(255,255,255,.7)', padding: '0 0 5px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15 }}>Découvrir&nbsp;&nbsp;→</button>
+          <button type="button" className="ulink" onClick={v.goPieces} style={{ marginTop: 16, pointerEvents: 'auto', background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15 }}>Découvrir&nbsp;&nbsp;→</button>
         </div>
       </div>
 
@@ -943,7 +1014,7 @@ function ScMaison({ v }) {
         <h2 style={{ margin: '0 0 48px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)', maxWidth: '20ch', textWrap: 'pretty' }}>Du cuir brut à la pièce numérotée</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(28px,4vw,60px)' }}>
           {v.savoirFaire.map((sf, i) => (
-            <div key={i}>
+            <div key={i} className="reveal" style={{ transitionDelay: (i * 70) + 'ms' }}>
               <p style={{ margin: '0 0 18px', fontFamily: 'var(--font-display)', fontSize: 32, color: 'rgba(71,29,27,.35)' }}>{sf.n}</p>
               <p style={{ margin: '0 0 10px', fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>{sf.title}</p>
               <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{sf.body}</p>
@@ -1001,7 +1072,7 @@ function ScPieces({ v }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'stretch' }}>
                   <button type="button" onClick={v.secCat.toggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
                     <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)' }}>Catégories</span>
-                    <span style={{ display: 'flex', transform: v.secCat.rot }}>
+                    <span style={{ display: 'flex', transform: v.secCat.rot, transition: 'transform .32s cubic-bezier(.2,0,0,1)' }}>
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
                     </span>
                   </button>
@@ -1024,7 +1095,7 @@ function ScPieces({ v }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'stretch' }}>
                   <button type="button" onClick={v.secDispo.toggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
                     <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)' }}>Disponibilités</span>
-                    <span style={{ display: 'flex', transform: v.secDispo.rot }}>
+                    <span style={{ display: 'flex', transform: v.secDispo.rot, transition: 'transform .32s cubic-bezier(.2,0,0,1)' }}>
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
                     </span>
                   </button>
@@ -1047,7 +1118,7 @@ function ScPieces({ v }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'stretch' }}>
                   <button type="button" onClick={v.secPrix.toggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
                     <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)' }}>Prix</span>
-                    <span style={{ display: 'flex', transform: v.secPrix.rot }}>
+                    <span style={{ display: 'flex', transform: v.secPrix.rot, transition: 'transform .32s cubic-bezier(.2,0,0,1)' }}>
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
                     </span>
                   </button>
@@ -1086,7 +1157,7 @@ function ScPieces({ v }) {
       <p style={{ margin: '30px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>{v.countLabel}</p>
       <div style={{ marginTop: 26, display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,220px),1fr))', gap: 'clamp(28px,3.5vw,56px) clamp(16px,2.5vw,32px)' }}>
         {v.shown.map((p, i) => (
-          <div key={i}>
+          <div key={i} className="reveal" style={{ transitionDelay: ((i % 4) * 55) + 'ms' }}>
             <Oval p={p} />
             <button type="button" className="fx-press99" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
               <p style={{ margin: '20px 0 0', fontFamily: 'var(--font-display)', fontSize: 22, color: 'rgb(71,29,27)' }}>{p.name}</p>
@@ -1144,7 +1215,7 @@ function ScProduit({ v }) {
                 </div>
               </div>
               <div style={{ marginTop: 22 }}>
-                <Button variant="primary" onClick={v.addCurrent} style={v.btnBlock.style}>{v.addToCartLabel}</Button>
+                <Button variant="primary" onClick={v.addCurrent} style={v.btnBlock.style}>Ajouter au panier — <AnimatedNumber value={v.addTotal} format={v.fmt} /></Button>
               </div>
               <div style={{ marginTop: 12 }}>
                 <Button variant="secondary" onClick={v.buyNow} style={v.btnBlock.style}>Acheter maintenant</Button>
@@ -1160,7 +1231,7 @@ function ScProduit({ v }) {
             ))}
             <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
           </div>
-          <button type="button" onClick={v.goPasseport} style={{ marginTop: 26, background: 'none', border: 0, borderBottom: '1px solid rgb(71,29,27)', padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14 }}>Le passeport digital de cette pièce&nbsp;&nbsp;→</button>
+          <button type="button" className="ulink" onClick={v.goPasseport} style={{ marginTop: 26, background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14 }}>Le passeport digital de cette pièce&nbsp;&nbsp;→</button>
         </div>
       </div>
 
@@ -1168,7 +1239,7 @@ function ScProduit({ v }) {
         <h2 style={{ margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Vous aimerez aussi</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,200px),1fr))', gap: '32px 20px' }}>
           {v.related.map((p, i) => (
-            <div key={i}>
+            <div key={i} className="reveal" style={{ transitionDelay: (i * 55) + 'ms' }}>
               <Oval p={p} />
               <button type="button" className="fx-press99" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
                 <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>{p.name}</p>
@@ -1198,7 +1269,7 @@ function ScPanier({ v }) {
       {v.cartEmpty && (
         <div>
           <p style={{ margin: 0, fontSize: 17, color: 'rgb(70,70,70)' }}>Votre panier est vide.</p>
-          <button type="button" onClick={v.goPieces} style={{ marginTop: 20, background: 'none', border: 0, borderBottom: '1px solid rgb(71,29,27)', padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 15 }}>Voir les pièces&nbsp;&nbsp;→</button>
+          <button type="button" className="ulink" onClick={v.goPieces} style={{ marginTop: 20, background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 15 }}>Voir les pièces&nbsp;&nbsp;→</button>
         </div>
       )}
       {v.hasCart && (
