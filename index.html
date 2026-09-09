@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carole Sessegnon</title>
+<link rel="stylesheet" href="_ds/carole-sessegnon-design-system-d86b2cd7-6c83-493c-afcb-c3661a83e17a/tokens/fig-tokens.css">
+<link rel="stylesheet" href="_ds/carole-sessegnon-design-system-d86b2cd7-6c83-493c-afcb-c3661a83e17a/tokens/colors.css">
+<link rel="stylesheet" href="_ds/carole-sessegnon-design-system-d86b2cd7-6c83-493c-afcb-c3661a83e17a/tokens/typography.css">
+<link rel="stylesheet" href="_ds/carole-sessegnon-design-system-d86b2cd7-6c83-493c-afcb-c3661a83e17a/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/carole-sessegnon-design-system-d86b2cd7-6c83-493c-afcb-c3661a83e17a/components/fig-assets.css">
+<link rel="stylesheet" href="_ds/carole-sessegnon-design-system-d86b2cd7-6c83-493c-afcb-c3661a83e17a/styles.css">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:rgb(252,249,248)}
+  a{color:rgb(71,29,27);text-decoration:none}
+  a:hover{color:rgb(129,53,50)}
+  input,select,textarea,button{font-family:var(--font-body);font-size:16px}
+  input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:1px solid rgb(71,29,27);outline-offset:2px}
+  @keyframes cs-spin{to{transform:rotate(360deg)}}
+  @keyframes cs-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes cs-slide{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+  .fx-dim{transition:opacity .15s cubic-bezier(.2,0,0,1)}
+  .fx-dim:hover{opacity:.72}
+  .fx-press{transition:transform .15s cubic-bezier(.2,0,0,1)}
+  .fx-press:active{transform:scale(.96)}
+  .fx-press99{transition:transform .15s cubic-bezier(.2,0,0,1)}
+  .fx-press99:active{transform:scale(.99)}
+  .fx-bordeaux{transition:background-color .15s cubic-bezier(.2,0,0,1)}
+  .fx-bordeaux:hover{background:rgb(129,53,50)!important}
+  .fx-reveal{--reveal:0}
+  .fx-reveal:hover{--reveal:1}
+  .fx-resetbtn:hover{color:rgb(94,94,94)!important}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.25.6/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, Fragment } = React;
+
+/* ---------- inline-style-string parser: keeps DS style strings verbatim ---------- */
+function st(str){
+  const o = {};
+  String(str).split(';').forEach(decl => {
+    const i = decl.indexOf(':');
+    if (i < 0) return;
+    let k = decl.slice(0, i).trim();
+    let v = decl.slice(i + 1).trim();
+    if (!k) return;
+    if (k.startsWith('--')) { o[k] = v; return; }
+    if (k.startsWith('-')) {
+      k = k.slice(1).split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+    } else {
+      k = k.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    }
+    o[k] = v;
+  });
+  return o;
+}
+
+/* ============================ design-system components ============================ */
+function ImageSlot({ shape = 'rect', placeholder = 'Image', style }) {
+  const hasSize = style && (style.width || style.height);
+  const box = hasSize
+    ? { position: 'relative', ...style }
+    : { position: 'absolute', inset: 0, width: '100%', height: '100%' };
+  return (
+    <div aria-label={placeholder} style={{
+      ...box, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
+      padding: 12, boxSizing: 'border-box',
+      background: 'repeating-linear-gradient(45deg,rgba(71,29,27,.05),rgba(71,29,27,.05) 12px,rgba(71,29,27,.09) 12px,rgba(71,29,27,.09) 24px)',
+      color: 'rgba(71,29,27,.5)', font: '500 10px/1.4 var(--font-body)', letterSpacing: '.1em',
+      textTransform: 'uppercase', borderRadius: shape === 'circle' ? '50%' : 0
+    }}>
+      <span style={{ maxWidth: '85%' }}>{placeholder}</span>
+    </div>
+  );
+}
+
+function Button({ variant = 'primary', size = 'md', disabled = false, className, style, onClick, type, children }) {
+  const sizes = { md: { padding: '20px 30px', font: 18 }, sm: { padding: '14px 24px', font: 16 } };
+  const sz = sizes[size] || sizes.md;
+  const base = {
+    display: 'inline-flex', flexDirection: 'row', gap: 10, justifyContent: 'center', alignItems: 'center',
+    padding: sz.padding, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: sz.font, lineHeight: '28px',
+    border: 'none', cursor: disabled ? 'not-allowed' : 'pointer', boxSizing: 'border-box',
+    transition: 'background-color .15s ease, color .15s ease, opacity .15s ease', opacity: disabled ? 0.4 : 1
+  };
+  const variants = {
+    primary: { backgroundColor: 'var(--brand-bordeaux)', color: 'var(--ink-on-dark)' },
+    secondary: { backgroundColor: 'transparent', color: 'var(--brand-bordeaux)', boxShadow: 'inset 0 0 0 2px var(--brand-bordeaux)' },
+    ghost: { backgroundColor: 'var(--surface-page)', color: 'var(--ink)', fontWeight: 400 },
+    light: { backgroundColor: 'var(--surface-page)', color: 'var(--ink)' }
+  };
+  return (
+    <button className={className} disabled={disabled} onClick={onClick} type={type || 'button'}
+      style={{ ...base, ...variants[variant], ...style }}>
+      {children ?? 'Bouton'}
+    </button>
+  );
+}
+
+function AccordionItem({ open = false, question, answer, onToggle, className, style }) {
+  return (
+    <div className={className} style={{ borderBottom: '1px solid var(--line-hairline)', ...style }}>
+      <button onClick={onToggle} type="button" style={{
+        width: '100%', background: 'none', border: 'none', cursor: 'pointer', boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+        padding: '24px 0', fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 18, lineHeight: '28px',
+        color: 'var(--ink)', textAlign: 'left'
+      }}>
+        <span>{question}</span>
+        <svg width="16" height="8" viewBox="0 0 8 4" style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s ease' }}>
+          <path d="M 4 4 L 3.47 4.53 C 3.763 4.823 4.237 4.823 4.53 4.53 L 4 4 Z M 0 0 L -0.53 0.53 L 3.47 4.53 L 4 4 L 4.53 3.47 L 0.53 -0.53 L 0 0 Z M 4 4 L 4.53 4.53 L 8.53 0.53 L 8 0 L 7.47 -0.53 L 3.47 3.47 L 4 4 Z" fill="var(--ink)" />
+        </svg>
+      </button>
+      {open && (
+        <p style={{ margin: 0, padding: '0 0 20px 0', fontFamily: 'var(--font-mono)', fontWeight: 400, fontSize: 16, lineHeight: '24px', color: 'var(--ink)' }}>{answer}</p>
+      )}
+    </div>
+  );
+}
+
+function ContinueWithGoogleLeftAligned({ text1 = 'Continuer avec Google', className, style }) {
+  return (
+    <div className={className} style={{ width: 283, boxShadow: 'inset 0 0 0 1px var(--color-secondary-950)', display: 'flex', flexDirection: 'row', gap: 15, padding: 15, alignItems: 'center', boxSizing: 'border-box', position: 'relative', ...style }}>
+      <span style={{ width: 24, height: 24, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width="20" height="20" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+        </svg>
+      </span>
+      <span style={{ fontFamily: 'Roboto, -apple-system, sans-serif', fontWeight: 400, fontSize: 20, whiteSpace: 'nowrap', lineHeight: '100%', color: 'var(--color-secondary-950)' }}>{text1}</span>
+    </div>
+  );
+}
+
+function ContinueWithAppleLeftAligned({ text1 = 'Continuer avec Apple', className, style }) {
+  return (
+    <div className={className} style={{ width: 283, boxShadow: 'inset 0 0 0 1px var(--color-secondary-950)', display: 'flex', flexDirection: 'row', gap: 15, padding: 15, alignItems: 'center', boxSizing: 'border-box', position: 'relative', color: 'var(--color-secondary-950)', ...style }}>
+      <span style={{ width: 24, height: 24, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width="18" height="22" viewBox="0 0 384 512" fill="currentColor">
+          <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+        </svg>
+      </span>
+      <span style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', fontWeight: 400, fontSize: 20, whiteSpace: 'nowrap', lineHeight: '100%', color: 'var(--color-secondary-950)' }}>{text1}</span>
+    </div>
+  );
+}
+
+/* shared product oval with prev/next affordance */
+function Oval({ p, ar = '.68', ph = 'Photo produit — cadrage ovale' }) {
+  return (
+    <div className="fx-reveal" style={{ position: 'relative', aspectRatio: ar, overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+      <ImageSlot shape="circle" placeholder={ph} />
+      <button type="button" onClick={p.prevImg} aria-label="Image précédente" style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'none', border: 0, color: 'rgb(255,255,255)', mixBlendMode: 'difference', cursor: 'pointer', opacity: 'var(--reveal, 0)', transition: 'opacity .2s' }}>
+        <svg width="9" height="14" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 1 1 6l6 5" /></svg>
+      </button>
+      <button type="button" onClick={p.nextImg} aria-label="Image suivante" style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'none', border: 0, color: 'rgb(255,255,255)', mixBlendMode: 'difference', cursor: 'pointer', opacity: 'var(--reveal, 0)', transition: 'opacity .2s' }}>
+        <svg width="9" height="14" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l6 5-6 5" /></svg>
+      </button>
+    </div>
+  );
+}
+
+/* ================================ data ================================ */
+const PRODUCTS = [
+  { id: 'huperano', name: 'Huperano', tagline: "Attire les regards sans jamais voler la lumière à celle qui le porte", price: 420000, cat: 'Sacs', material: "Cuir de vachette ivoirien, tannage végétal", hasTeinte: true },
+  { id: 'radah', name: 'Radah', tagline: "Elle règne à chaque pas", price: 385000, cat: 'Pochettes', material: "Cuir bordeaux, doublure daim", hasTeinte: false },
+  { id: 'nafi', name: 'Nafi', tagline: "Le geste juste, répété mille fois", price: 295000, cat: 'Petite maroquinerie', material: "Cuir naturel patiné à la main", hasTeinte: false },
+  { id: 'sikadi', name: 'Sikadi', tagline: "Un cuir qui garde la mémoire du jour", price: 510000, cat: 'Sacs', material: "Cuir grainé, ferrures bronze", hasTeinte: true },
+  { id: 'ayaba', name: 'Ayaba', tagline: "Portée haut, sans jamais être levée", price: 460000, cat: 'Sacs', soon: true, material: "Cuir tressé, pièce d'atelier", hasTeinte: false },
+  { id: 'wele', name: 'Wèlè', tagline: "Discrète le matin, souveraine le soir", price: 340000, cat: 'Pochettes', material: "Cuir souple, fermoir aimanté", hasTeinte: true }
+];
+const CATS = ['Tout', 'Sacs', 'Pochettes', 'Petite maroquinerie'];
+const LEGAL = {
+  mentions: { title: "Mentions légales", body: [
+    "Texte provisoire. Éditeur du site : Maison Carole Sessegnon, Abidjan, Côte d'Ivoire. Responsable de la publication : la fondatrice.",
+    "Texte provisoire. Hébergement, immatriculation, capital social et coordonnées complètes seront précisés avant la mise en ligne.",
+    "Texte provisoire. L'ensemble des contenus du site — photographies, textes, monogramme et logotype — est protégé et ne peut être reproduit sans autorisation écrite de la Maison."
+  ] },
+  cgv: { title: "Conditions générales de vente", body: [
+    "Texte provisoire. Les présentes conditions régissent la vente des pièces proposées sur carolesessegnon.com, en Côte d'Ivoire comme à l'international.",
+    "Texte provisoire. Chaque pièce étant unique et numérotée, les délais de préparation sont indiqués sur la fiche de la pièce. Le paiement s'effectue par carte bancaire, PayPal, Wave ou Orange Money.",
+    "Texte provisoire. Livraison, droit de rétractation, retours et garanties seront détaillés ici.",
+    "Texte provisoire. Le passeport digital accompagne chaque pièce vendue et reste consultable par son propriétaire."
+  ] },
+  rgpd: { title: "Politique de confidentialité", body: [
+    "Texte provisoire. La Maison collecte uniquement les données nécessaires au traitement des commandes et, si vous le souhaitez, à l'association d'une pièce à votre nom : prénom, nom, e-mail et pays.",
+    "Texte provisoire. Les codes d'activation privés ne sont jamais exposés publiquement et ne servent qu'à la vérification d'authenticité.",
+    "Texte provisoire. Vous disposez d'un droit d'accès, de rectification et de suppression de vos données, exerçable à bonjour@carolesessegnon.com."
+  ] }
+};
+const SAVOIR_FAIRE = [
+  { n: '01', title: 'Sélection', body: "Texte provisoire. Les peaux sont choisies une à une en Côte d'Ivoire, pour leur grain et leur tenue dans le temps." },
+  { n: '02', title: 'Tannage', body: "Texte provisoire. Un tannage végétal, plus lent mais plus doux pour le cuir et pour la main qui le travaille." },
+  { n: '03', title: 'Façonnage', body: "Texte provisoire. Coupe, couture et patine à la main, dans l'atelier du Plateau, pièce par pièce." },
+  { n: '04', title: 'Numérotation', body: "Texte provisoire. Chaque pièce reçoit un numéro et un passeport digital qui l'accompagnent toute sa vie." }
+];
+const ACC = [
+  { title: "Matière et fabrication", body: "Texte provisoire. Cuir sélectionné en Côte d'Ivoire, tanné au végétal, coupé et cousu à la main dans l'atelier d'Abidjan. Comptez trois semaines de fabrication." },
+  { title: "Livraison et retours", body: "Texte provisoire. Remise en main propre à Abidjan, livraison suivie en Côte d'Ivoire et à l'international. Retour possible sous quatorze jours, la pièce non portée." },
+  { title: "Passeport digital", body: "Texte provisoire. Un certificat d'origine numéroté est glissé dans le coffret. Son QR code ouvre le passeport digital de votre pièce." }
+];
+const FAQ = [
+  { q: "Comment puis-je contacter la Maison Carole Sessegnon ?", a: "Chaque pièce de la Maison Carole Sessegnon est confectionnée à la main à partir de cuir ivoirien sélectionné avec soin. Pour toute question sur nos créations, nos délais de fabrication ou une commande en cours, notre équipe est disponible par email ou via nos réseaux sociaux. Nous nous engageons à vous répondre sous 48 heures." },
+  { q: "Dans quel délai puis-je espérer recevoir une réponse ?", a: "Texte provisoire. Nous répondons sous 48 heures ouvrées, du lundi au samedi, de 9h à 19h." },
+  { q: "Comment puis-je en savoir plus sur le cuir ivoirien utilisé dans vos créations ?", a: "Texte provisoire. Les peaux sont sélectionnées en Côte d'Ivoire et tannées au végétal ; l'atelier peut vous détailler la provenance de chaque lot." },
+  { q: "Proposez-vous des commandes sur mesure ou des personnalisations de pièces ?", a: "Texte provisoire. Certaines pièces peuvent être personnalisées (coloris, initiales). Écrivez-nous pour en discuter." },
+  { q: "Comment se déroule un rendez-vous à l'atelier ?", a: "Texte provisoire. Le rendez-vous dure environ une heure, en présence d'un conseiller de la Maison." },
+  { q: "Puis-je visiter votre atelier à Abidjan ?", a: "Texte provisoire. L'atelier du Plateau reçoit sur rendez-vous, du lundi au samedi." }
+];
+const CANAUX = [
+  { k: "WHATSAPP", t: "Contactez-nous sur WhatsApp", d: "CONTACTEZ UN CONSEILLER DE LA MAISON AU : LUNDI – SAMEDI : 9H – 18H (GMT)" },
+  { k: "TELEPHONE", t: "Appelez-nous", d: "CONTACTEZ UN CONSEILLER DE LA MAISON AU : LUNDI – SAMEDI : 9H – 18H (GMT)" },
+  { k: "CHAT EN DIRECT", t: "Envoyez-nous un message", d: "CONTACTEZ UN CONSEILLER DE LA MAISON AU : LUNDI – SAMEDI : 9H – 18H (GMT)" },
+  { k: "EMAIL", t: "Ecrivez nous", d: "NOUS NOUS EFFORÇONS DE VOUS RÉPONDRE SOUS 48 HEURES (JOURS OUVRABLES)." }
+];
+const TUILES = [{ t: "Sacs", c: "Sacs" }, { t: "Pochettes", c: "Pochettes" }, { t: "Maroquineries", c: "Petite maroquinerie" }];
+const TEINTES = ["Noir Ébène", "Cuir naturel", "Bordeaux"];
+const VILLES = ["Abidjan", "Bouaké", "Yamoussoukro"];
+const BOUTIQUES = [
+  { name: "Riviéra CIAD", phone: "+225 00 00 00 00 00", adresse: "Ecole libanaise" },
+  { name: "Plateau — atelier", phone: "+225 00 00 00 00 01", adresse: "Rue du Commerce" },
+  { name: "Cocody Angré", phone: "+225 00 00 00 00 02", adresse: "Rue des Jardins" }
+];
+const ORDERS = [
+  { no: '#CS-2026-9482', date: '2 septembre 2026', items: '1 pièce — Huperano', statut: 'Livrée', subtotal: 420000, shipping: 0,
+    name: 'Awa Koné', adresse: 'Riviéra CIAD, Lot 42', ville: "Abidjan, Côte d'Ivoire", paiement: 'Carte bancaire — •••• 4471',
+    items_detail: [{ id: 'huperano', qty: 1 }] },
+  { no: '#CS-2026-9120', date: '14 juillet 2026', items: '2 pièces — Radah, Nafi', statut: 'Préparée', subtotal: 680000, shipping: 5000,
+    name: 'Awa Koné', adresse: 'Riviéra CIAD, Lot 42', ville: "Abidjan, Côte d'Ivoire", paiement: 'Wave — +225 07 00 00 00',
+    items_detail: [{ id: 'radah', qty: 1 }, { id: 'nafi', qty: 1 }] }
+];
+
+const INPUT = "margin-top:8px;width:100%;height:60px;padding:16px 20px;background:var(--surface-page);border:0;box-shadow:inset 0 0 0 1px var(--color-secondary-50);color:var(--ink);font-size:18px";
+const LABEL = "display:block;font-size:13px;letter-spacing:.08em;color:rgb(70,70,70)";
+
+/* ================================ App ================================ */
+function App() {
+  const [s, setS] = useState({
+    route: 'accueil', menu: false, search: false, filters: false, cat: 'Tout', sort: 'default',
+    pid: 'huperano', open: 0, cart: [{ id: 'radah', qty: 1 }], step: 1,
+    pstep: 'intro', tries: 0, perr: '', assoc: null, skipped: false,
+    authTab: 'connexion', authMsg: '', contactSent: false, legal: 'mentions', pwdVisible: false,
+    fav: [], faq: -1, cIdx: 0, teinte: 'Noir Ébène', pqty: 1, q: '', savedProfile: false, cardImg: {},
+    prof: 'infos', mode: 'domicile', ville: 'Abidjan', boutique: 'Riviéra CIAD',
+    orderId: '#CS-2026-9482',
+    factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
+    secCat: true, secDispo: true, secPrix: true,
+    wide: (typeof window !== 'undefined' && window.innerWidth > 1320), headerH: 112, scrolled: false
+  });
+
+  const set = patch => setS(p => ({ ...p, ...(typeof patch === 'function' ? patch(p) : patch) }));
+  const go = (route, extra = {}) => { setS(p => ({ ...p, route, menu: false, search: false, ...extra })); try { window.scrollTo(0, 0); } catch (e) {} };
+  const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
+  const add = (id, n) => {
+    const q = n || 1;
+    setS(p => {
+      const line = p.cart.find(l => l.id === id);
+      const cart = line ? p.cart.map(l => l.id === id ? { id, qty: l.qty + q } : l) : p.cart.concat([{ id, qty: q }]);
+      return { ...p, cart, route: 'panier' };
+    });
+    try { window.scrollTo(0, 0); } catch (e) {}
+  };
+  const qty = (id, d) => setS(p => ({ ...p, cart: p.cart.map(l => l.id === id ? { id, qty: Math.max(1, l.qty + d) } : l) }));
+  const remove = id => setS(p => ({ ...p, cart: p.cart.filter(l => l.id !== id) }));
+
+  useEffect(() => {
+    const measure = () => {
+      const h = document.querySelector('#root header');
+      if (h) { const val = Math.round(h.getBoundingClientRect().height); setS(p => (val && val !== p.headerH ? { ...p, headerH: val } : p)); }
+    };
+    const onR = () => { setS(p => ({ ...p, wide: window.innerWidth > 1320 })); requestAnimationFrame(measure); };
+    const onScroll = () => {
+      const y = window.scrollY || 0;
+      setS(p => {
+        let n = p; const top = y > 500; const sc = y > 20;
+        if (top !== p.showTop) n = { ...n, showTop: top };
+        if (sc !== p.scrolled) n = { ...n, scrolled: sc };
+        return n;
+      });
+      measure();
+    };
+    requestAnimationFrame(measure);
+    window.addEventListener('resize', onR);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => { window.removeEventListener('resize', onR); window.removeEventListener('scroll', onScroll); };
+  }, []);
+
+  /* -------------------- derived values (port of renderVals) -------------------- */
+  const dec = PRODUCTS.map(p => {
+    const idx = (s.cardImg && s.cardImg[p.id]) || 0;
+    const imgSlots = ['cs-p-' + p.id, 'cs-p-' + p.id + '-alt'];
+    return Object.assign({}, p, {
+      slot: imgSlots[idx % imgSlots.length],
+      priceLabel: p.soon ? 'Bientôt disponible' : fmt(p.price),
+      priceColor: p.soon ? 'rgb(127,127,127)' : 'rgb(0,0,0)',
+      available: !p.soon, soon: !!p.soon,
+      open: () => go('produit', { pid: p.id, open: 0 }),
+      prevImg: e => { e.stopPropagation(); setS(st => ({ ...st, cardImg: { ...st.cardImg, [p.id]: (idx + imgSlots.length - 1) % imgSlots.length } })); },
+      nextImg: e => { e.stopPropagation(); setS(st => ({ ...st, cardImg: { ...st.cardImg, [p.id]: (idx + 1) % imgSlots.length } })); }
+    });
+  });
+  let shown = s.cat === 'Tout' ? dec.slice() : dec.filter(p => p.cat === s.cat);
+  if (s.fDispo === 'Disponible') shown = shown.filter(p => !p.soon);
+  if (s.fDispo === 'En rupture de stock') shown = shown.filter(p => p.soon);
+  shown = shown.filter(p => p.price <= s.fPrix);
+  if (s.sort === 'asc') shown.sort((a, b) => a.price - b.price);
+  if (s.sort === 'desc') shown.sort((a, b) => b.price - a.price);
+  const current = dec.find(p => p.id === s.pid) || dec[0];
+
+  const lines = s.cart.map(l => {
+    const p = dec.find(x => x.id === l.id) || dec[0];
+    return {
+      id: l.id, qty: l.qty, name: p.name, slot: p.slot, material: p.material,
+      label: p.name + ' × ' + l.qty, total: fmt(p.price * l.qty),
+      inc: () => qty(l.id, 1), dec: () => qty(l.id, -1), remove: () => remove(l.id),
+      favLabel: s.fav.indexOf(l.id) >= 0 ? 'Dans mes favoris' : 'Ajouter à mes favoris',
+      favColor: s.fav.indexOf(l.id) >= 0 ? 'rgb(71,29,27)' : 'rgb(94,94,94)',
+      favFill: s.fav.indexOf(l.id) >= 0 ? 'currentColor' : 'none',
+      fav: () => setS(st => ({ ...st, fav: st.fav.indexOf(l.id) >= 0 ? st.fav.filter(x => x !== l.id) : st.fav.concat([l.id]) })),
+      open: () => go('produit', { pid: l.id, open: 0 })
+    };
+  });
+  const sub = s.cart.reduce((t, l) => t + l.qty * (PRODUCTS.find(p => p.id === l.id) || { price: 0 }).price, 0);
+  const stepC = n => s.step === n ? 'rgb(71,29,27)' : 'rgb(127,127,127)';
+  const stepL = n => s.step === n ? 'rgb(71,29,27)' : 'transparent';
+  const assocName = s.assoc ? s.assoc.name : '';
+  const legalKey = LEGAL[s.legal] ? s.legal : 'mentions';
+
+  const v = {
+    s, go, add, fmt, set,
+    btnBlock: { style: { width: '100%', textTransform: 'uppercase', letterSpacing: '.1em', fontSize: 14 } },
+    backBtn: { style: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', padding: '20px 24px' } },
+    confirmBtn: { style: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, textTransform: 'uppercase', letterSpacing: '.1em', fontSize: 14 } },
+    btnUpper: { style: { textTransform: 'uppercase', letterSpacing: '.1em', fontSize: 14 } },
+    savoirFaire: SAVOIR_FAIRE,
+    faqItems: FAQ.map((it, i) => ({ q: it.q, a: it.a, open: s.faq === i, toggle: () => setS(st => ({ ...st, faq: st.faq === i ? -1 : i })) })),
+    canaux: CANAUX,
+    tuiles: TUILES.map(t => ({ label: t.t, slot: 'cs-cat-' + t.c, pick: () => go('pieces', { cat: t.c }) })),
+    carItems: dec.slice(s.cIdx).concat(dec.slice(0, s.cIdx)).slice(0, 4),
+    carPrev: () => setS(st => ({ ...st, cIdx: (st.cIdx + dec.length - 1) % dec.length })),
+    carNext: () => setS(st => ({ ...st, cIdx: (st.cIdx + 1) % dec.length })),
+    teintes: TEINTES.map(t => ({
+      label: t, pick: () => set({ teinte: t }),
+      ring: s.teinte === t ? 'inset 0 0 0 1px rgb(71,29,27)' : 'inset 0 0 0 1px rgba(0,0,0,.25)'
+    })),
+    teinte: s.teinte, pqty: s.pqty,
+    qtyMinus: () => setS(st => ({ ...st, pqty: Math.max(1, st.pqty - 1) })),
+    qtyPlus: () => setS(st => ({ ...st, pqty: st.pqty + 1 })),
+    buyNow: () => { add(current.id, s.pqty); go('paiement', { step: 1 }); },
+    addToCartLabel: 'Ajouter au panier — ' + fmt(current.price * s.pqty),
+    related: dec.filter(p => p.id !== s.pid).slice(0, 4),
+    panierTitle: 'Panier (' + s.cart.reduce((t, l) => t + l.qty, 0) + ')',
+    clearCart: () => set({ cart: [] }),
+    profInfos: s.prof === 'infos', profCmd: s.prof === 'commandes', profPieces: s.prof === 'pieces',
+    profTabs: [{ key: 'infos', label: 'Informations' }, { key: 'commandes', label: 'Mes commandes' }, { key: 'pieces', label: 'Mes pièces' }].map(t => ({
+      label: t.label, pick: () => set({ prof: t.key }),
+      color: s.prof === t.key ? 'rgb(71,29,27)' : 'rgb(70,70,70)',
+      bg: s.prof === t.key ? 'rgb(255,251,248)' : 'transparent', ring: s.prof === t.key ? 'inset 0 0 0 1px rgba(0,0,0,.08)' : 'none'
+    })),
+    goProfil: () => go('profil'),
+    saveLabel: s.savedProfile ? 'Enregistré' : 'Enregistrer',
+    saveProfile: () => { set({ savedProfile: true }); setTimeout(() => set({ savedProfile: false }), 1800); },
+    logout: () => go('connexion'),
+    modeDomicile: s.mode === 'domicile', modeRetrait: s.mode === 'retrait',
+    pickDomicile: () => set({ mode: 'domicile' }), pickRetrait: () => set({ mode: 'retrait' }),
+    villes: VILLES.map(v2 => ({ v: v2 })),
+    setVille: e => set({ ville: e.target.value }),
+    boutiqueCards: BOUTIQUES.map(b => ({
+      name: b.name, phone: b.phone, adresse: b.adresse,
+      pick: () => set({ boutique: b.name }),
+      bg: s.boutique === b.name ? 'rgb(252,249,248)' : 'transparent',
+      ring: s.boutique === b.name ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgb(174,174,174)',
+      dot: s.boutique === b.name ? 'inset 0 0 0 5px rgb(71,29,27)' : 'inset 0 0 0 2px rgb(71,29,27)'
+    })),
+    factSame: s.factSame, factOpen: !s.factSame,
+    toggleFact: () => setS(st => ({ ...st, factSame: !st.factSame })),
+    pickCarte: () => set({ moyen: 'carte' }), pickMobile: () => set({ moyen: 'mobile' }), pickEspeces: () => set({ moyen: 'especes' }),
+    carteRing: s.moyen === 'carte' ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgb(174,174,174)',
+    mobileRing: s.moyen === 'mobile' ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgb(174,174,174)',
+    especesRing: s.moyen === 'especes' ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgb(174,174,174)',
+    carteDot: 'inset 0 0 0 2px rgb(71,29,27)', mobileDot: 'inset 0 0 0 2px rgb(71,29,27)', especesDot: 'inset 0 0 0 2px rgb(71,29,27)',
+    carteOpen: s.moyen === 'carte', mobileOpen: s.moyen === 'mobile', especesOpen: s.moyen === 'especes',
+    orderNo: s.order ? s.order.no : '', orderDate: s.order ? s.order.date : '',
+    orderMode: s.mode === 'retrait' ? ('Retrait en boutique — ' + s.boutique + ', ' + s.ville) : 'Livraison à votre adresse',
+    paymentLabel: ({ carte: 'Carte de crédit', mobile: 'Mobile money', especes: 'Paiement en espèce', paypal: 'PayPal' })[s.moyen] || 'Carte de crédit',
+    suivreCommande: () => set({ route: 'commande', orderId: 'latest' }),
+    q: s.q, setQ: e => set({ q: e.target.value }),
+    results: dec.filter(p => !s.q || (p.name + ' ' + p.tagline + ' ' + p.material).toLowerCase().indexOf(s.q.toLowerCase()) >= 0),
+    scrollTop: () => { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) {} },
+    fPrix: s.fPrix,
+    setPrix: e => set({ fPrix: Number(e.target.value) }),
+    dispos: ['Tout', 'Disponible', 'En rupture de stock'].map(d => ({
+      label: d, pick: () => set({ fDispo: d }),
+      count: d === 'Tout' ? dec.length : (d === 'Disponible' ? dec.filter(p => !p.soon).length : dec.filter(p => p.soon).length),
+      ring: s.fDispo === d ? 'inset 0 0 0 1px rgb(71,29,27)' : 'inset 0 0 0 1px rgb(0,0,0)',
+      dot: s.fDispo === d ? 'rgb(71,29,27)' : 'transparent'
+    })),
+    resetFilters: () => set({ cat: 'Tout', fDispo: 'Tout', fPrix: 600000, sort: 'default' }),
+    catLabel: s.cat === 'Tout' ? 'Toutes les pièces' : s.cat,
+    showTop: s.showTop, newsOk: s.newsOk,
+    submitNews: e => { e.preventDefault(); set({ newsOk: true }); },
+    goContactRdv: () => go('contact'),
+    retraitRing: s.mode === 'retrait' ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgba(0,0,0,.18)',
+    domicileRing: s.mode === 'domicile' ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgba(0,0,0,.18)',
+    useLocation: () => set({ locNote: true }),
+    orders: ORDERS.map(o => ({
+      no: o.no, date: o.date, items: o.items, total: fmt(o.subtotal + o.shipping), statut: o.statut,
+      open: () => set({ route: 'commande', orderId: o.no })
+    })),
+    backToOrders: () => set({ route: 'profil', prof: 'commandes' }),
+    orderDetail: (() => {
+      const stepOrder = ['Confirmée', 'Préparée', 'Expédiée', 'Livrée'];
+      if (s.orderId === 'latest' && s.order) {
+        const o = s.order;
+        return {
+          no: o.no, date: o.date, statut: 'Confirmée', name: '', adresse: '', ville: '', paiement: o.payment,
+          subtotal: fmt(o.subtotal), shipping: o.shipping ? fmt(o.shipping) : 'Offerte', total: fmt(o.subtotal + (o.shipping || 0)),
+          lines: o.lines,
+          steps: stepOrder.map((label, i) => ({ label, bar: i === 0 ? 'rgb(71,29,27)' : 'rgba(0,0,0,.12)', color: i === 0 ? 'rgb(71,29,27)' : 'rgb(94,94,94)' }))
+        };
+      }
+      const o = ORDERS.find(x => x.no === s.orderId) || ORDERS[0];
+      const idx = stepOrder.indexOf(o.statut);
+      return {
+        no: o.no, date: o.date, statut: o.statut, name: o.name, adresse: o.adresse, ville: o.ville, paiement: o.paiement,
+        subtotal: fmt(o.subtotal), shipping: o.shipping ? fmt(o.shipping) : 'Offerte', total: fmt(o.subtotal + o.shipping),
+        lines: o.items_detail.map(it => {
+          const p = dec.find(x => x.id === it.id) || dec[0];
+          return { slot: p.slot, name: p.name, material: p.material, qty: it.qty, total: fmt(p.price * it.qty) };
+        }),
+        steps: stepOrder.map((label, i) => ({ label, bar: i <= idx ? 'rgb(71,29,27)' : 'rgba(0,0,0,.12)', color: i <= idx ? 'rgb(71,29,27)' : 'rgb(94,94,94)' }))
+      };
+    })(),
+    applyFilters: () => set({ filters: false }),
+    socialFull: { style: { width: '100%' } },
+    wide: s.wide, menu: s.menu, search: s.search, filters: s.filters,
+    isAccueil: s.route === 'accueil', isMaison: s.route === 'maison', isPieces: s.route === 'pieces',
+    isProduit: s.route === 'produit', isPanier: s.route === 'panier', isPaiement: s.route === 'paiement',
+    isPasseport: s.route === 'passeport', isContact: s.route === 'contact',
+    isConnexion: s.route === 'connexion', isLegal: s.route === 'legal',
+    isProfil: s.route === 'profil', isCommande: s.route === 'commande',
+    openMenu: () => set({ menu: true, search: false }),
+    openSearch: () => set({ search: true, menu: false }),
+    closeOverlays: () => set({ menu: false, search: false }),
+    headerH: s.headerH + 'px', notWide: !s.wide,
+    headerBg: (s.route === 'accueil' && !s.scrolled) ? 'transparent' : 'rgba(255,255,255,.8)',
+    headerBlur: (s.route === 'accueil' && !s.scrolled) ? 'none' : 'blur(40px)',
+    headerColor: (s.route === 'accueil' && !s.scrolled) ? 'rgb(255,255,255)' : 'rgb(71,29,27)',
+    heroOffset: s.route === 'accueil' ? '-' + s.headerH + 'px' : '0',
+    goAccueil: () => go('accueil'), goMaison: () => go('maison'),
+    goPieces: () => go('pieces'), goPanier: () => go('panier'),
+    goPaiement: () => go('paiement', { step: 1 }),
+    goPasseport: () => go('passeport'), goContact: () => go('contact'),
+    goConnexion: () => go('connexion'),
+    goLegal: () => go('legal', { legal: 'mentions' }),
+    goCGV: () => go('legal', { legal: 'cgv' }),
+    goRGPD: () => go('legal', { legal: 'rgpd' }),
+    shown, countLabel: shown.length + (shown.length > 1 ? ' pièces' : ' pièce'),
+    toggleFilters: () => setS(st => ({ ...st, filters: !st.filters })),
+    categories: CATS.map(c => ({
+      label: c, pick: () => set({ cat: c }),
+      count: c === 'Tout' ? dec.length : dec.filter(p => p.cat === c).length,
+      boxBg: s.cat === c ? 'rgb(71,29,27)' : 'transparent',
+      boxRing: s.cat === c ? 'none' : 'inset 0 0 0 1px rgb(0,0,0)',
+      checkOpacity: s.cat === c ? 1 : 0
+    })),
+    closeFilters: () => set({ filters: false }),
+    prixNum: fmt(s.fPrix).replace(' FCFA', ''),
+    secCat: { open: s.secCat, rot: s.secCat ? 'rotate(180deg)' : 'none', toggle: () => setS(st => ({ ...st, secCat: !st.secCat })) },
+    secDispo: { open: s.secDispo, rot: s.secDispo ? 'rotate(180deg)' : 'none', toggle: () => setS(st => ({ ...st, secDispo: !st.secDispo })) },
+    secPrix: { open: s.secPrix, rot: s.secPrix ? 'rotate(180deg)' : 'none', toggle: () => setS(st => ({ ...st, secPrix: !st.secPrix })) },
+    setSort: e => set({ sort: e.target.value }),
+    current, addCurrent: () => add(current.id),
+    accordion: ACC.map((a, i) => ({ title: a.title, body: a.body, open: s.open === i, toggle: () => setS(st => ({ ...st, open: st.open === i ? -1 : i })) })),
+    lines, subtotal: fmt(sub),
+    hasCart: s.cart.length > 0, cartEmpty: s.cart.length === 0,
+    cartCount: s.cart.reduce((t, l) => t + l.qty, 0),
+    isStep1: s.step === 1, isStep2: s.step === 2, isStep3: s.step === 3,
+    step1Color: stepC(1), step2Color: stepC(2), step3Color: stepC(3),
+    step1Line: stepL(1), step2Line: stepL(2), step3Line: stepL(3),
+    submitLivraison: e => { e.preventDefault(); set({ step: 2 }); try { window.scrollTo(0, 0); } catch (x) {} },
+    submitPaiement: e => {
+      if (e && e.preventDefault) e.preventDefault();
+      const no = '#CS-2026-' + String(9000 + Math.floor(Math.random() * 999));
+      const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      const payLabel = ({ carte: 'Carte de crédit', mobile: 'Mobile money', especes: 'Paiement en espèce', paypal: 'PayPal' })[s.moyen] || 'Carte de crédit';
+      const orderLines = lines.map(l => ({ slot: l.slot, name: l.name, material: l.material, qty: l.qty, total: l.total }));
+      set({ step: 3, cart: [], order: { no, date, payment: payLabel, lines: orderLines, subtotal: sub, shipping: 0 } });
+      try { window.scrollTo(0, 0); } catch (x) {}
+    },
+    backStep1: () => set({ step: 1 }),
+    pIntro: s.pstep === 'intro', pSaisie: s.pstep === 'saisie', pVerif: s.pstep === 'verif',
+    pShow: s.pstep === 'passeport', pDone: s.pstep === 'confirme',
+    pErr: s.perr, pLocked: s.tries >= 3,
+    pGoSaisie: () => set({ pstep: 'saisie', perr: '' }),
+    verify: e => {
+      e.preventDefault();
+      const f = e.target.elements;
+      const serie = (f.serie.value || '').trim().toUpperCase();
+      const code = (f.code.value || '').trim().toUpperCase();
+      if (s.tries >= 3) return;
+      if (serie === 'CS-0042-2026' && code === '8F3K-22QD') {
+        set({ pstep: 'verif', perr: '' });
+        setTimeout(() => set({ pstep: 'passeport' }), 1700);
+      } else {
+        setS(st => {
+          const tries = st.tries + 1;
+          return { ...st, tries, perr: tries >= 3
+            ? "Trois tentatives erronées. La saisie est bloquée pour cette session ; écrivez-nous à bonjour@carolesessegnon.com."
+            : "Le numéro de série et le code d'activation ne correspondent pas. Tentative " + tries + " sur 3." };
+        });
+      }
+    },
+    passportRows: [
+      { k: 'Modèle', v: 'Huperano' }, { k: 'Numéro de série', v: 'CS-0042-2026' },
+      { k: 'Numérotation', v: '042 / 100' }, { k: 'Coloris', v: 'Cuir naturel & bordeaux' },
+      { k: 'Matière', v: 'Cuir de vachette, tannage végétal' }, { k: 'Date de fabrication', v: '12 mars 2026' },
+      { k: 'Atelier', v: 'Abidjan, Plateau' }
+    ],
+    pAssocDone: !!s.assoc, pAssocOpen: !s.assoc,
+    assocName, assocDate: s.assoc ? s.assoc.date : '',
+    associate: e => {
+      e.preventDefault();
+      const f = e.target.elements;
+      const name = ((f.prenom.value || '') + ' ' + (f.nom.value || '')).trim();
+      const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      set({ assoc: { name, date }, pstep: 'confirme' });
+      try { window.scrollTo(0, 0); } catch (x) {}
+    },
+    skipAssoc: () => go('accueil'),
+    pBackToPasseport: () => set({ pstep: 'passeport' }),
+    pReset: () => set({ pstep: 'saisie', perr: '', tries: 0 }),
+    contactSent: s.contactSent, contactOpen: !s.contactSent,
+    submitContact: e => { e.preventDefault(); set({ contactSent: true }); },
+    resetContact: () => set({ contactSent: false }),
+    isSignup: s.authTab === 'inscription',
+    authTitle: s.authTab === 'inscription' ? 'Créer un compte' : 'Bonjour',
+    authCta: s.authTab === 'inscription' ? 'Créer mon compte' : 'Se connecter',
+    authMsg: s.authMsg,
+    tabLogin: () => set({ authTab: 'connexion', authMsg: '' }),
+    tabSignup: () => set({ authTab: 'inscription', authMsg: '' }),
+    tabLoginColor: s.authTab === 'connexion' ? 'rgb(71,29,27)' : 'rgb(127,127,127)',
+    tabSignupColor: s.authTab === 'inscription' ? 'rgb(71,29,27)' : 'rgb(127,127,127)',
+    tabLoginLine: s.authTab === 'connexion' ? 'rgb(71,29,27)' : 'transparent',
+    tabSignupLine: s.authTab === 'inscription' ? 'rgb(71,29,27)' : 'transparent',
+    submitAuth: e => { e.preventDefault(); set({ authMsg: "Démonstration — aucun compte n'est réellement créé." }); },
+    noopAuth: () => set({ authMsg: 'Démonstration — connexion tierce non branchée.' }),
+    legalTabs: [{ key: 'mentions', label: 'Mentions légales' }, { key: 'cgv', label: 'CGV' }, { key: 'rgpd', label: 'Confidentialité' }].map(t => ({
+      label: t.label, pick: () => set({ legal: t.key }),
+      color: s.legal === t.key ? 'rgb(71,29,27)' : 'rgb(127,127,127)',
+      line: s.legal === t.key ? 'rgb(71,29,27)' : 'transparent'
+    })),
+    legalTitle: LEGAL[legalKey].title,
+    legalBody: LEGAL[legalKey].body.map(t => ({ text: t }))
+  };
+
+  return <Shell v={v} />;
+}
+
+/* ================================ Shell ================================ */
+function Shell({ v }) {
+  const navBtn = { background: 'none', border: 0, padding: 0, color: 'inherit', cursor: 'pointer', fontSize: 13, letterSpacing: '.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' };
+  const iconBtn = { display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, background: 'none', border: 0, color: 'inherit', cursor: 'pointer', padding: 0 };
+  return (
+    <div style={{ minHeight: '100vh', background: 'rgb(252,249,248)', fontFamily: 'var(--font-body)', color: 'rgb(0,0,0)', WebkitFontSmoothing: 'antialiased', marginTop: v.heroOffset }}>
+
+      <header style={{ position: 'sticky', top: 0, zIndex: 40, background: v.headerBg, backdropFilter: v.headerBlur, color: v.headerColor, transitionProperty: 'background-color,backdrop-filter,color', transitionDuration: '.25s', transitionTimingFunction: 'cubic-bezier(.2,0,0,1)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', columnGap: 16, width: '100%', maxWidth: 1920, margin: '0 auto', padding: '12px clamp(16px,3vw,60px)', height: 'clamp(56px,6vw,84px)' }}>
+          <div style={{ gridColumn: 1, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+            {v.wide && (
+              <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(18px,2.6vw,34px)', fontSize: 13, letterSpacing: '.08em', textTransform: 'uppercase' }}>
+                <button type="button" className="fx-dim" onClick={v.goMaison} style={navBtn}>La Maison</button>
+                <button type="button" className="fx-dim" onClick={v.goPieces} style={navBtn}>Les Pièces</button>
+                <button type="button" className="fx-dim" onClick={v.goPasseport} style={navBtn}>Passeport</button>
+                <button type="button" className="fx-dim" onClick={v.goContact} style={navBtn}>Contact</button>
+              </nav>
+            )}
+            {v.notWide && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px,2vw,30px)' }}>
+                <button type="button" className="fx-dim fx-press" aria-label="Menu" onClick={v.openMenu} style={iconBtn}>
+                  <svg width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M0 1h18M0 6h18M0 11h18" /></svg>
+                </button>
+                <button type="button" className="fx-dim fx-press" aria-label="Rechercher" onClick={v.openSearch} style={iconBtn}>
+                  <svg width="22" height="22" viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth=".9"><circle cx="7" cy="7" r="6" /><path d="M11.5 11.5 16 16" /></svg>
+                </button>
+              </div>
+            )}
+          </div>
+          <button type="button" className="fx-press" aria-label="Accueil" onClick={v.goAccueil} style={{ gridColumn: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', padding: 0, color: 'inherit' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(17px,2.6vw,26px)', letterSpacing: '.04em', whiteSpace: 'nowrap' }}>CAROLE SESSEGNON</span>
+          </button>
+          <div style={{ gridColumn: 3, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'clamp(8px,2vw,30px)' }}>
+            {v.wide && (
+              <button type="button" className="fx-dim fx-press" aria-label="Rechercher" onClick={v.openSearch} style={iconBtn}>
+                <svg width="22" height="22" viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth=".9"><circle cx="7" cy="7" r="6" /><path d="M11.5 11.5 16 16" /></svg>
+              </button>
+            )}
+            <button type="button" className="fx-dim fx-press" aria-label="Mon compte" onClick={v.goConnexion} style={iconBtn}>
+              <svg width="22" height="22" viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth=".9"><circle cx="8.5" cy="5.5" r="3.5" /><path d="M1.5 16c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5" /></svg>
+            </button>
+            <button type="button" className="fx-dim fx-press" aria-label="Panier" onClick={v.goPanier} style={{ ...iconBtn, position: 'relative' }}>
+              <svg width="21" height="23" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth=".9"><path d="M1 5h14l-1 12H2L1 5Z" /><path d="M5.5 5V3.5a2.5 2.5 0 0 1 5 0V5" /></svg>
+              {v.hasCart && (
+                <span style={{ position: 'absolute', top: 6, right: 5, minWidth: 16, height: 16, borderRadius: '50%', background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', fontSize: 10, lineHeight: '16px', textAlign: 'center', fontWeight: 500 }}>{v.cartCount}</span>
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {v.menu && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(20px,5vw,60px)', animation: 'cs-in .25s ease-out' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button type="button" aria-label="Fermer" onClick={v.closeOverlays} style={{ width: 44, height: 44, background: 'none', border: 0, color: 'inherit', cursor: 'pointer', fontSize: 22, fontFamily: 'var(--font-body)' }}>×</button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 22, marginTop: 40, maxWidth: 520 }}>
+            {[['Accueil', v.goAccueil], ['La Maison', v.goMaison], ['Les Pièces', v.goPieces], ['Passeport', v.goPasseport], ['Contact', v.goContact]].map(([label, fn]) => (
+              <button key={label} type="button" onClick={fn} style={{ textAlign: 'left', background: 'none', border: 0, color: 'inherit', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(26px,5vw,40px)', lineHeight: 1.1 }}>{label}</button>
+            ))}
+            <div style={{ height: 1, background: 'rgba(255,255,255,.22)', margin: '10px 0' }}></div>
+            <button type="button" onClick={v.goConnexion} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', background: 'none', border: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', padding: 0, fontSize: 14, letterSpacing: '.12em', textTransform: 'uppercase' }}>
+              <svg width="16" height="16" viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="8.5" cy="5.5" r="3.5" /><path d="M1.5 16c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5" /></svg>
+              Mon compte
+            </button>
+            <button type="button" onClick={v.goProfil} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', background: 'none', border: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', padding: 0, fontSize: 14, letterSpacing: '.12em', textTransform: 'uppercase' }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="8" cy="8" r="6.5" /><circle cx="8" cy="6" r="2.2" /><path d="M3.8 12.8c.7-1.8 2.3-2.8 4.2-2.8s3.5 1 4.2 2.8" /></svg>
+              Mon profil
+            </button>
+            <button type="button" onClick={v.goLegal} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', background: 'none', border: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', padding: 0, fontSize: 14, letterSpacing: '.12em', textTransform: 'uppercase' }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1"><rect x="2" y="1.5" width="12" height="13" rx="0" /><path d="M5 5h6M5 8h6M5 11h4" /></svg>
+              Mentions légales
+            </button>
+          </div>
+        </div>
+      )}
+
+      {v.search && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(252,249,248,.97)', padding: 'clamp(20px,5vw,60px)', animation: 'cs-in .25s ease-out', overflow: 'auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button type="button" aria-label="Fermer" onClick={v.closeOverlays} style={{ width: 44, height: 44, background: 'none', border: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 22, fontFamily: 'var(--font-body)' }}>×</button>
+          </div>
+          <div style={{ maxWidth: 900, margin: '40px auto 0' }}>
+            <label htmlFor="cs-q" style={{ display: 'block', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)', marginBottom: 12 }}>Rechercher une pièce</label>
+            <input id="cs-q" type="search" value={v.q} onChange={v.setQ} placeholder="Nom, matière, coloris" style={{ width: '100%', padding: '14px 0', background: 'none', border: 0, borderBottom: '1px solid rgb(71,29,27)', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,4vw,34px)', color: 'rgb(71,29,27)' }} />
+            <p style={{ fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)', margin: '34px 0 14px' }}>Résultats</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,170px),1fr))', gap: '28px 20px' }}>
+              {v.results.map((p, i) => (
+                <div key={i}>
+                  <Oval p={p} />
+                  <button type="button" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                    <p style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 19, color: 'rgb(71,29,27)' }}>{p.name}</p>
+                    <p style={{ margin: '6px 0 0', fontSize: 14, color: p.priceColor }}>{p.priceLabel}</p>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <main style={{ minHeight: '60vh' }}>
+        {v.isAccueil && <ScAccueil v={v} />}
+        {v.isMaison && <ScMaison v={v} />}
+        {v.isPieces && <ScPieces v={v} />}
+        {v.isProduit && <ScProduit v={v} />}
+        {v.isPanier && <ScPanier v={v} />}
+        {v.isPaiement && <ScPaiement v={v} />}
+        {v.isPasseport && <ScPasseport v={v} />}
+        {v.isContact && <ScContact v={v} />}
+        {v.isConnexion && <ScConnexion v={v} />}
+        {v.isProfil && <ScProfil v={v} />}
+        {v.isCommande && <ScCommande v={v} />}
+        {v.isLegal && <ScLegal v={v} />}
+      </main>
+
+      <div style={{ position: 'fixed', right: 'clamp(14px,2vw,28px)', bottom: 'clamp(14px,2vw,28px)', zIndex: 50, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {v.showTop && (
+          <button type="button" className="fx-press" aria-label="Retour en haut" onClick={v.scrollTop} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, borderRadius: '50%', background: 'rgb(255,255,255)', border: 0, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.15),0 12px 24px -8px rgba(0,0,0,.12)', color: 'rgb(71,29,27)', cursor: 'pointer' }}>
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15V1M1 7l6-6 6 6" /></svg>
+          </button>
+        )}
+        <button type="button" className="fx-bordeaux fx-press" aria-label="Discuter avec la Maison" onClick={v.goContact} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
+          <svg width="22" height="20" viewBox="0 0 22 20" fill="none" stroke="currentColor" strokeWidth="1"><path d="M21 9.5c0 4.4-4.5 8-10 8-1.2 0-2.4-.2-3.4-.5L1 19l1.6-3.8A7.4 7.4 0 0 1 1 9.5c0-4.4 4.5-8 10-8s10 3.6 10 8Z" /></svg>
+        </button>
+      </div>
+
+      <Footer v={v} />
+    </div>
+  );
+}
+
+function Footer({ v }) {
+  const link = { background: 'none', border: 0, padding: 0, color: 'rgba(255,255,255,.9)', cursor: 'pointer', fontSize: 15 };
+  const eyebrow = { margin: '0 0 18px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.6)' };
+  return (
+    <footer style={{ background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(48px,7vw,80px) clamp(20px,5vw,140px) clamp(32px,4vw,48px)' }}>
+      <div style={{ maxWidth: 1640, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,200px),1fr))', gap: 'clamp(28px,4vw,56px)', textAlign: 'left', paddingBottom: 'clamp(36px,5vw,60px)' }}>
+          <div>
+            <p style={eyebrow}>Menu</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
+              <button type="button" onClick={v.goAccueil} style={link}>Accueil</button>
+              <button type="button" onClick={v.goMaison} style={link}>La Maison</button>
+              <button type="button" onClick={v.goPieces} style={link}>Les Pièces</button>
+              <button type="button" onClick={v.goContact} style={link}>Contact</button>
+            </div>
+          </div>
+          <div>
+            <p style={eyebrow}>Plus d'informations</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
+              <button type="button" onClick={v.goPasseport} style={link}>Passeport digital</button>
+              <button type="button" onClick={v.goProfil} style={link}>Mon profil</button>
+              <button type="button" onClick={v.goLegal} style={link}>Mentions légales</button>
+              <button type="button" onClick={v.goCGV} style={link}>CGV</button>
+              <button type="button" onClick={v.goRGPD} style={link}>Confidentialité</button>
+            </div>
+          </div>
+          <div>
+            <p style={eyebrow}>Suivez nous</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
+              <a href="#" style={{ color: 'rgba(255,255,255,.9)', fontSize: 15 }}>Instagram</a>
+              <a href="#" style={{ color: 'rgba(255,255,255,.9)', fontSize: 15 }}>Facebook</a>
+              <a href="#" style={{ color: 'rgba(255,255,255,.9)', fontSize: 15 }}>Pinterest</a>
+              <a href="#" style={{ color: 'rgba(255,255,255,.9)', fontSize: 15 }}>WhatsApp</a>
+            </div>
+          </div>
+          <div>
+            <p style={eyebrow}>Rester informé</p>
+            <p style={{ margin: '0 0 16px', fontSize: 15, lineHeight: 1.6, color: 'rgba(255,255,255,.82)' }}>Les nouvelles pièces et les rendez-vous de la Maison, sans excès.</p>
+            <form onSubmit={v.submitNews} style={{ display: 'flex', gap: 0, flexWrap: 'wrap' }}>
+              <input name="news" type="email" required placeholder="Votre e-mail" style={{ flex: 1, minWidth: 160, height: 52, padding: '0 16px', background: 'transparent', border: 0, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.45)', color: 'rgb(255,255,255)', fontSize: 15 }} />
+              <button type="submit" style={{ height: 52, padding: '0 22px', background: 'rgb(255,255,255)', border: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 13, letterSpacing: '.1em', textTransform: 'uppercase' }}>OK</button>
+            </form>
+            {v.newsOk && <p style={{ margin: '12px 0 0', fontSize: 14, color: 'rgba(255,255,255,.82)' }}>Merci, votre inscription est enregistrée.</p>}
+          </div>
+        </div>
+        <div style={{ borderTop: '1px solid rgba(255,255,255,.2)', paddingTop: 'clamp(32px,4vw,48px)', textAlign: 'center' }}>
+          <img src="assets/CS-LOGOMARK.svg" alt="Monogramme Carole Sessegnon" style={{ width: 44, height: 'auto', display: 'block', margin: '0 auto 18px', filter: 'brightness(0) invert(1)' }} />
+          <p style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontSize: 'clamp(28px,7vw,64px)', letterSpacing: '.14em', lineHeight: 1 }}>CAROLE SESSEGNON</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 30 }}>
+            <a href="#" aria-label="Instagram" style={{ color: 'rgba(255,255,255,.85)', display: 'flex', width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1"><rect x="1" y="1" width="16" height="16" rx="4" /><circle cx="9" cy="9" r="4" /><circle cx="13.4" cy="4.6" r=".8" fill="currentColor" stroke="none" /></svg>
+            </a>
+            <a href="#" aria-label="Facebook" style={{ color: 'rgba(255,255,255,.85)', display: 'flex', width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1"><path d="M11.5 5.5h2.2M11.5 5.5c0-2 .8-3 2.2-3M11.5 5.5V17M8 9h6" /></svg>
+            </a>
+            <a href="#" aria-label="Pinterest" style={{ color: 'rgba(255,255,255,.85)', display: 'flex', width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="9" cy="9" r="8" /><path d="M7 17c1.4-3.6 2.2-6.8 2.2-6.8M6.4 7.6c0-1.8 1.4-3 3-3s2.8 1 2.8 2.8c0 2-1.2 3.6-2.8 3.6-.9 0-1.6-.7-1.4-1.6" /></svg>
+            </a>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 26, marginBottom: 22, fontSize: 14 }}>
+            <button type="button" onClick={v.goLegal} style={{ background: 'none', border: 0, padding: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', fontSize: 14 }}>Mentions légales</button>
+            <button type="button" onClick={v.goCGV} style={{ background: 'none', border: 0, padding: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', fontSize: 14 }}>CGV</button>
+            <button type="button" onClick={v.goRGPD} style={{ background: 'none', border: 0, padding: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', fontSize: 14 }}>Confidentialité</button>
+          </div>
+          <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,.7)' }}>© 2026 Carole Sessegnon — Tous droits réservés</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function FAQBlock({ v, center }) {
+  return (
+    <div style={{ margin: center ? '0 auto' : undefined, maxWidth: 900, textAlign: center ? 'center' : 'left', marginLeft: center ? 'auto' : undefined, marginRight: center ? 'auto' : undefined }}>
+      <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Foire aux questions</p>
+      <h2 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Les questions fréquentes</h2>
+      {v.faqItems.map((i, k) => (
+        <AccordionItem key={k} question={i.q} answer={i.a} open={i.open} onToggle={i.toggle} style={{ textAlign: 'left' }} />
+      ))}
+    </div>
+  );
+}
+
+/* ================================ Screens ================================ */
+function ScAccueil({ v }) {
+  return (
+    <section>
+      <div style={{ position: 'relative', height: 'calc(75vh + 130px)' }}>
+        <ImageSlot placeholder="Visuel d'ouverture" />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 18%,rgba(0,0,0,.05) 45%,rgba(0,0,0,.55) 100%)', pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
+          <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.9)' }}>Maison ivoirienne de maroquinerie</p>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(255,255,255)', maxWidth: '16ch', textWrap: 'pretty' }}>Chaque pièce porte un nom</h1>
+          <button type="button" onClick={v.goPieces} style={{ marginTop: 26, pointerEvents: 'auto', background: 'none', border: 0, borderBottom: '1px solid rgba(255,255,255,.7)', padding: '0 0 6px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15, letterSpacing: '.06em' }}>Découvrir les pièces&nbsp;&nbsp;→</button>
+        </div>
+      </div>
+
+      <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', textAlign: 'center' }}>
+        <p style={{ margin: '0 auto', maxWidth: '44ch', fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,2.6vw,32px)', lineHeight: 1.4, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>Née à Abidjan, la Maison travaille le cuir ivoirien pièce par pièce, à la main. Chaque pièce est unique, numérotée, et accompagnée de son passeport digital.</p>
+        <button type="button" onClick={v.goMaison} style={{ marginTop: 30, background: 'none', border: 0, borderBottom: '1px solid rgb(71,29,27)', padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, letterSpacing: '.06em' }}>La Maison&nbsp;&nbsp;→</button>
+      </div>
+
+      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(16px,2vw,28px)' }}>
+          {v.tuiles.map((t, i) => (
+            <button key={i} type="button" onClick={t.pick} style={{ position: 'relative', display: 'block', width: '100%', height: 'clamp(280px,34vw,420px)', padding: 0, background: 'none', border: 0, cursor: 'pointer', overflow: 'hidden' }}>
+              <ImageSlot placeholder="Visuel catégorie" />
+              <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 60%)' }}></span>
+              <span style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 24, textAlign: 'left', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,2.4vw,28px)', color: 'rgb(255,255,255)' }}>{t.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
+        <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Les pièces</p>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, margin: '0 0 40px', flexWrap: 'wrap' }}>
+          <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)', maxWidth: '22ch', textWrap: 'pretty' }}>Collection de maroquineries tendances en ce moment</h2>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button type="button" className="fx-bordeaux fx-press" aria-label="Précédent" onClick={v.carPrev} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M15 6H1M6 1 1 6l5 5" /></svg>
+            </button>
+            <button type="button" className="fx-bordeaux fx-press" aria-label="Suivant" onClick={v.carNext} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M1 6h14M10 1l5 5-5 5" /></svg>
+            </button>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,220px),1fr))', gap: 'clamp(24px,3vw,48px) clamp(16px,2.5vw,32px)' }}>
+          {v.carItems.map((p, i) => (
+            <div key={i}>
+              <Oval p={p} ph="Photo produit — cadrage ovale" />
+              <button type="button" className="fx-press99" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                <p style={{ margin: '20px 0 0', fontFamily: 'var(--font-display)', fontSize: 22, color: 'rgb(71,29,27)' }}>{p.name}</p>
+                <p style={{ margin: '8px 0 0', fontSize: 15, lineHeight: 1.5, color: 'rgb(94,94,94)', textWrap: 'pretty' }}>{p.tagline}</p>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ position: 'relative', height: 'clamp(420px,70vh,680px)' }}>
+        <ImageSlot placeholder="Bandeau lifestyle — plein écran" />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 55%)', pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', left: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
+          <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.2vw,44px)', color: 'rgb(255,255,255)' }}>Les Pièces</h2>
+          <button type="button" onClick={v.goPieces} style={{ marginTop: 16, pointerEvents: 'auto', background: 'none', border: 0, borderBottom: '1px solid rgba(255,255,255,.7)', padding: '0 0 5px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15 }}>Découvrir&nbsp;&nbsp;→</button>
+        </div>
+      </div>
+
+      <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+        <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Passeport digital</p>
+        <h2 style={{ margin: '0 0 18px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)' }}>Vérifiez l'authenticité de votre pièce</h2>
+        <p style={{ margin: '0 auto 28px', maxWidth: '56ch', fontSize: 17, lineHeight: 1.65, color: 'rgb(94,94,94)', textWrap: 'pretty' }}>Le certificat glissé dans votre coffret porte un numéro de série et un code d'activation privé. Ils ouvrent le passeport de votre pièce.</p>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Button variant="primary" onClick={v.goPasseport} style={v.btnUpper.style}>Activer mon passeport</Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ScMaison({ v }) {
+  const eyebrow = { margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' };
+  return (
+    <section>
+      <div style={{ position: 'relative', height: 'clamp(340px,55vh,560px)' }}>
+        <ImageSlot placeholder="Atelier — visuel large" />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(120deg,rgba(71,29,27,.6),rgba(0,0,0,.25))', pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
+          <div>
+            <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.9)' }}>La Maison</p>
+            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,5.5vw,56px)', lineHeight: 1.08, color: 'rgb(255,255,255)', maxWidth: '18ch' }}>Abidjan, atelier de cuir</h1>
+          </div>
+        </div>
+      </div>
+      <div style={{ padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,320px),1fr))', gap: 'clamp(32px,5vw,80px)', alignItems: 'start' }}>
+        <div>
+          <p style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,2.4vw,28px)', lineHeight: 1.45, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>La Maison est née d'un geste simple : couper, coudre, patiner, et recommencer jusqu'à ce que la pièce tienne toute seule.</p>
+          <p style={{ margin: '0 0 18px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Texte provisoire. Les cuirs sont sélectionnés en Côte d'Ivoire, tannés au végétal, puis travaillés à la main dans l'atelier du Plateau. Chaque pièce reçoit un numéro qui l'accompagne toute sa vie.</p>
+          <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Texte provisoire. Aucune pièce n'est produite deux fois à l'identique : les peaux, les fils et les patines varient, et c'est cette variation que le registre de la Maison conserve.</p>
+        </div>
+        <div>
+          <div style={{ position: 'relative', aspectRatio: '.8', boxShadow: '0 12px 24px -8px rgba(0,0,0,.08),0 0 0 1px oklch(0 0 0 / 0.1)' }}>
+            <ImageSlot placeholder="Portrait — Carole Sessegnon" />
+          </div>
+          <p style={{ margin: '14px 0 0', fontSize: 13, letterSpacing: '.06em', color: 'rgb(94,94,94)' }}>Carole Sessegnon, fondatrice</p>
+        </div>
+      </div>
+      <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)' }}>
+        <div style={{ maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 'clamp(24px,4vw,60px)' }}>
+          <div><p style={eyebrow}>Le cuir</p><p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Texte provisoire sur la provenance et le tannage des peaux.</p></div>
+          <div><p style={eyebrow}>La main</p><p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Texte provisoire sur les gestes de l'atelier et le temps de fabrication.</p></div>
+          <div><p style={eyebrow}>Le registre</p><p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Texte provisoire sur la numérotation et le passeport digital de chaque pièce.</p></div>
+        </div>
+      </div>
+
+      <div style={{ position: 'relative', height: 'clamp(360px,58vh,600px)' }}>
+        <ImageSlot placeholder="Atelier — détail du geste" />
+      </div>
+
+      <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
+        <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Savoir-faire</p>
+        <h2 style={{ margin: '0 0 48px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)', maxWidth: '20ch', textWrap: 'pretty' }}>Du cuir brut à la pièce numérotée</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(28px,4vw,60px)' }}>
+          {v.savoirFaire.map((sf, i) => (
+            <div key={i}>
+              <p style={{ margin: '0 0 18px', fontFamily: 'var(--font-display)', fontSize: 32, color: 'rgba(71,29,27,.35)' }}>{sf.n}</p>
+              <p style={{ margin: '0 0 10px', fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>{sf.title}</p>
+              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{sf.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ background: 'rgb(71,29,27)', color: 'rgb(255,255,255)' }}>
+        <div style={{ maxWidth: 1640, margin: '0 auto', padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(32px,5vw,72px)', alignItems: 'center' }}>
+          <div style={{ flex: '0 0 auto', width: 120 }}>
+            <ImageSlot placeholder="Sentinelle — illustration à venir" style={{ width: 120, height: 156 }} />
+          </div>
+          <div>
+            <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.7)' }}>Les Sentinelles de la Maison</p>
+            <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,2.6vw,28px)', lineHeight: 1.5, maxWidth: '48ch', textWrap: 'pretty' }}>Elles veillent sur chaque pièce, du registre à la vérification de son authenticité — gardiennes silencieuses des archives et de l'histoire de chaque pièce.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+        <h2 style={{ margin: '0 0 24px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)' }}>Voir les pièces</h2>
+        <Button variant="secondary" onClick={v.goPieces} style={v.btnUpper.style}>Découvrir les pièces</Button>
+      </div>
+    </section>
+  );
+}
+
+function ScPieces({ v }) {
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
+      <p style={{ margin: '0 0 8px', fontSize: 14, letterSpacing: '.1em', color: 'rgb(94,94,94)' }}>Les Pièces</p>
+      <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(71,29,27)' }}>Les Pièces</h1>
+      <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, margin: '26px -4px 0', padding: '14px 4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', background: 'rgba(255,255,255,.72)', backdropFilter: 'blur(40px)' }}>
+        <p style={{ margin: 0, fontSize: 15, color: 'rgb(70,70,70)' }}>Type de pièce : <span style={{ color: 'rgb(0,0,0)' }}>{v.catLabel}</span></p>
+        <button type="button" onClick={v.toggleFilters} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, borderBottom: '1px solid rgb(0,0,0)', padding: '0 0 5px', color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 15 }}>
+          Filtrer
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M0 1h16M3 6h10M6 11h4" /></svg>
+        </button>
+      </div>
+
+      {v.filters && (
+        <Fragment>
+          <div onClick={v.closeFilters} style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(0,0,0,.35)', animation: 'cs-in .2s ease-out' }}></div>
+          <aside style={{ position: 'fixed', top: 10, right: 10, bottom: 10, zIndex: 71, width: 'min(556px,calc(100vw - 20px))', background: 'rgb(255,255,255)', padding: '21px 20px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 24, overflow: 'auto', animation: 'cs-slide .28s ease-out' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 31, alignItems: 'stretch' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, height: 39 }}>
+                <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)' }}>Filter par :</span>
+                <button type="button" aria-label="Fermer" onClick={v.closeFilters} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 39, height: 39, background: 'rgb(228,228,228)', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)', padding: 0 }}>
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1"><path d="M3.7 3.7l7.6 7.6M11.3 3.7l-7.6 7.6" /></svg>
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'stretch' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'stretch' }}>
+                  <button type="button" onClick={v.secCat.toggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                    <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)' }}>Catégories</span>
+                    <span style={{ display: 'flex', transform: v.secCat.rot }}>
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
+                    </span>
+                  </button>
+                  {v.secCat.open && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+                      {v.categories.map((c, i) => (
+                        <button key={i} type="button" onClick={c.pick} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 28, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 22, height: 22, background: c.boxBg, boxShadow: c.boxRing }}>
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="rgb(255,255,255)" strokeWidth="1.2" style={{ opacity: c.checkOpacity }}><path d="M1 6.3 4.6 10 11 1" /></svg>
+                          </span>
+                          <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)', whiteSpace: 'nowrap' }}>{c.label} <span style={{ color: 'rgb(140,140,140)', whiteSpace: 'nowrap' }}>({c.count})</span></span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ height: 0, borderTop: '1px dashed rgb(201,201,201)' }}></div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'stretch' }}>
+                  <button type="button" onClick={v.secDispo.toggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                    <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)' }}>Disponibilités</span>
+                    <span style={{ display: 'flex', transform: v.secDispo.rot }}>
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
+                    </span>
+                  </button>
+                  {v.secDispo.open && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+                      {v.dispos.map((d, i) => (
+                        <button key={i} type="button" onClick={d.pick} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 28, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 22, height: 22, borderRadius: 120, boxShadow: d.ring }}>
+                            <span style={{ width: 12, height: 12, borderRadius: 120, background: d.dot }}></span>
+                          </span>
+                          <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)', whiteSpace: 'nowrap' }}>{d.label} <span style={{ color: 'rgb(140,140,140)', whiteSpace: 'nowrap' }}>({d.count})</span></span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ height: 0, borderTop: '1px dashed rgb(201,201,201)' }}></div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'stretch' }}>
+                  <button type="button" onClick={v.secPrix.toggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                    <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)' }}>Prix</span>
+                    <span style={{ display: 'flex', transform: v.secPrix.rot }}>
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
+                    </span>
+                  </button>
+                  {v.secPrix.open && (
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+                        <span style={{ minWidth: 120, padding: '20px 30px', boxShadow: 'inset 0 0 0 1px rgb(0,0,0)', fontSize: 18, lineHeight: '28px', textAlign: 'center', color: 'rgb(0,0,0)' }}>0</span>
+                        <span style={{ minWidth: 130, padding: '20px 30px', boxShadow: 'inset 0 0 0 1px rgb(0,0,0)', fontSize: 18, lineHeight: '28px', textAlign: 'center', color: 'rgb(0,0,0)' }}>{v.prixNum}</span>
+                      </div>
+                      <input type="range" min="50000" max="600000" step="5000" value={v.fPrix} onChange={v.setPrix} aria-label="Prix maximum" style={{ marginTop: 22, width: '100%', accentColor: 'rgb(71,29,27)' }} />
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ height: 0, borderTop: '1px dashed rgb(201,201,201)' }}></div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'stretch' }}>
+                  <label htmlFor="cs-sort" style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)' }}>Trier par</label>
+                  <select id="cs-sort" value={v.s.sort} onChange={v.setSort} style={{ width: '100%', height: 60, padding: '0 20px', background: 'rgb(255,255,255)', border: 0, boxShadow: 'inset 0 0 0 1px rgb(0,0,0)', color: 'rgb(0,0,0)', fontSize: 18 }}>
+                    <option value="default">Sélection de la Maison</option>
+                    <option value="asc">Prix croissant</option>
+                    <option value="desc">Prix décroissant</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+              <button type="button" className="fx-press fx-resetbtn" onClick={v.resetFilters} style={{ flex: 1, height: 68, padding: '20px 30px', background: 'none', border: 0, color: 'rgb(174,174,174)', cursor: 'pointer', fontSize: 18, fontWeight: 700 }}>Réinitialiser</button>
+              <button type="button" className="fx-bordeaux fx-press" onClick={v.applyFilters} style={{ flex: 1, height: 68, padding: '20px 30px', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 18, fontWeight: 700 }}>Appliquer le(s) filtre(s)</button>
+            </div>
+          </aside>
+        </Fragment>
+      )}
+
+      <p style={{ margin: '30px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>{v.countLabel}</p>
+      <div style={{ marginTop: 26, display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,220px),1fr))', gap: 'clamp(28px,3.5vw,56px) clamp(16px,2.5vw,32px)' }}>
+        {v.shown.map((p, i) => (
+          <div key={i}>
+            <Oval p={p} />
+            <button type="button" className="fx-press99" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+              <p style={{ margin: '20px 0 0', fontFamily: 'var(--font-display)', fontSize: 22, color: 'rgb(71,29,27)' }}>{p.name}</p>
+              <p style={{ margin: '8px 0 0', fontSize: 15, lineHeight: 1.5, color: 'rgb(94,94,94)', textWrap: 'pretty' }}>{p.tagline}</p>
+              <p style={{ margin: '10px 0 0', fontSize: 14, letterSpacing: '.06em', color: p.priceColor }}>{p.priceLabel}</p>
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ScProduit({ v }) {
+  const c = v.current;
+  return (
+    <section style={{ padding: 'clamp(24px,4vw,60px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
+      <button type="button" onClick={v.goPieces} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, letterSpacing: '.06em' }}>← Les Pièces</button>
+      <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
+        <div>
+          <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+            <ImageSlot shape="circle" placeholder="Photo produit principale" />
+          </div>
+          <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12 }}>
+            {['Détail 1', 'Détail 2', 'Détail 3'].map((d, i) => (
+              <div key={i} style={{ position: 'relative', minWidth: 0, overflow: 'hidden', aspectRatio: '1', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}><ImageSlot placeholder={d} /></div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièce numérotée</p>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,4.6vw,48px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>{c.name}</h1>
+          <p style={{ margin: '14px 0 0', fontSize: 17, lineHeight: 1.6, color: 'rgb(70,70,70)', maxWidth: '42ch', textWrap: 'pretty' }}>{c.tagline}</p>
+          <p style={{ margin: '26px 0 0', fontSize: 20, letterSpacing: '.04em', color: 'rgb(0,0,0)' }}>{c.priceLabel}</p>
+          <p style={{ margin: '8px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{c.material}</p>
+
+          {c.available && (
+            <div style={{ marginTop: 30, maxWidth: 420 }}>
+              {c.hasTeinte && (
+                <Fragment>
+                  <p style={{ margin: '0 0 12px', fontSize: 15, color: 'rgb(70,70,70)' }}>Teinte : <span style={{ color: 'rgb(0,0,0)' }}>{v.teinte}</span></p>
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    {v.teintes.map((t, i) => (
+                      <button key={i} type="button" onClick={t.pick} style={{ padding: '10px 16px', background: 'none', border: 0, boxShadow: t.ring, color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 14 }}>{t.label}</button>
+                    ))}
+                  </div>
+                </Fragment>
+              )}
+              <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 15, color: 'rgb(70,70,70)' }}>Quantité</span>
+                <div style={{ display: 'flex', alignItems: 'center', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)' }}>
+                  <button type="button" aria-label="Moins" onClick={v.qtyMinus} style={{ width: 44, height: 44, background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)', fontSize: 16 }}>−</button>
+                  <span style={{ minWidth: 30, textAlign: 'center', fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>{v.pqty}</span>
+                  <button type="button" aria-label="Plus" onClick={v.qtyPlus} style={{ width: 44, height: 44, background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)', fontSize: 16 }}>+</button>
+                </div>
+              </div>
+              <div style={{ marginTop: 22 }}>
+                <Button variant="primary" onClick={v.addCurrent} style={v.btnBlock.style}>{v.addToCartLabel}</Button>
+              </div>
+              <div style={{ marginTop: 12 }}>
+                <Button variant="secondary" onClick={v.buyNow} style={v.btnBlock.style}>Acheter maintenant</Button>
+              </div>
+            </div>
+          )}
+          {c.soon && (
+            <p style={{ margin: '30px 0 0', padding: 18, maxWidth: 420, textAlign: 'center', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.15)', fontSize: 13, letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Bientôt disponible</p>
+          )}
+          <div style={{ marginTop: 36, maxWidth: 520 }}>
+            {v.accordion.map((a, i) => (
+              <AccordionItem key={i} question={a.title} answer={a.body} open={a.open} onToggle={a.toggle} />
+            ))}
+            <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
+          </div>
+          <button type="button" onClick={v.goPasseport} style={{ marginTop: 26, background: 'none', border: 0, borderBottom: '1px solid rgb(71,29,27)', padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14 }}>Le passeport digital de cette pièce&nbsp;&nbsp;→</button>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 'clamp(48px,7vw,90px)' }}>
+        <h2 style={{ margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Vous aimerez aussi</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,200px),1fr))', gap: '32px 20px' }}>
+          {v.related.map((p, i) => (
+            <div key={i}>
+              <Oval p={p} />
+              <button type="button" className="fx-press99" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>{p.name}</p>
+                <p style={{ margin: '6px 0 0', fontSize: 14, color: p.priceColor }}>{p.priceLabel}</p>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900 }}>
+        <FAQBlock v={v} />
+      </div>
+    </section>
+  );
+}
+
+function ScPanier({ v }) {
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', margin: '0 0 34px' }}>
+        <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,5vw,48px)', color: 'rgb(71,29,27)' }}>{v.panierTitle}</h1>
+        {v.hasCart && (
+          <button type="button" onClick={v.clearCart} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgba(0,0,0,.3)' }}>Vider le panier</button>
+        )}
+      </div>
+      {v.cartEmpty && (
+        <div>
+          <p style={{ margin: 0, fontSize: 17, color: 'rgb(70,70,70)' }}>Votre panier est vide.</p>
+          <button type="button" onClick={v.goPieces} style={{ marginTop: 20, background: 'none', border: 0, borderBottom: '1px solid rgb(71,29,27)', padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 15 }}>Voir les pièces&nbsp;&nbsp;→</button>
+        </div>
+      )}
+      {v.hasCart && (
+        <Fragment>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
+            <div>
+              {v.lines.map((l, i) => (
+                <div key={i} style={{ display: 'flex', gap: 18, padding: '22px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
+                  <button type="button" onClick={l.open} aria-label={'Voir ' + l.name} style={{ flex: '0 0 84px', position: 'relative', width: 84, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px', padding: 0, background: 'none', border: 0, cursor: 'pointer' }}>
+                    <ImageSlot shape="circle" placeholder="Photo" />
+                  </button>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <button type="button" onClick={l.open} style={{ display: 'block', background: 'none', border: 0, padding: 0, cursor: 'pointer', textAlign: 'left', margin: 0, fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>{l.name}</button>
+                    <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{l.material}</p>
+                    <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.15)' }}>
+                        <button type="button" aria-label="Retirer un" onClick={l.dec} style={{ width: 44, height: 44, background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)', fontSize: 16 }}>−</button>
+                        <span style={{ minWidth: 28, textAlign: 'center', fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>{l.qty}</span>
+                        <button type="button" aria-label="Ajouter un" onClick={l.inc} style={{ width: 44, height: 44, background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)', fontSize: 16 }}>+</button>
+                      </div>
+                      <button type="button" onClick={l.fav} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 0, padding: 0, color: l.favColor, cursor: 'pointer', fontSize: 13 }}>
+                        <svg width="15" height="14" viewBox="0 0 15 14" fill={l.favFill} stroke="currentColor" strokeWidth="1"><path d="M7.5 12.6 2.1 7.4a3.2 3.2 0 0 1 4.5-4.5l.9.9.9-.9a3.2 3.2 0 0 1 4.5 4.5l-5.4 5.2Z" /></svg>
+                        {l.favLabel}
+                      </button>
+                      <button type="button" onClick={l.remove} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid rgba(0,0,0,.3)' }}>Retirer</button>
+                    </div>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 15, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{l.total}</p>
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
+            </div>
+            <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(20px,3vw,32px)' }}>
+              <p style={{ margin: '0 0 20px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Récapitulatif</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 15, padding: '8px 0' }}><span>Sous-total</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{v.subtotal}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 15, padding: '8px 0', color: 'rgb(70,70,70)' }}><span>Livraison</span><span>Calculée à l'étape suivante</span></div>
+              <div style={{ height: 1, background: 'rgba(0,0,0,.15)', margin: '14px 0' }}></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 18, padding: '4px 0' }}><span>Total</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{v.subtotal}</span></div>
+              <Button variant="primary" onClick={v.goPaiement} style={{ ...v.btnBlock.style, marginTop: 24 }}>Passer au paiement</Button>
+              <p style={{ margin: '16px 0 0', fontSize: 13, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Paiement sécurisé — carte bancaire, PayPal, Wave, Orange Money.</p>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900 }}>
+            <FAQBlock v={v} />
+          </div>
+        </Fragment>
+      )}
+    </section>
+  );
+}
+
+function ScPaiement({ v }) {
+  const step = { paddingBottom: 6 };
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
+      <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,5vw,48px)', color: 'rgb(71,29,27)' }}>Paiement</h1>
+      <div style={{ display: 'flex', gap: 26, flexWrap: 'wrap', marginBottom: 34, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase' }}>
+        <span style={{ ...step, color: v.step1Color, borderBottom: '1px solid ' + v.step1Line }}>1. Livraison</span>
+        <span style={{ ...step, color: v.step2Color, borderBottom: '1px solid ' + v.step2Line }}>2. Paiement</span>
+        <span style={{ ...step, color: v.step3Color, borderBottom: '1px solid ' + v.step3Line }}>3. Confirmation</span>
+      </div>
+
+      {v.isStep1 && (
+        <form onSubmit={v.submitLivraison} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+            <div>
+              <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Coordonnées</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <label style={st(LABEL)}>Adresse e-mail<input name="email" type="email" required placeholder="exemple@domain.com" style={st(INPUT)} /></label>
+                <label style={st(LABEL)}>Téléphone<input name="tel" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+              </div>
+            </div>
+
+            <div>
+              <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Mode de réception</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,200px),1fr))', gap: 12 }}>
+                <button type="button" onClick={v.pickDomicile} style={{ textAlign: 'left', padding: 18, background: 'none', border: 0, boxShadow: v.domicileRing, cursor: 'pointer' }}>
+                  <span style={{ display: 'block', fontSize: 15, color: 'rgb(0,0,0)' }}>Livraison à votre adresse</span>
+                  <span style={{ display: 'block', marginTop: 6, fontSize: 13, color: 'rgb(94,94,94)' }}>À partir de 2 000 FCFA</span>
+                </button>
+                <button type="button" onClick={v.pickRetrait} style={{ textAlign: 'left', padding: 18, background: 'none', border: 0, boxShadow: v.retraitRing, cursor: 'pointer' }}>
+                  <span style={{ display: 'block', fontSize: 15, color: 'rgb(0,0,0)' }}>Retrait en boutique</span>
+                  <span style={{ display: 'block', marginTop: 6, fontSize: 13, color: 'rgb(94,94,94)' }}>Gratuite</span>
+                </button>
+              </div>
+            </div>
+
+            {v.modeDomicile && (
+              <div>
+                <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Adresse de livraison</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                    <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
+                    <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+                  </div>
+                  <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
+                  <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
+                    <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15s6-5 6-9A6 6 0 0 0 1 6c0 4 6 9 6 9Z" /><circle cx="7" cy="6" r="2" /></svg>
+                    Utiliser ma position
+                  </button>
+                  {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
+                  <label style={st(LABEL)}>Plus de précision<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
+                </div>
+              </div>
+            )}
+
+            {v.modeRetrait && (
+              <div>
+                <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Sélectionnez une boutique</p>
+                <label style={st(LABEL)}>Sélectionner la ville
+                  <select onChange={v.setVille} value={v.s.ville} style={st(INPUT)}>
+                    {v.villes.map((x, i) => <option key={i}>{x.v}</option>)}
+                  </select>
+                </label>
+                <p style={{ margin: '20px 0 12px', fontSize: 15, color: 'rgb(0,0,0)' }}>Sélectionnez la boutique où vous souhaitez retirer votre commande.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {v.boutiqueCards.map((b, i) => (
+                    <button key={i} type="button" onClick={b.pick} style={{ display: 'flex', gap: 12, alignItems: 'center', textAlign: 'left', padding: 20, background: b.bg, border: 0, boxShadow: b.ring, cursor: 'pointer' }}>
+                      <span style={{ flex: '0 0 auto', width: 16, height: 16, borderRadius: '50%', boxShadow: b.dot }}></span>
+                      <span>
+                        <span style={{ display: 'block', fontSize: 15, color: 'rgb(0,0,0)' }}>{b.name}</span>
+                        <span style={{ display: 'block', marginTop: 4, fontSize: 13, color: 'rgb(94,94,94)' }}>{b.phone}</span>
+                        <span style={{ display: 'block', marginTop: 2, fontSize: 13, color: 'rgb(94,94,94)' }}>{b.adresse}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label style={{ display: 'flex', gap: 12, alignItems: 'flex-start', fontSize: 14, lineHeight: 1.6, color: 'rgb(70,70,70)', cursor: 'pointer' }}>
+                <input type="checkbox" checked={v.factSame} onChange={v.toggleFact} style={{ marginTop: 4, accentColor: 'rgb(71,29,27)' }} />
+                <span>Utiliser comme adresse de facturation</span>
+              </label>
+              {v.factOpen && (
+                <div style={{ marginTop: 16 }}>
+                  <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Adresse de facturation</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                      <label style={st(LABEL)}>Prénoms<input name="factprenom" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Nom<input name="factnom" style={st(INPUT)} /></label>
+                    </div>
+                    <label style={st(LABEL)}>Adresse e-mail<input name="factemail" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
+                    <label style={st(LABEL)}>Téléphone<input name="facttel" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Button type="submit" variant="primary" style={v.btnBlock.style}>Confirmer et passer au paiement</Button>
+          </div>
+          <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(20px,3vw,32px)' }}>
+            <p style={{ margin: '0 0 20px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Votre commande</p>
+            {v.lines.map((l, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 15, padding: '8px 0' }}><span>{l.label}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{l.total}</span></div>
+            ))}
+            <div style={{ height: 1, background: 'rgba(0,0,0,.15)', margin: '14px 0' }}></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 18 }}><span>Total</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{v.subtotal}</span></div>
+          </div>
+        </form>
+      )}
+
+      {v.isStep2 && (
+        <form onSubmit={v.submitPaiement} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
+          <div>
+            <div>
+              <p style={{ margin: '0 0 16px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Comment souhaitez-vous payer ?</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ boxShadow: v.carteRing, padding: 20 }}>
+                  <button type="button" onClick={v.pickCarte} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'none', border: 0, padding: 0, cursor: 'pointer', textAlign: 'left' }}>
+                    <span style={{ flex: '0 0 auto', position: 'relative', width: 16, height: 16, borderRadius: '50%', boxShadow: v.carteDot }}>
+                      {v.carteOpen && <span style={{ position: 'absolute', left: 4, top: 4, width: 8, height: 8, borderRadius: '50%', background: 'rgb(71,29,27)' }}></span>}
+                    </span>
+                    <span style={{ fontSize: 16, color: 'rgb(0,0,0)' }}>Carte de crédit</span>
+                  </button>
+                  {v.carteOpen && (
+                    <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                        <label style={st(LABEL)}>Nom du titulaire<input name="cardnom" placeholder="Fols" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
+                        <label style={st(LABEL)}>Prénoms du titulaire<input name="cardprenom" placeholder="Biran" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
+                      </div>
+                      <label style={st(LABEL)}>Numéro de la carte<input name="carte" inputMode="numeric" placeholder="0000 0000 0000 0000" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,140px),1fr))', gap: 16 }}>
+                        <label style={st(LABEL)}>Date d'expiration<input name="exp" placeholder="12/28" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
+                        <label style={st(LABEL)}>CVC<input name="cvc" placeholder="123" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ boxShadow: v.mobileRing, padding: 20 }}>
+                  <button type="button" onClick={v.pickMobile} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'none', border: 0, padding: 0, cursor: 'pointer', textAlign: 'left' }}>
+                    <span style={{ flex: '0 0 auto', position: 'relative', width: 16, height: 16, borderRadius: '50%', boxShadow: v.mobileDot }}>
+                      {v.mobileOpen && <span style={{ position: 'absolute', left: 4, top: 4, width: 8, height: 8, borderRadius: '50%', background: 'rgb(71,29,27)' }}></span>}
+                    </span>
+                    <span style={{ fontSize: 16, color: 'rgb(0,0,0)' }}>Mobile money</span>
+                  </button>
+                  {v.mobileOpen && (
+                    <label style={{ ...st(LABEL), marginTop: 16, display: 'block' }}>Numéro mobile money<input name="mm" inputMode="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
+                  )}
+                </div>
+
+                <div style={{ boxShadow: v.especesRing, padding: 20 }}>
+                  <button type="button" onClick={v.pickEspeces} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'none', border: 0, padding: 0, cursor: 'pointer', textAlign: 'left' }}>
+                    <span style={{ flex: '0 0 auto', position: 'relative', width: 16, height: 16, borderRadius: '50%', boxShadow: v.especesDot }}>
+                      {v.especesOpen && <span style={{ position: 'absolute', left: 4, top: 4, width: 8, height: 8, borderRadius: '50%', background: 'rgb(71,29,27)' }}></span>}
+                    </span>
+                    <span style={{ fontSize: 16, color: 'rgb(0,0,0)' }}>Paiement en espèce</span>
+                  </button>
+                  {v.especesOpen && <p style={{ margin: '16px 0 0', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Le montant sera à régler en espèces à la réception de votre commande.</p>}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginTop: 26 }}>
+              <Button variant="secondary" onClick={v.backStep1} style={v.backBtn.style}>
+                <svg width="20" height="14" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M19 7H1M7 1 1 7l6 6" /></svg>
+              </Button>
+              <Button variant="primary" onClick={v.submitPaiement} style={v.confirmBtn.style}>Confirmer et passer au paiement</Button>
+            </div>
+            <p style={{ margin: '18px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>Connexion chiffrée (HTTPS). Aucune donnée bancaire n'est conservée par la Maison.</p>
+          </div>
+          <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(20px,3vw,32px)' }}>
+            <p style={{ margin: '0 0 20px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Votre commande</p>
+            {v.lines.map((l, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 15, padding: '8px 0' }}><span>{l.label}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{l.total}</span></div>
+            ))}
+            <div style={{ height: 1, background: 'rgba(0,0,0,.15)', margin: '14px 0' }}></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 18 }}><span>Total</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{v.subtotal}</span></div>
+          </div>
+        </form>
+      )}
+
+      {v.isStep3 && (
+        <div style={{ maxWidth: 900, animation: 'cs-in .4s ease-out' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 28 }}>
+            <svg width="24" height="18" viewBox="0 0 22 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 8.5 7.5 15 21 1.5" /></svg>
+          </div>
+          <h2 style={{ margin: '0 0 30px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)' }}>Votre commande a été confirmée !</h2>
+          <div style={{ display: 'flex', gap: 'clamp(32px,6vw,80px)', flexWrap: 'wrap', padding: '22px 0', borderTop: '1px solid rgba(0,0,0,.15)', borderBottom: '1px solid rgba(0,0,0,.15)', marginBottom: 32 }}>
+            <div>
+              <p style={{ margin: '0 0 6px', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Numéro de commande</p>
+              <p style={{ margin: 0, fontSize: 16, color: 'rgb(0,0,0)' }}>{v.orderNo}</p>
+            </div>
+            <div>
+              <p style={{ margin: '0 0 6px', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Date de commande</p>
+              <p style={{ margin: 0, fontSize: 16, color: 'rgb(0,0,0)' }}>{v.orderDate}</p>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(24px,3vw,48px)', marginBottom: 36 }}>
+            <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 22 }}>
+              <p style={{ margin: '0 0 12px', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Adresse de livraison</p>
+              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{v.orderMode}</p>
+            </div>
+            <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 22 }}>
+              <p style={{ margin: '0 0 12px', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Mode de paiement</p>
+              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{v.paymentLabel}</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
+            <Button variant="primary" onClick={v.goPieces} style={v.btnUpper.style}>Continuer mes achats</Button>
+            <Button variant="secondary" onClick={v.suivreCommande} style={v.btnUpper.style}>Suivre ma commande</Button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ScPasseport({ v }) {
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 900, margin: '0 auto' }}>
+      {v.pIntro && (
+        <div>
+          <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Passeport digital</p>
+          <h1 style={{ margin: '0 0 18px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,5vw,52px)', lineHeight: 1.08, color: 'rgb(71,29,27)' }}>Le registre de la Maison</h1>
+          <p style={{ margin: '0 0 30px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '60ch', textWrap: 'pretty' }}>Chaque pièce est numérotée et accompagnée, dans son coffret, d'un certificat d'origine. Scannez le QR code du certificat, ou saisissez directement votre numéro de série et votre code d'activation privé.</p>
+          <div style={{ display: 'flex', gap: 'clamp(20px,3vw,40px)', flexWrap: 'wrap', alignItems: 'center', padding: 'clamp(20px,3vw,32px)', background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)' }}>
+            <div style={{ flex: '0 0 auto', width: 132 }}>
+              <ImageSlot placeholder="Sentinelle 1 — illustration à venir" style={{ width: 132, height: 172 }} />
+              <p style={{ margin: '8px 0 0', fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgb(94,94,94)', textAlign: 'center' }}>Emplacement Sentinelle</p>
+            </div>
+            <p style={{ flex: 1, minWidth: 220, margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(18px,2.4vw,24px)', lineHeight: 1.5, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>Les Sentinelles veillent sur chaque pièce, du registre à la vérification de son authenticité.</p>
+          </div>
+          <Button variant="primary" onClick={v.pGoSaisie} style={{ ...v.btnUpper.style, marginTop: 30 }}>Vérifier ma pièce</Button>
+        </div>
+      )}
+
+      {v.pSaisie && (
+        <div>
+          <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 1 sur 3</p>
+          <h1 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.4vw,44px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>Votre certificat</h1>
+          <p style={{ margin: '0 0 30px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>Les deux informations figurent sur le certificat d'origine placé dans votre coffret.</p>
+          <form onSubmit={v.verify} style={{ maxWidth: 460, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <label style={st(LABEL)}>Numéro de série<input name="serie" required placeholder="CS-0042-2026" style={st(INPUT + ';letter-spacing:.08em')} /></label>
+            <label style={st(LABEL)}>Code d'activation privé<input name="code" required placeholder="8F3K-22QD" style={st(INPUT + ';letter-spacing:.08em')} /></label>
+            {v.pErr && <p style={{ margin: 0, padding: 14, background: 'rgb(254,247,246)', boxShadow: 'inset 0 0 0 1px rgb(253,83,83)', fontSize: 14, lineHeight: 1.6, color: 'rgb(155,24,33)' }}>{v.pErr}</p>}
+            <Button type="submit" variant="primary" disabled={v.pLocked} style={v.btnBlock.style}>Vérifier</Button>
+            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Démonstration : numéro <span style={{ color: 'rgb(0,0,0)' }}>CS-0042-2026</span>, code <span style={{ color: 'rgb(0,0,0)' }}>8F3K-22QD</span>. Trois tentatives erronées bloquent la saisie.</p>
+          </form>
+        </div>
+      )}
+
+      {v.pVerif && (
+        <div style={{ padding: 'clamp(40px,10vw,90px) 0', textAlign: 'center' }}>
+          <div style={{ width: 44, height: 44, margin: '0 auto 28px', border: '1px solid rgba(71,29,27,.2)', borderTopColor: 'rgb(71,29,27)', borderRadius: '50%', animation: 'cs-spin 1s linear infinite' }}></div>
+          <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,3vw,28px)', color: 'rgb(71,29,27)' }}>Vérification au registre</p>
+          <p style={{ margin: '12px 0 0', fontSize: 15, color: 'rgb(94,94,94)' }}>Un instant, les Sentinelles consultent les archives.</p>
+          <div style={{ margin: '34px auto 0', width: 120 }}>
+            <ImageSlot placeholder="Sentinelle 2 — illustration à venir" style={{ width: 120, height: 156 }} />
+          </div>
+        </div>
+      )}
+
+      {v.pShow && (
+        <div style={{ animation: 'cs-in .4s ease-out' }}>
+          <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 2 sur 3 — pièce authentifiée</p>
+          <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,4.6vw,48px)', lineHeight: 1.08, color: 'rgb(71,29,27)' }}>Passeport de la pièce</h1>
+          <div style={{ background: 'rgb(255,255,255)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)', padding: 'clamp(20px,3.5vw,40px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 'clamp(24px,3vw,44px)', alignItems: 'start' }}>
+            <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+              <ImageSlot shape="circle" placeholder="Photo de la pièce" />
+            </div>
+            <div>
+              <p style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Huperano</p>
+              {v.passportRows.map((r, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 20, padding: '12px 0', borderTop: '1px solid rgba(0,0,0,.12)', fontSize: 15 }}>
+                  <span style={{ color: 'rgb(94,94,94)' }}>{r.k}</span>
+                  <span style={{ textAlign: 'right' }}>{r.v}</span>
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(0,0,0,.12)' }}></div>
+            </div>
+          </div>
+          {v.pAssocDone && (
+            <p style={{ margin: '26px 0 0', padding: 16, background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', fontSize: 15, lineHeight: 1.6, color: 'rgb(70,70,70)' }}>Cette pièce est déjà associée à {v.assocName} depuis le {v.assocDate}. L'association ne peut être effectuée qu'une seule fois ; la consultation du passeport reste possible.</p>
+          )}
+          {v.pAssocOpen && (
+            <div style={{ marginTop: 36 }}>
+              <h2 style={{ margin: '0 0 10px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Associer la pièce à votre nom</h2>
+              <p style={{ margin: '0 0 24px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>L'association est facultative et définitive. Vous pouvez également la faire plus tard.</p>
+              <form onSubmit={v.associate} style={{ maxWidth: 520, display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,160px),1fr))', gap: 16 }}>
+                  <label style={st(LABEL)}>Prénom<input name="prenom" required style={st(INPUT)} /></label>
+                  <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+                </div>
+                <label style={st(LABEL)}>E-mail (facultatif)<input name="email" type="email" style={st(INPUT)} /></label>
+                <label style={st(LABEL)}>Pays (facultatif)
+                  <select name="pays" style={st(INPUT)}>
+                    <option>Côte d'Ivoire</option><option>France</option><option>Sénégal</option><option>Autre</option>
+                  </select>
+                </label>
+                <label style={{ display: 'flex', gap: 12, alignItems: 'flex-start', fontSize: 14, lineHeight: 1.6, color: 'rgb(70,70,70)', cursor: 'pointer' }}>
+                  <input type="checkbox" name="rgpd" required style={{ marginTop: 4, accentColor: 'rgb(71,29,27)' }} />
+                  <span>J'accepte que la Maison conserve ces informations pour rattacher la pièce à mon nom, conformément à la politique de confidentialité.</span>
+                </label>
+                <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap', marginTop: 6 }}>
+                  <Button type="submit" variant="primary" style={v.btnUpper.style}>Associer la pièce</Button>
+                  <button type="button" onClick={v.skipAssoc} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgba(0,0,0,.3)' }}>Pas pour l'instant</button>
+                </div>
+              </form>
+            </div>
+          )}
+          <button type="button" onClick={v.pReset} style={{ marginTop: 34, background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid rgba(0,0,0,.25)' }}>Vérifier une autre pièce</button>
+        </div>
+      )}
+
+      {v.pDone && (
+        <div style={{ animation: 'cs-in .4s ease-out' }}>
+          <div style={{ display: 'flex', gap: 'clamp(20px,3vw,40px)', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div style={{ flex: '0 0 auto', width: 120 }}>
+              <ImageSlot placeholder="Sentinelle 3 — illustration à venir" style={{ width: 120, height: 156 }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 3 sur 3</p>
+              <h1 style={{ margin: '0 0 16px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.4vw,44px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>La pièce porte votre nom</h1>
+              <p style={{ margin: '0 0 10px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Huperano, n° 042/100, est désormais associée à {v.assocName}.</p>
+              <p style={{ margin: 0, fontSize: 15, color: 'rgb(94,94,94)' }}>Association enregistrée au registre de la Maison le {v.assocDate}.</p>
+              <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginTop: 28 }}>
+                <Button variant="primary" onClick={v.pBackToPasseport} style={v.btnUpper.style}>Revoir le passeport</Button>
+                <button type="button" onClick={v.goAccueil} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Retour à l'accueil</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ScContact({ v }) {
+  const eyebrow = { margin: '0 0 10px', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' };
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
+      <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Contact</p>
+      <h1 style={{ margin: '0 0 36px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,5vw,52px)', color: 'rgb(71,29,27)' }}>Écrire à la Maison</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap: 'clamp(28px,4vw,72px)', alignItems: 'start' }}>
+        {v.contactSent && (
+          <div style={{ animation: 'cs-in .3s ease-out' }}>
+            <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,2.6vw,26px)', color: 'rgb(71,29,27)' }}>Votre message est parti.</p>
+            <p style={{ margin: '12px 0 0', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Nous vous répondons sous deux jours ouvrés.</p>
+            <button type="button" onClick={v.resetContact} style={{ marginTop: 22, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Écrire un autre message</button>
+          </div>
+        )}
+        {v.contactOpen && (
+          <form onSubmit={v.submitContact} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,160px),1fr))', gap: 16 }}>
+              <label style={st(LABEL)}>Prénom<input name="prenom" required style={st(INPUT)} /></label>
+              <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+            </div>
+            <label style={st(LABEL)}>E-mail<input name="email" type="email" required style={st(INPUT)} /></label>
+            <label style={st(LABEL)}>Objet
+              <select name="objet" style={st(INPUT)}>
+                <option>Une pièce</option><option>Une commande</option><option>Le passeport digital</option><option>Presse</option>
+              </select>
+            </label>
+            <label style={st(LABEL)}>Message<textarea name="message" rows="6" required style={st(INPUT + ';height:auto;resize:vertical')} /></label>
+            <Button type="submit" variant="primary" style={{ ...v.btnBlock.style, marginTop: 6 }}>Envoyer</Button>
+          </form>
+        )}
+        <div>
+          <p style={eyebrow}>Atelier</p>
+          <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Plateau, Abidjan<br />Côte d'Ivoire<br />Sur rendez-vous</p>
+          <p style={eyebrow}>Écrire</p>
+          <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>bonjour@carolesessegnon.com<br />+225 00 00 00 00</p>
+          <p style={eyebrow}>Suivez nous</p>
+          <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Instagram — Facebook — Pinterest</p>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 'clamp(48px,7vw,90px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(16px,2vw,24px)' }}>
+        {v.canaux.map((c, i) => (
+          <div key={i} style={{ padding: 26, background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)' }}>
+            <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{c.k}</p>
+            <p style={{ margin: '0 0 12px', fontFamily: 'var(--font-display)', fontSize: 22, color: 'rgb(71,29,27)' }}>{c.t}</p>
+            <p style={{ margin: 0, fontSize: 12, lineHeight: 1.7, letterSpacing: '.06em', color: 'rgb(94,94,94)' }}>{c.d}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 'clamp(32px,4vw,48px)', padding: 'clamp(24px,4vw,44px)', background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+        <div>
+          <p style={{ margin: '0 0 8px', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,3vw,30px)' }}>Réserver un rendez-vous en boutique</p>
+          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'rgba(255,255,255,.82)', maxWidth: '52ch' }}>Texte provisoire. Un conseiller de la Maison vous reçoit à l'atelier du Plateau pour découvrir les pièces disponibles.</p>
+        </div>
+        <Button variant="light" onClick={v.goContactRdv} style={v.btnUpper.style}>Prendre rendez-vous</Button>
+      </div>
+
+      <div style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900, marginLeft: 'auto', marginRight: 'auto', textAlign: 'center' }}>
+        <FAQBlock v={v} center />
+      </div>
+    </section>
+  );
+}
+
+function ScConnexion({ v }) {
+  const tab = { background: 'none', border: 0, padding: '0 0 6px', cursor: 'pointer', fontSize: 'inherit', letterSpacing: 'inherit', textTransform: 'inherit' };
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 520, margin: '0 auto' }}>
+      <div style={{ display: 'flex', gap: 26, marginBottom: 32, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase' }}>
+        <button type="button" onClick={v.tabLogin} style={{ ...tab, color: v.tabLoginColor, borderBottom: '1px solid ' + v.tabLoginLine }}>Connexion</button>
+        <button type="button" onClick={v.tabSignup} style={{ ...tab, color: v.tabSignupColor, borderBottom: '1px solid ' + v.tabSignupLine }}>Créer un compte</button>
+      </div>
+      <h1 style={{ margin: '0 0 28px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)' }}>{v.authTitle}</h1>
+      <form onSubmit={v.submitAuth} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        {v.isSignup && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+            <label style={st(LABEL)}>Prénom<input name="prenom" required style={st(INPUT)} /></label>
+            <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+          </div>
+        )}
+        <label style={st(LABEL)}>E-mail ou téléphone<input name="email" required style={st(INPUT)} /></label>
+        <label style={st(LABEL)}>Mot de passe<input name="mdp" type="password" required style={st(INPUT)} /></label>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 14, color: 'rgb(70,70,70)', cursor: 'pointer' }}>
+            <input type="checkbox" style={{ accentColor: 'rgb(71,29,27)' }} />Se souvenir de moi
+          </label>
+          <button type="button" onClick={v.noopAuth} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Mot de passe oublié ?</button>
+        </div>
+        <Button type="submit" variant="primary" style={{ ...v.btnBlock.style, marginTop: 6 }}>{v.authCta}</Button>
+        {v.authMsg && <p style={{ margin: 0, fontSize: 14, color: 'rgb(71,29,27)' }}>{v.authMsg}</p>}
+      </form>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '30px 0', color: 'rgb(94,94,94)', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase' }}>
+        <span style={{ flex: 1, height: 1, background: 'rgba(0,0,0,.15)' }}></span>ou<span style={{ flex: 1, height: 1, background: 'rgba(0,0,0,.15)' }}></span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <button type="button" className="fx-press99" onClick={v.noopAuth} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+          <ContinueWithGoogleLeftAligned style={v.socialFull.style} />
+        </button>
+        <button type="button" className="fx-press99" onClick={v.noopAuth} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+          <ContinueWithAppleLeftAligned style={v.socialFull.style} />
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function ScProfil({ v }) {
+  const FIELD = "margin-top:8px;width:100%;height:60px;padding:16px 20px;background:var(--surface-page);border:0;box-shadow:inset 0 0 0 1px var(--color-secondary-50);color:var(--ink);font-size:18px";
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
+      <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Mon compte</p>
+      <h1 style={{ margin: '0 0 36px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,5vw,52px)', color: 'rgb(71,29,27)' }}>Bonjour, Awa</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,220px),1fr))', gap: 'clamp(24px,4vw,56px)', alignItems: 'start' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {v.profTabs.map((t, i) => (
+            <button key={i} type="button" onClick={t.pick} style={{ textAlign: 'left', padding: '15px 18px', background: t.bg, boxShadow: t.ring, border: 0, color: t.color, cursor: 'pointer', fontSize: 15 }}>{t.label}</button>
+          ))}
+          <button type="button" onClick={v.logout} style={{ textAlign: 'left', marginTop: 14, padding: '15px 18px', background: 'none', border: 0, color: 'rgb(155,24,33)', cursor: 'pointer', fontSize: 15 }}>Déconnexion</button>
+        </nav>
+        <div style={{ gridColumn: 'span 2', minWidth: 0 }}>
+          {v.profInfos && (
+            <div>
+              <h2 style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Informations</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,200px),1fr))', gap: 16 }}>
+                <label style={st(LABEL)}>Prénom<input name="prenom" defaultValue="Awa" style={st(FIELD)} /></label>
+                <label style={st(LABEL)}>Nom<input name="nom" defaultValue="Koné" style={st(FIELD)} /></label>
+                <label style={st(LABEL)}>E-mail<input name="email" type="email" defaultValue="awa.kone@exemple.ci" style={st(FIELD)} /></label>
+                <label style={st(LABEL)}>Téléphone<input name="telephone" defaultValue="+225 00 00 00 00" style={st(FIELD)} /></label>
+              </div>
+              <h3 style={{ margin: '34px 0 16px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 22, color: 'rgb(71,29,27)' }}>Sécurité</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,200px),1fr))', gap: 16 }}>
+                <label style={st(LABEL)}>Nouveau mot de passe<input name="nouveaumdp" type="password" style={st(FIELD)} /></label>
+                <label style={st(LABEL)}>Confirmer<input name="confirmermdp" type="password" style={st(FIELD)} /></label>
+              </div>
+              <Button variant="primary" onClick={v.saveProfile} style={{ ...v.btnUpper.style, marginTop: 26 }}>{v.saveLabel}</Button>
+            </div>
+          )}
+          {v.profCmd && (
+            <div>
+              <h2 style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Mes commandes</h2>
+              {v.orders.map((o, i) => (
+                <button key={i} type="button" className="fx-dim" onClick={o.open} style={{ display: 'flex', width: '100%', gap: 20, justifyContent: 'space-between', flexWrap: 'wrap', padding: '20px 0', background: 'none', border: 0, borderTop: '1px solid rgba(0,0,0,.15)', textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  <div>
+                    <p style={{ margin: 0, fontSize: 15, color: 'rgb(0,0,0)' }}>{o.no}</p>
+                    <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{o.date} — {o.items}</p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ margin: 0, fontSize: 15, fontVariantNumeric: 'tabular-nums', color: 'rgb(0,0,0)' }}>{o.total}</p>
+                    <p style={{ margin: '6px 0 0', fontSize: 13, letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{o.statut}</p>
+                  </div>
+                </button>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
+            </div>
+          )}
+          {v.profPieces && (
+            <div>
+              <h2 style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Mes pièces</h2>
+              <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>Les pièces associées à votre nom via leur passeport digital.</p>
+              <div style={{ display: 'flex', gap: 18, alignItems: 'center', padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
+                <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+                  <ImageSlot shape="circle" placeholder="Photo" />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>Huperano</p>
+                  <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>n° 042/100 — CS-0042-2026</p>
+                </div>
+                <button type="button" onClick={v.goPasseport} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Passeport</button>
+              </div>
+              <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ScCommande({ v }) {
+  const o = v.orderDetail;
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 900, margin: '0 auto' }}>
+      <button type="button" onClick={v.backToOrders} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, letterSpacing: '.06em' }}>← Mes commandes</button>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', marginTop: 22 }}>
+        <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.4vw,42px)', color: 'rgb(71,29,27)' }}>{o.no}</h1>
+        <p style={{ margin: 0, fontSize: 13, letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{o.statut}</p>
+      </div>
+      <p style={{ margin: '8px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>Commandée le {o.date}</p>
+
+      <div style={{ display: 'flex', gap: 0, margin: '36px 0 40px', overflow: 'hidden' }}>
+        {o.steps.map((s, i) => (
+          <div key={i} style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ height: 3, background: s.bar }}></div>
+            <p style={{ margin: '12px 0 0', fontSize: 12, letterSpacing: '.08em', color: s.color }}>{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <p style={{ margin: '0 0 16px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièces</p>
+        {o.lines.map((l, i) => (
+          <div key={i} style={{ display: 'flex', gap: 18, padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
+            <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+              <ImageSlot shape="circle" placeholder="Photo" />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 19, color: 'rgb(71,29,27)' }}>{l.name}</p>
+              <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{l.material} — qté {l.qty}</p>
+            </div>
+            <p style={{ margin: 0, fontSize: 15, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{l.total}</p>
+          </div>
+        ))}
+        <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
+      </div>
+
+      <div style={{ marginTop: 36, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(24px,3vw,48px)' }}>
+        <div>
+          <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Livraison</p>
+          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{o.name}<br />{o.adresse}<br />{o.ville}</p>
+        </div>
+        <div>
+          <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Paiement</p>
+          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{o.paiement}</p>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 36, maxWidth: 400, marginLeft: 'auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 15, padding: '8px 0' }}><span>Sous-total</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{o.subtotal}</span></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 15, padding: '8px 0', color: 'rgb(70,70,70)' }}><span>Livraison</span><span>{o.shipping}</span></div>
+        <div style={{ height: 1, background: 'rgba(0,0,0,.15)', margin: '12px 0' }}></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 18 }}><span>Total</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{o.total}</span></div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginTop: 36 }}>
+        <button type="button" onClick={v.goContact} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Besoin d'aide sur cette commande</button>
+      </div>
+    </section>
+  );
+}
+
+function ScLegal({ v }) {
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 900, margin: '0 auto' }}>
+      <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,4.6vw,44px)', color: 'rgb(71,29,27)' }}>Informations légales</h1>
+      <div style={{ display: 'flex', gap: 22, flexWrap: 'wrap', marginBottom: 34, fontSize: 13, letterSpacing: '.1em', textTransform: 'uppercase' }}>
+        {v.legalTabs.map((t, i) => (
+          <button key={i} type="button" onClick={t.pick} style={{ background: 'none', border: 0, padding: '0 0 6px', cursor: 'pointer', color: t.color, borderBottom: '1px solid ' + t.line, fontSize: 'inherit', letterSpacing: 'inherit', textTransform: 'inherit' }}>{t.label}</button>
+        ))}
+      </div>
+      <h2 style={{ margin: '0 0 16px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>{v.legalTitle}</h2>
+      {v.legalBody.map((p, i) => (
+        <p key={i} style={{ margin: '0 0 16px', fontSize: 16, lineHeight: 1.8, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>{p.text}</p>
+      ))}
+      <p style={{ margin: '30px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>Textes provisoires — à remplacer par les mentions définitives fournies par la Maison.</p>
+    </section>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
