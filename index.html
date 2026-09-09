@@ -61,12 +61,53 @@ function st(str){
   return o;
 }
 
+/* ---------- photography wired into the design's image zones ---------- */
+const PH = {
+  piscine: 'assets/photos/lifestyle-piscine.jpg',
+  terrasse: 'assets/photos/lifestyle-terrasse.jpg',
+  porte: 'assets/photos/piece-portee.jpg',
+  studio: 'assets/photos/piece-studio.jpg',
+  coffret: 'assets/photos/coffret.jpg'
+};
+const PHOTOS = {
+  'cs-hero': PH.piscine,
+  'cs-banner-accueil': PH.terrasse,
+  'cs-cat-Sacs': PH.piscine,
+  'cs-cat-Pochettes': PH.terrasse,
+  'cs-cat-Petite maroquinerie': PH.porte,
+  'cs-maison-hero': PH.terrasse,
+  'cs-maison-portrait': PH.porte,
+  'cs-maison-atelier2': PH.coffret,
+  'cs-maison-sentinelle': PH.coffret,
+  'cs-sentinelle-accueil': PH.coffret,
+  'cs-sentinelle-verif': PH.coffret,
+  'cs-sentinelle-confirm': PH.coffret,
+  'cs-passeport-piece': PH.studio,
+  'cs-profil-piece': PH.studio
+};
+function photoFor(id) {
+  if (!id) return null;
+  if (PHOTOS[id]) return PHOTOS[id];
+  if (id.indexOf('cs-p-') === 0) return id.slice(-4) === '-alt' ? PH.porte : PH.studio;
+  if (id.indexOf('cs-cat-') === 0) return PH.terrasse;
+  if (id.indexOf('cs-t') === 0) { const n = id.slice(4); return n === '1' ? PH.porte : n === '2' ? PH.coffret : PH.terrasse; }
+  return null;
+}
+
 /* ============================ design-system components ============================ */
-function ImageSlot({ shape = 'rect', placeholder = 'Image', style }) {
+function ImageSlot({ id, shape = 'rect', placeholder = 'Image', style }) {
   const hasSize = style && (style.width || style.height);
   const box = hasSize
     ? { position: 'relative', ...style }
     : { position: 'absolute', inset: 0, width: '100%', height: '100%' };
+  const src = photoFor(id);
+  if (src) {
+    return (
+      <div style={{ ...box, overflow: 'hidden', borderRadius: shape === 'circle' ? '50%' : 0 }}>
+        <img src={src} alt={placeholder} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      </div>
+    );
+  }
   return (
     <div aria-label={placeholder} style={{
       ...box, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
@@ -157,7 +198,7 @@ function ContinueWithAppleLeftAligned({ text1 = 'Continuer avec Apple', classNam
 function Oval({ p, ar = '.68', ph = 'Photo produit — cadrage ovale' }) {
   return (
     <div className="fx-reveal" style={{ position: 'relative', aspectRatio: ar, overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
-      <ImageSlot shape="circle" placeholder={ph} />
+      <ImageSlot id={p.slot} shape="circle" placeholder={ph} />
       <button type="button" onClick={p.prevImg} aria-label="Image précédente" style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'none', border: 0, color: 'rgb(255,255,255)', mixBlendMode: 'difference', cursor: 'pointer', opacity: 'var(--reveal, 0)', transition: 'opacity .2s' }}>
         <svg width="9" height="14" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 1 1 6l6 5" /></svg>
       </button>
@@ -785,7 +826,7 @@ function ScAccueil({ v }) {
   return (
     <section>
       <div style={{ position: 'relative', height: 'calc(75vh + 130px)' }}>
-        <ImageSlot placeholder="Visuel d'ouverture" />
+        <ImageSlot id="cs-hero" placeholder="Visuel d'ouverture" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 18%,rgba(0,0,0,.05) 45%,rgba(0,0,0,.55) 100%)', pointerEvents: 'none' }}></div>
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
           <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.9)' }}>Maison ivoirienne de maroquinerie</p>
@@ -803,7 +844,7 @@ function ScAccueil({ v }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(16px,2vw,28px)' }}>
           {v.tuiles.map((t, i) => (
             <button key={i} type="button" onClick={t.pick} style={{ position: 'relative', display: 'block', width: '100%', height: 'clamp(280px,34vw,420px)', padding: 0, background: 'none', border: 0, cursor: 'pointer', overflow: 'hidden' }}>
-              <ImageSlot placeholder="Visuel catégorie" />
+              <ImageSlot id={t.slot} placeholder="Visuel catégorie" />
               <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 60%)' }}></span>
               <span style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 24, textAlign: 'left', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,2.4vw,28px)', color: 'rgb(255,255,255)' }}>{t.label}</span>
             </button>
@@ -838,7 +879,7 @@ function ScAccueil({ v }) {
       </div>
 
       <div style={{ position: 'relative', height: 'clamp(420px,70vh,680px)' }}>
-        <ImageSlot placeholder="Bandeau lifestyle — plein écran" />
+        <ImageSlot id="cs-banner-accueil" placeholder="Bandeau lifestyle — plein écran" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 55%)', pointerEvents: 'none' }}></div>
         <div style={{ position: 'absolute', left: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
           <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.2vw,44px)', color: 'rgb(255,255,255)' }}>Les Pièces</h2>
@@ -863,7 +904,7 @@ function ScMaison({ v }) {
   return (
     <section>
       <div style={{ position: 'relative', height: 'clamp(340px,55vh,560px)' }}>
-        <ImageSlot placeholder="Atelier — visuel large" />
+        <ImageSlot id="cs-maison-hero" placeholder="Atelier — visuel large" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(120deg,rgba(71,29,27,.6),rgba(0,0,0,.25))', pointerEvents: 'none' }}></div>
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
           <div>
@@ -880,7 +921,7 @@ function ScMaison({ v }) {
         </div>
         <div>
           <div style={{ position: 'relative', aspectRatio: '.8', boxShadow: '0 12px 24px -8px rgba(0,0,0,.08),0 0 0 1px oklch(0 0 0 / 0.1)' }}>
-            <ImageSlot placeholder="Portrait — Carole Sessegnon" />
+            <ImageSlot id="cs-maison-portrait" placeholder="Portrait — Carole Sessegnon" />
           </div>
           <p style={{ margin: '14px 0 0', fontSize: 13, letterSpacing: '.06em', color: 'rgb(94,94,94)' }}>Carole Sessegnon, fondatrice</p>
         </div>
@@ -894,7 +935,7 @@ function ScMaison({ v }) {
       </div>
 
       <div style={{ position: 'relative', height: 'clamp(360px,58vh,600px)' }}>
-        <ImageSlot placeholder="Atelier — détail du geste" />
+        <ImageSlot id="cs-maison-atelier2" placeholder="Atelier — détail du geste" />
       </div>
 
       <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
@@ -914,7 +955,7 @@ function ScMaison({ v }) {
       <div style={{ background: 'rgb(71,29,27)', color: 'rgb(255,255,255)' }}>
         <div style={{ maxWidth: 1640, margin: '0 auto', padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(32px,5vw,72px)', alignItems: 'center' }}>
           <div style={{ flex: '0 0 auto', width: 120 }}>
-            <ImageSlot placeholder="Sentinelle — illustration à venir" style={{ width: 120, height: 156 }} />
+            <ImageSlot id="cs-maison-sentinelle" placeholder="Sentinelle — illustration à venir" style={{ width: 120, height: 156 }} />
           </div>
           <div>
             <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.7)' }}>Les Sentinelles de la Maison</p>
@@ -1067,11 +1108,11 @@ function ScProduit({ v }) {
       <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
         <div>
           <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
-            <ImageSlot shape="circle" placeholder="Photo produit principale" />
+            <ImageSlot id={c.slot} shape="circle" placeholder="Photo produit principale" />
           </div>
           <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12 }}>
             {['Détail 1', 'Détail 2', 'Détail 3'].map((d, i) => (
-              <div key={i} style={{ position: 'relative', minWidth: 0, overflow: 'hidden', aspectRatio: '1', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}><ImageSlot placeholder={d} /></div>
+              <div key={i} style={{ position: 'relative', minWidth: 0, overflow: 'hidden', aspectRatio: '1', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}><ImageSlot id={'cs-t' + (i + 1)} placeholder={d} /></div>
             ))}
           </div>
         </div>
@@ -1167,7 +1208,7 @@ function ScPanier({ v }) {
               {v.lines.map((l, i) => (
                 <div key={i} style={{ display: 'flex', gap: 18, padding: '22px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
                   <button type="button" onClick={l.open} aria-label={'Voir ' + l.name} style={{ flex: '0 0 84px', position: 'relative', width: 84, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px', padding: 0, background: 'none', border: 0, cursor: 'pointer' }}>
-                    <ImageSlot shape="circle" placeholder="Photo" />
+                    <ImageSlot id={l.slot} shape="circle" placeholder="Photo" />
                   </button>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <button type="button" onClick={l.open} style={{ display: 'block', background: 'none', border: 0, padding: 0, cursor: 'pointer', textAlign: 'left', margin: 0, fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>{l.name}</button>
@@ -1438,7 +1479,7 @@ function ScPasseport({ v }) {
           <p style={{ margin: '0 0 30px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '60ch', textWrap: 'pretty' }}>Chaque pièce est numérotée et accompagnée, dans son coffret, d'un certificat d'origine. Scannez le QR code du certificat, ou saisissez directement votre numéro de série et votre code d'activation privé.</p>
           <div style={{ display: 'flex', gap: 'clamp(20px,3vw,40px)', flexWrap: 'wrap', alignItems: 'center', padding: 'clamp(20px,3vw,32px)', background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)' }}>
             <div style={{ flex: '0 0 auto', width: 132 }}>
-              <ImageSlot placeholder="Sentinelle 1 — illustration à venir" style={{ width: 132, height: 172 }} />
+              <ImageSlot id="cs-sentinelle-accueil" placeholder="Sentinelle 1 — illustration à venir" style={{ width: 132, height: 172 }} />
               <p style={{ margin: '8px 0 0', fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgb(94,94,94)', textAlign: 'center' }}>Emplacement Sentinelle</p>
             </div>
             <p style={{ flex: 1, minWidth: 220, margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(18px,2.4vw,24px)', lineHeight: 1.5, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>Les Sentinelles veillent sur chaque pièce, du registre à la vérification de son authenticité.</p>
@@ -1468,7 +1509,7 @@ function ScPasseport({ v }) {
           <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,3vw,28px)', color: 'rgb(71,29,27)' }}>Vérification au registre</p>
           <p style={{ margin: '12px 0 0', fontSize: 15, color: 'rgb(94,94,94)' }}>Un instant, les Sentinelles consultent les archives.</p>
           <div style={{ margin: '34px auto 0', width: 120 }}>
-            <ImageSlot placeholder="Sentinelle 2 — illustration à venir" style={{ width: 120, height: 156 }} />
+            <ImageSlot id="cs-sentinelle-verif" placeholder="Sentinelle 2 — illustration à venir" style={{ width: 120, height: 156 }} />
           </div>
         </div>
       )}
@@ -1479,7 +1520,7 @@ function ScPasseport({ v }) {
           <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,4.6vw,48px)', lineHeight: 1.08, color: 'rgb(71,29,27)' }}>Passeport de la pièce</h1>
           <div style={{ background: 'rgb(255,255,255)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)', padding: 'clamp(20px,3.5vw,40px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 'clamp(24px,3vw,44px)', alignItems: 'start' }}>
             <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
-              <ImageSlot shape="circle" placeholder="Photo de la pièce" />
+              <ImageSlot id="cs-passeport-piece" shape="circle" placeholder="Photo de la pièce" />
             </div>
             <div>
               <p style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Huperano</p>
@@ -1529,7 +1570,7 @@ function ScPasseport({ v }) {
         <div style={{ animation: 'cs-in .4s ease-out' }}>
           <div style={{ display: 'flex', gap: 'clamp(20px,3vw,40px)', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div style={{ flex: '0 0 auto', width: 120 }}>
-              <ImageSlot placeholder="Sentinelle 3 — illustration à venir" style={{ width: 120, height: 156 }} />
+              <ImageSlot id="cs-sentinelle-confirm" placeholder="Sentinelle 3 — illustration à venir" style={{ width: 120, height: 156 }} />
             </div>
             <div style={{ flex: 1, minWidth: 240 }}>
               <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 3 sur 3</p>
@@ -1710,7 +1751,7 @@ function ScProfil({ v }) {
               <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>Les pièces associées à votre nom via leur passeport digital.</p>
               <div style={{ display: 'flex', gap: 18, alignItems: 'center', padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
                 <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
-                  <ImageSlot shape="circle" placeholder="Photo" />
+                  <ImageSlot id="cs-profil-piece" shape="circle" placeholder="Photo" />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>Huperano</p>
@@ -1752,7 +1793,7 @@ function ScCommande({ v }) {
         {o.lines.map((l, i) => (
           <div key={i} style={{ display: 'flex', gap: 18, padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
             <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
-              <ImageSlot shape="circle" placeholder="Photo" />
+              <ImageSlot id={l.slot} shape="circle" placeholder="Photo" />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 19, color: 'rgb(71,29,27)' }}>{l.name}</p>
