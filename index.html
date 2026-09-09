@@ -1094,13 +1094,31 @@ function ScMaison({ v }) {
 }
 
 function ScPieces({ v }) {
+  const [stuck, setStuck] = useState(false);
+  const [vw, setVw] = useState(() => (typeof document !== 'undefined' && document.documentElement ? document.documentElement.clientWidth : 0));
+  const sentinel = useRef(null);
+  useEffect(() => {
+    const onR = () => setVw(document.documentElement.clientWidth);
+    onR();
+    window.addEventListener('resize', onR);
+    return () => window.removeEventListener('resize', onR);
+  }, []);
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { rootMargin: '-' + (v.s.headerH + 1) + 'px 0px 0px 0px', threshold: [0, 1] });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [v.s.headerH]);
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
       <p style={{ margin: '0 0 8px', fontSize: 14, letterSpacing: '.1em', color: 'rgb(94,94,94)' }}>Les Pièces</p>
       <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(71,29,27)' }}>Les Pièces</h1>
-      <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, margin: '26px -4px 0', padding: '14px 4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', background: 'rgba(255,255,255,.72)', backdropFilter: 'blur(40px)' }}>
-        <p style={{ margin: 0, fontSize: 15, color: 'rgb(70,70,70)' }}>Type de pièce : <span style={{ color: 'rgb(0,0,0)' }}>{v.catLabel}</span></p>
-        <button type="button" onClick={v.toggleFilters} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, borderBottom: '1px solid rgb(0,0,0)', padding: '0 0 5px', color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 15 }}>
+      <div ref={sentinel} aria-hidden="true" style={{ height: 1, margin: '26px 0 0', pointerEvents: 'none' }} />
+      <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, padding: '14px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: (vw || 0) + 'px', transform: 'translateX(-50%)', background: 'rgba(255,255,255,.72)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderBottom: '1px solid rgba(0,0,0,.06)', opacity: stuck ? 1 : 0, transition: 'opacity .25s cubic-bezier(.2,0,0,1)', pointerEvents: 'none' }} />
+        <p style={{ position: 'relative', margin: 0, fontSize: 15, color: 'rgb(70,70,70)' }}>Type de pièce : <span style={{ color: 'rgb(0,0,0)' }}>{v.catLabel}</span></p>
+        <button type="button" onClick={v.toggleFilters} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, borderBottom: '1px solid rgb(0,0,0)', padding: '0 0 5px', color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 15 }}>
           Filtrer
           <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M0 1h16M3 6h10M6 11h4" /></svg>
         </button>
