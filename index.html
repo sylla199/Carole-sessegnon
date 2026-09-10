@@ -1393,7 +1393,7 @@ function ScPaiement({ v }) {
   const step = { paddingBottom: 6 };
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
-      <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,5vw,48px)', color: 'rgb(71,29,27)' }}>Paiement</h1>
+      <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,5vw,48px)', color: 'rgb(71,29,27)' }}>Commande</h1>
       <div style={{ display: 'flex', gap: 26, flexWrap: 'wrap', marginBottom: 34, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase' }}>
         <span style={{ ...step, color: v.step1Color, borderBottom: '1px solid ' + v.step1Line }}>1. Livraison</span>
         <span style={{ ...step, color: v.step2Color, borderBottom: '1px solid ' + v.step2Line }}>2. Paiement</span>
@@ -1401,6 +1401,14 @@ function ScPaiement({ v }) {
       </div>
 
       {v.isStep1 && (
+        <Fragment>
+          <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(20px,3vw,28px)', marginBottom: 'clamp(28px,4vw,40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
+            <div style={{ minWidth: 220, flex: '1 1 260px' }}>
+              <p style={{ margin: '0 0 4px', fontSize: 15, color: 'rgb(0,0,0)' }}>Vous avez déjà un compte&nbsp;?</p>
+              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Connectez-vous pour préremplir vos informations, ou continuez en invité.</p>
+            </div>
+            <Button variant="secondary" onClick={v.goConnexion} style={{ ...v.btnUpper.style, flexShrink: 0 }}>Se connecter</Button>
+          </div>
         <form onSubmit={v.submitLivraison} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
             <div>
@@ -1499,6 +1507,7 @@ function ScPaiement({ v }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 18 }}><span>Total</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{v.subtotal}</span></div>
           </div>
         </form>
+        </Fragment>
       )}
 
       {v.isStep2 && (
