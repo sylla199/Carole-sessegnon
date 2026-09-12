@@ -48,8 +48,8 @@
   .fx-arrowR:active{transform:translateY(-50%) translateX(3px)}
   .fx-nudgeR{transition:transform .18s cubic-bezier(.2,0,0,1)}
   .fx-nudgeR:active{transform:translateX(3px)}
-  @keyframes cs-badge-pulse{0%,100%{opacity:1}20%{opacity:.2}45%{opacity:1}68%{opacity:.35}86%{opacity:1}}
-  .cs-badge-pulse{animation:cs-badge-pulse .85s cubic-bezier(.2,0,0,1)}
+  @keyframes cs-pulse{0%{opacity:1}50%{opacity:.35}100%{opacity:1}}
+  .cs-badge-pulse{animation:cs-pulse .6s ease-in-out}
   @media (prefers-reduced-motion: reduce){
     .reveal{opacity:1 !important;transform:none !important}
     .cs-badge-pulse{animation:none}
@@ -109,10 +109,9 @@ function IntroSeal({ onDone }) {
       background: 'rgb(71,29,27)', clipPath: clip, WebkitClipPath: clip,
       transition: 'clip-path 1.6s cubic-bezier(.65,0,.35,1)'
     }}>
-      <img src="assets/CS-LOGOMARK.svg" alt="" style={{
-        position: 'absolute', left: '50%', top: '50%', width: 'clamp(48px,8vw,76px)', height: 'auto',
-        transform: 'translate(-50%,-50%)', filter: 'brightness(0) invert(1)', opacity: 0.96
-      }} />
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: closing ? 0 : 1, transition: 'opacity .5s ease-out' }}>
+        <img src="assets/CS-LOGOMARK.svg" alt="" style={{ width: 'clamp(64px,9vw,110px)', height: 'auto', filter: 'brightness(0) invert(1)' }} />
+      </div>
     </div>
   );
 }
@@ -146,17 +145,13 @@ const PH = {
   coffret: 'assets/photos/coffret.jpg'
 };
 const PHOTOS = {
-  'cs-hero': PH.piscine,
-  'cs-banner-accueil': PH.terrasse,
-  'cs-cat-Sacs': PH.piscine,
-  'cs-cat-Pochettes': PH.terrasse,
-  'cs-cat-Petite maroquinerie': PH.porte,
   'cs-maison-hero': PH.terrasse,
   'cs-maison-portrait': PH.porte,
   'cs-maison-atelier2': PH.coffret,
   'cs-hero-huperano': PH.terrasse,
   'cs-portrait-soie': PH.piscine,
   'cs-huperano-mains': PH.porte,
+  'cs-coffret-ferme': PH.coffret,
   'cs-maison-sentinelle': PH.coffret,
   'cs-sentinelle-accueil': PH.coffret,
   'cs-sentinelle-verif': PH.coffret,
@@ -276,7 +271,7 @@ function ContinueWithAppleLeftAligned({ text1 = 'Continuer avec Apple', classNam
 }
 
 /* shared product visual: square crop in a circle, prev/next affordance */
-function Oval({ p, ar = '1', ph = 'Photo produit — cadrage carré' }) {
+function Oval({ p, ar = '.68', ph = 'Photo produit — cadrage ovale' }) {
   return (
     <div className="fx-reveal" style={{ position: 'relative', aspectRatio: ar, overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
       <ImageSlot id={p.slot} shape="circle" placeholder={ph} />
@@ -752,7 +747,6 @@ function Shell({ v }) {
           <div style={{ gridColumn: 1, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
             {v.wide && (
               <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(18px,2.6vw,34px)', fontSize: 13, letterSpacing: '.08em', textTransform: 'uppercase' }}>
-                <button type="button" className="fx-dim" onClick={v.goAccueil} style={navBtn}>Accueil</button>
                 <button type="button" className="fx-dim" onClick={v.goMaison} style={navBtn}>La Maison</button>
                 <button type="button" className="fx-dim" onClick={v.goPieces} style={navBtn}>Les Pièces</button>
                 <button type="button" className="fx-dim" onClick={v.goPasseport} style={navBtn}>Passeport</button>
@@ -960,21 +954,6 @@ function FAQBlock({ v, center }) {
 function ScAccueil({ v }) {
   return (
     <section>
-      <div style={{ position: 'relative', height: 'calc(75vh + 130px)' }}>
-        <ImageSlot id="cs-hero" placeholder="Visuel d'ouverture" />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 18%,rgba(0,0,0,.05) 45%,rgba(0,0,0,.55) 100%)', pointerEvents: 'none' }}></div>
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.9)' }}>Maison ivoirienne de maroquinerie</p>
-          <h1 style={{ margin: '0 auto', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(255,255,255)', maxWidth: '16ch', textWrap: 'pretty' }}>Chaque pièce porte un nom</h1>
-          <button type="button" className="ulink" onClick={v.goPieces} style={{ marginTop: 26, pointerEvents: 'auto', background: 'none', border: 0, padding: '0 0 6px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15, letterSpacing: '.06em' }}>Découvrir les pièces&nbsp;&nbsp;→</button>
-        </div>
-      </div>
-
-      <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', textAlign: 'center' }}>
-        <p style={{ margin: '0 auto', maxWidth: '44ch', fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,2.6vw,32px)', lineHeight: 1.4, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>Née à Abidjan, la Maison travaille le cuir ivoirien pièce par pièce, à la main. Chaque pièce est unique, numérotée, et accompagnée de son passeport digital.</p>
-        <button type="button" className="ulink" onClick={v.goMaison} style={{ marginTop: 30, background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, letterSpacing: '.06em' }}>La Maison&nbsp;&nbsp;→</button>
-      </div>
-
       {/* 1. hero L'Huperano */}
       <div style={{ position: 'relative', height: 'calc(100vh - ' + v.headerH + ')' }}>
         <ImageSlot id="cs-hero-huperano" placeholder="L'Huperano — visuel d'ouverture" />
@@ -1017,66 +996,50 @@ function ScAccueil({ v }) {
       </div>
 
       {/* 7. croquis crayonné — pas de scène salon/échecs ici */}
-      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)' }}>
-        <div style={{ position: 'relative', aspectRatio: '.98', maxWidth: 900, margin: '0 auto', overflow: 'hidden' }}>
-          <ImageSlot id="cs-croquis-radah" placeholder="Croquis crayonné — La naissance de Radah" />
+      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(64px,10vw,120px)', maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ position: 'relative', aspectRatio: '.98' }}>
+          <ImageSlot id="cs-croquis-radah" placeholder="Croquis crayonné — esquisse de la pièce Radah" />
         </div>
       </div>
 
-      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(16px,2vw,28px)' }}>
-          {v.tuiles.map((t, i) => (
-            <button key={i} type="button" onClick={t.pick} style={{ position: 'relative', display: 'block', width: '100%', height: 'clamp(280px,34vw,420px)', padding: 0, background: 'none', border: 0, cursor: 'pointer', overflow: 'hidden' }}>
-              <ImageSlot id={t.slot} placeholder="Visuel catégorie" />
-              <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 60%)' }}></span>
-              <span style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 24, textAlign: 'left', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,2.4vw,28px)', color: 'rgb(255,255,255)' }}>{t.label}</span>
-            </button>
-          ))}
+      {/* Radah — mise en scène spectaculaire */}
+      <div style={{ position: 'relative', height: 'clamp(480px,86vh,860px)' }}>
+        <ImageSlot id="cs-radah-montgolfiere" placeholder="Radah — mise en scène spectaculaire (montgolfière, ciel)" />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 45%)', pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
+          <h2 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,4.4vw,46px)', lineHeight: 1.1, color: 'rgb(255,255,255)', maxWidth: '16ch' }}>Rendre l'ordinaire exceptionnel</h2>
+          <button type="button" className="ulink" onClick={v.goPieces} style={{ pointerEvents: 'auto', background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15 }}>Découvrir la pièce&nbsp;&nbsp;→</button>
         </div>
       </div>
 
-      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
-        <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Les pièces</p>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, margin: '0 0 40px', flexWrap: 'wrap' }}>
-          <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)', maxWidth: '22ch', textWrap: 'pretty' }}>Collection de maroquineries tendances en ce moment</h2>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button type="button" className="fx-bordeaux fx-nudgeL" aria-label="Précédent" onClick={v.carPrev} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
-              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M15 6H1M6 1 1 6l5 5" /></svg>
-            </button>
-            <button type="button" className="fx-bordeaux fx-nudgeR" aria-label="Suivant" onClick={v.carNext} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
-              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M1 6h14M10 1l5 5-5 5" /></svg>
-            </button>
-          </div>
+      {/* Coffret signature */}
+      <div style={{ padding: 'clamp(56px,9vw,100px) clamp(20px,5vw,140px) 0', maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ position: 'relative', aspectRatio: '1' }}>
+          <ImageSlot id="cs-coffret-ferme" placeholder="Coffret CAROLE SESSEGNON — vue extérieure" />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,220px),1fr))', gap: 'clamp(24px,3vw,48px) clamp(16px,2.5vw,32px)' }}>
-          {v.carItems.map((p, i) => (
-            <div key={i} className="reveal" style={{ transitionDelay: (i * 60) + 'ms' }}>
-              <Oval p={p} ph="Photo produit — cadrage ovale" />
-              <button type="button" className="fx-press99" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
-                <p style={{ margin: '20px 0 0', fontFamily: 'var(--font-display)', fontSize: 22, color: 'rgb(71,29,27)' }}>{p.name}</p>
-                <p style={{ margin: '8px 0 0', fontSize: 15, lineHeight: 1.5, color: 'rgb(94,94,94)', textWrap: 'pretty' }}>{p.tagline}</p>
-              </button>
-            </div>
-          ))}
+      </div>
+      <div style={{ padding: 'clamp(28px,4vw,40px) clamp(20px,5vw,140px) clamp(64px,10vw,120px)', maxWidth: 760, margin: '0 auto' }}>
+        <h2 style={{ margin: '0 0 18px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', lineHeight: 1.25, color: 'rgb(71,29,27)' }}>Coffret signature CAROLE SESSEGNON offert pour toute commande</h2>
+        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Chaque création est soigneusement enveloppée et présentée dans notre coffret signature, accompagnée de son ruban, de son papier de soie et de sa housse de protection.</p>
+      </div>
+
+      {/* Tout commence par les détails */}
+      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,100px)', maxWidth: 900, margin: '0 auto' }}>
+        <p style={{ margin: '0 0 24px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,28px)', color: 'rgb(71,29,27)', textAlign: 'center' }}>Tout commence par les détails</p>
+        <div style={{ position: 'relative', aspectRatio: '1' }}>
+          <ImageSlot id="cs-hardware-flatlay" placeholder="Flatlay quincaillerie — fermoirs, fils, outils d'atelier" />
         </div>
       </div>
 
-      <div style={{ position: 'relative', height: 'clamp(420px,70vh,680px)' }}>
-        <ImageSlot id="cs-banner-accueil" placeholder="Bandeau lifestyle — plein écran" />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 55%)', pointerEvents: 'none' }}></div>
-        <div style={{ position: 'absolute', left: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
-          <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.2vw,44px)', color: 'rgb(255,255,255)' }}>Les Pièces</h2>
-          <button type="button" className="ulink" onClick={v.goPieces} style={{ marginTop: 16, pointerEvents: 'auto', background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15 }}>Découvrir&nbsp;&nbsp;→</button>
-        </div>
-      </div>
-
-      <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-        <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Passeport digital</p>
-        <h2 style={{ margin: '0 0 18px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)' }}>Vérifiez l'authenticité de votre pièce</h2>
-        <p style={{ margin: '0 auto 28px', maxWidth: '56ch', fontSize: 17, lineHeight: 1.65, color: 'rgb(94,94,94)', textWrap: 'pretty' }}>Le certificat glissé dans votre coffret porte un numéro de série et un code d'activation privé. Ils ouvrent le passeport de votre pièce.</p>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Button variant="primary" onClick={v.goPasseport} style={v.btnUpper.style}>Activer mon passeport</Button>
-        </div>
+      {/* La Maison — CAROLE SESSEGNON */}
+      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(64px,10vw,120px)', maxWidth: 760, margin: '0 auto' }}>
+        <p style={{ margin: '0 0 8px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>La Maison</p>
+        <h2 style={{ margin: '0 0 28px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>CAROLE SESSEGNON</h2>
+        <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}><span style={{ letterSpacing: '.02em' }}>CAROLE SESSEGNON</span> est une Maison ivoirienne de maroquinerie, née d'une vocation.</p>
+        <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}>Elle repose sur une conviction profonde : chaque personne porte en elle une empreinte que nul autre ne saurait reproduire.</p>
+        <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}>Ses créations sont pensées pour accompagner, au quotidien, ce qui vous rend déjà unique.</p>
+        <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}>La Maison explore les formes et les lignes pour imaginer des pièces qui se distinguent, avec un regard singulier sur la maroquinerie.</p>
+        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}>À contre-courant de l'éphémère, elle choisit de créer des pièces que l'on prend plaisir à porter, à garder près de soi et à offrir.</p>
       </div>
     </section>
   );
@@ -1156,34 +1119,18 @@ function ScMaison({ v }) {
 }
 
 function ScPieces({ v }) {
-  const [stuck, setStuck] = useState(false);
-  const [vw, setVw] = useState(() => (typeof document !== 'undefined' && document.documentElement ? document.documentElement.clientWidth : 0));
-  const sentinel = useRef(null);
-  useEffect(() => {
-    const onR = () => setVw(document.documentElement.clientWidth);
-    onR();
-    window.addEventListener('resize', onR);
-    return () => window.removeEventListener('resize', onR);
-  }, []);
-  useEffect(() => {
-    const el = sentinel.current;
-    if (!el || !('IntersectionObserver' in window)) return;
-    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { rootMargin: '-' + (v.s.headerH + 1) + 'px 0px 0px 0px', threshold: [0, 1] });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [v.s.headerH]);
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
       <p style={{ margin: '0 0 8px', fontSize: 14, letterSpacing: '.1em', color: 'rgb(94,94,94)' }}>Les Pièces</p>
       <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(71,29,27)' }}>Les Pièces</h1>
-      <div ref={sentinel} aria-hidden="true" style={{ height: 1, margin: '26px 0 0', pointerEvents: 'none' }} />
-      <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, padding: '14px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-        <div aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: (vw || 0) + 'px', transform: 'translateX(-50%)', background: 'rgba(255,255,255,.72)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderBottom: '1px solid rgba(0,0,0,.06)', opacity: stuck ? 1 : 0, transition: 'opacity .25s cubic-bezier(.2,0,0,1)', pointerEvents: 'none' }} />
-        <p style={{ position: 'relative', margin: 0, fontSize: 15, color: 'rgb(70,70,70)' }}>Type de pièce : <button type="button" onClick={v.toggleFilters} style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: 'rgb(71,29,27)', cursor: 'pointer' }}>{v.catLabel}</button></p>
-        <button type="button" onClick={v.toggleFilters} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, borderBottom: '1px solid rgb(0,0,0)', padding: '0 0 5px', color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 15 }}>
-          Filtrer
-          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M0 1h16M3 6h10M6 11h4" /></svg>
-        </button>
+      <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, margin: '26px 0 0', left: 0, right: 0, width: '100vw', marginLeft: 'calc(50% - 50vw)', padding: '14px clamp(20px,5vw,140px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', background: v.s.scrolled ? 'rgba(255,255,255,.72)' : 'transparent', backdropFilter: v.s.scrolled ? 'blur(40px)' : 'none', WebkitBackdropFilter: v.s.scrolled ? 'blur(40px)' : 'none', transitionProperty: 'background-color,backdrop-filter', transitionDuration: '.2s' }}>
+        <div style={{ maxWidth: 1640, width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <p style={{ margin: 0, fontSize: 15, color: 'rgb(70,70,70)' }}>Type de pièce : <button type="button" onClick={v.toggleFilters} style={{ background: 'none', border: 0, padding: 0, margin: 0, font: 'inherit', color: 'rgb(71,29,27)', cursor: 'pointer' }}>{v.catLabel}</button></p>
+          <button type="button" onClick={v.toggleFilters} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, borderBottom: '1px solid rgb(0,0,0)', padding: '0 0 5px', color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 15 }}>
+            Filtrer
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M0 1h16M3 6h10M6 11h4" /></svg>
+          </button>
+        </div>
       </div>
 
       {v.filters && (
@@ -1283,8 +1230,8 @@ function ScPieces({ v }) {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'stretch', gap: 20 }}>
-              <Button variant="secondary" onClick={v.resetFilters} style={{ flex: 1 }}>Réinitialiser</Button>
-              <Button variant="primary" onClick={v.applyFilters} style={{ flex: 1 }}>Appliquer le(s) filtre(s)</Button>
+              <Button variant="secondary" onClick={v.resetFilters} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, textTransform: 'uppercase', letterSpacing: '.1em', fontSize: 13, whiteSpace: 'nowrap', padding: '20px 10px' }}>Réinitialiser</Button>
+              <Button variant="primary" onClick={v.applyFilters} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, textTransform: 'uppercase', letterSpacing: '.1em', fontSize: 13, whiteSpace: 'nowrap', padding: '20px 10px' }}>Appliquer le(s) filtre(s)</Button>
             </div>
           </aside>
         </Fragment>
@@ -1314,7 +1261,7 @@ function ScProduit({ v }) {
       <button type="button" onClick={v.goPieces} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, letterSpacing: '.06em' }}>← Les Pièces</button>
       <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
         <div>
-          <div style={{ position: 'relative', aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+          <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
             <ImageSlot id={c.slot} shape="circle" placeholder="Photo produit principale" />
           </div>
           <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12 }}>
@@ -1414,7 +1361,7 @@ function ScPanier({ v }) {
             <div>
               {v.lines.map((l, i) => (
                 <div key={i} style={{ display: 'flex', gap: 18, padding: '22px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
-                  <button type="button" onClick={l.open} aria-label={'Voir ' + l.name} style={{ flex: '0 0 84px', position: 'relative', width: 84, aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px', padding: 0, background: 'none', border: 0, cursor: 'pointer' }}>
+                  <button type="button" onClick={l.open} aria-label={'Voir ' + l.name} style={{ flex: '0 0 84px', position: 'relative', width: 84, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px', padding: 0, background: 'none', border: 0, cursor: 'pointer' }}>
                     <ImageSlot id={l.slot} shape="circle" placeholder="Photo" />
                   </button>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -1735,7 +1682,7 @@ function ScPasseport({ v }) {
           <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 2 sur 3 — pièce authentifiée</p>
           <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,4.6vw,48px)', lineHeight: 1.08, color: 'rgb(71,29,27)' }}>Passeport de la pièce</h1>
           <div style={{ background: 'rgb(255,255,255)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)', padding: 'clamp(20px,3.5vw,40px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 'clamp(24px,3vw,44px)', alignItems: 'start' }}>
-            <div style={{ position: 'relative', aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+            <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
               <ImageSlot id="cs-passeport-piece" shape="circle" placeholder="Photo de la pièce" />
             </div>
             <div>
@@ -1966,7 +1913,7 @@ function ScProfil({ v }) {
               <h2 style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Mes pièces</h2>
               <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>Les pièces associées à votre nom via leur passeport digital.</p>
               <div style={{ display: 'flex', gap: 18, alignItems: 'center', padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
-                <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+                <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
                   <ImageSlot id="cs-profil-piece" shape="circle" placeholder="Photo" />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -2008,7 +1955,7 @@ function ScCommande({ v }) {
         <p style={{ margin: '0 0 16px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièces</p>
         {o.lines.map((l, i) => (
           <div key={i} style={{ display: 'flex', gap: 18, padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
-            <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+            <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
               <ImageSlot id={l.slot} shape="circle" placeholder="Photo" />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
