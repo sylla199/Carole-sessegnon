@@ -42,6 +42,10 @@
   .ulink:hover::after,.ulink:focus-visible::after{transform:scaleX(1)}
   .fx-nudgeL{transition:transform .18s cubic-bezier(.2,0,0,1)}
   .fx-nudgeL:active{transform:translateX(-3px)}
+  .fx-arrowL{transform:translateY(-50%);transition:transform .18s cubic-bezier(.2,0,0,1)}
+  .fx-arrowL:active{transform:translateY(-50%) translateX(-3px)}
+  .fx-arrowR{transform:translateY(-50%);transition:transform .18s cubic-bezier(.2,0,0,1)}
+  .fx-arrowR:active{transform:translateY(-50%) translateX(3px)}
   .fx-nudgeR{transition:transform .18s cubic-bezier(.2,0,0,1)}
   .fx-nudgeR:active{transform:translateX(3px)}
   @keyframes cs-badge-pulse{0%,100%{opacity:1}20%{opacity:.2}45%{opacity:1}68%{opacity:.35}86%{opacity:1}}
@@ -71,7 +75,7 @@ function AnimatedNumber({ value, format }) {
     if (value === to.current) return;
     to.current = value;
     if (prefersReduced()) { disp.current = value; tick(x => x + 1); return; }
-    const from = disp.current, t0 = performance.now(), dur = 500;
+    const from = disp.current, t0 = performance.now(), dur = 350;
     cancelAnimationFrame(raf.current);
     const step = now => {
       const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
@@ -84,35 +88,30 @@ function AnimatedNumber({ value, format }) {
   return <span style={{ fontVariantNumeric: 'tabular-nums' }}>{format ? format(disp.current) : disp.current}</span>;
 }
 
-/* intro / loading screen: full-bleed bordeaux, CS monogram centred, fades in
-   with a slight scale-up, rests, then the two panels part to reveal the home
-   page. Fade/reveal only — no bounce, no spring. ~2.3s, then auto-advances. */
+/* intro / loading screen: full-bleed bordeaux, CS monogram centred and still.
+   Holds ~1.2s, then a single continuous radial motion — clip-path circle
+   150% -> 0%, no sliding panels — closes in on itself and reveals the portal.
+   Unmounts at 2.8s. */
 function IntroSeal({ onDone }) {
-  const [phase, setPhase] = useState('in'); // in -> hold -> out
+  const [closing, setClosing] = useState(false);
   useEffect(() => {
     try { sessionStorage.setItem('cs-intro', '1'); } catch (e) {}
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const t1 = setTimeout(() => setPhase('hold'), 40);
-    const t2 = setTimeout(() => setPhase('out'), 1500);
-    const t3 = setTimeout(() => { document.body.style.overflow = prev; onDone(); }, 2400);
-    return () => { [t1, t2, t3].forEach(clearTimeout); document.body.style.overflow = prev; };
+    const t1 = setTimeout(() => setClosing(true), 1200);
+    const t2 = setTimeout(() => { document.body.style.overflow = prev; onDone(); }, 2800);
+    return () => { [t1, t2].forEach(clearTimeout); document.body.style.overflow = prev; };
   }, []);
-  const out = phase === 'out';
-  const mono = {
-    in: { opacity: 0, transform: 'translate(-50%,-50%) scale(.92)' },
-    hold: { opacity: 0.96, transform: 'translate(-50%,-50%) scale(1)' },
-    out: { opacity: 0, transform: 'translate(-50%,-50%) scale(1)' }
-  }[phase];
-  const panel = { position: 'absolute', top: 0, bottom: 0, width: '50.6%', background: 'rgb(71,29,27)', transition: 'transform .9s cubic-bezier(.4,0,0,1)' };
+  const clip = 'circle(' + (closing ? '0%' : '150%') + ' at 50% 50%)';
   return (
-    <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 100000, pointerEvents: out ? 'none' : 'auto', overflow: 'hidden' }}>
-      <div style={{ ...panel, left: 0, transform: out ? 'translateX(-100%)' : 'none' }} />
-      <div style={{ ...panel, right: 0, transform: out ? 'translateX(100%)' : 'none' }} />
+    <div aria-hidden="true" style={{
+      position: 'fixed', inset: 0, zIndex: 100000, pointerEvents: closing ? 'none' : 'auto',
+      background: 'rgb(71,29,27)', clipPath: clip, WebkitClipPath: clip,
+      transition: 'clip-path 1.6s cubic-bezier(.65,0,.35,1)'
+    }}>
       <img src="assets/CS-LOGOMARK.svg" alt="" style={{
         position: 'absolute', left: '50%', top: '50%', width: 'clamp(48px,8vw,76px)', height: 'auto',
-        filter: 'brightness(0) invert(1)', ...mono,
-        transition: 'opacity ' + (out ? '.5s' : '.9s') + ' ease, transform ' + (out ? '.5s' : '1s') + ' cubic-bezier(.2,0,0,1)'
+        transform: 'translate(-50%,-50%)', filter: 'brightness(0) invert(1)', opacity: 0.96
       }} />
     </div>
   );
@@ -155,6 +154,8 @@ const PHOTOS = {
   'cs-maison-hero': PH.terrasse,
   'cs-maison-portrait': PH.porte,
   'cs-maison-atelier2': PH.coffret,
+  'cs-maison-huperano-portrait': PH.terrasse,
+  'cs-maison-huperano-mains': PH.porte,
   'cs-maison-sentinelle': PH.coffret,
   'cs-sentinelle-accueil': PH.coffret,
   'cs-sentinelle-verif': PH.coffret,
@@ -273,15 +274,15 @@ function ContinueWithAppleLeftAligned({ text1 = 'Continuer avec Apple', classNam
   );
 }
 
-/* shared product oval with prev/next affordance */
-function Oval({ p, ar = '.68', ph = 'Photo produit — cadrage ovale' }) {
+/* shared product visual: square crop in a circle, prev/next affordance */
+function Oval({ p, ar = '1', ph = 'Photo produit — cadrage carré' }) {
   return (
     <div className="fx-reveal" style={{ position: 'relative', aspectRatio: ar, overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
       <ImageSlot id={p.slot} shape="circle" placeholder={ph} />
-      <button type="button" onClick={p.prevImg} aria-label="Image précédente" style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'none', border: 0, color: 'rgb(255,255,255)', mixBlendMode: 'difference', cursor: 'pointer', opacity: 'var(--reveal, 0)', transition: 'opacity .2s' }}>
+      <button type="button" className="fx-arrowL" onClick={p.prevImg} aria-label="Image précédente" style={{ position: 'absolute', left: 8, top: '50%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'none', border: 0, color: 'rgb(255,255,255)', mixBlendMode: 'difference', cursor: 'pointer', opacity: 'var(--reveal, 0)', transitionProperty: 'opacity,transform', transitionDuration: '.2s,.18s' }}>
         <svg width="9" height="14" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 1 1 6l6 5" /></svg>
       </button>
-      <button type="button" onClick={p.nextImg} aria-label="Image suivante" style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'none', border: 0, color: 'rgb(255,255,255)', mixBlendMode: 'difference', cursor: 'pointer', opacity: 'var(--reveal, 0)', transition: 'opacity .2s' }}>
+      <button type="button" className="fx-arrowR" onClick={p.nextImg} aria-label="Image suivante" style={{ position: 'absolute', right: 8, top: '50%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: 'none', border: 0, color: 'rgb(255,255,255)', mixBlendMode: 'difference', cursor: 'pointer', opacity: 'var(--reveal, 0)', transitionProperty: 'opacity,transform', transitionDuration: '.2s,.18s' }}>
         <svg width="9" height="14" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l6 5-6 5" /></svg>
       </button>
     </div>
@@ -415,6 +416,14 @@ function App() {
     const measure = () => {
       const h = document.querySelector('#root header');
       if (h) { const val = Math.round(h.getBoundingClientRect().height); setS(p => (val && val !== p.headerH ? { ...p, headerH: val } : p)); }
+      // nav-overlap fallback: if the left nav crowds the centered logo, drop to the hamburger
+      // instead of letting the layout break — never widens back on its own (the width check does that).
+      const nav = document.querySelector('#root header nav');
+      const logo = document.querySelector('#root header [aria-label="Accueil"]');
+      if (nav && logo) {
+        const overlap = nav.getBoundingClientRect().right > logo.getBoundingClientRect().left - 8;
+        if (overlap) setS(p => (p.wide ? { ...p, wide: false } : p));
+      }
     };
     const onR = () => { setS(p => ({ ...p, wide: window.innerWidth > 1320 })); requestAnimationFrame(measure); };
     const onScroll = () => {
@@ -428,9 +437,13 @@ function App() {
       measure();
     };
     requestAnimationFrame(measure);
+    // re-measure once the display/body webfonts swap in — their metrics differ from the
+    // fallback stack, so the very first (pre-font) measurement can under/over-estimate overlap
+    try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure); } catch (e) {}
+    const t = setTimeout(measure, 400);
     window.addEventListener('resize', onR);
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => { window.removeEventListener('resize', onR); window.removeEventListener('scroll', onScroll); };
+    return () => { clearTimeout(t); window.removeEventListener('resize', onR); window.removeEventListener('scroll', onScroll); };
   }, []);
 
   /* fade-in on scroll for .reveal blocks (savoir-faire, cartes produits, FAQ) */
@@ -738,6 +751,7 @@ function Shell({ v }) {
           <div style={{ gridColumn: 1, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
             {v.wide && (
               <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(18px,2.6vw,34px)', fontSize: 13, letterSpacing: '.08em', textTransform: 'uppercase' }}>
+                <button type="button" className="fx-dim" onClick={v.goAccueil} style={navBtn}>Accueil</button>
                 <button type="button" className="fx-dim" onClick={v.goMaison} style={navBtn}>La Maison</button>
                 <button type="button" className="fx-dim" onClick={v.goPieces} style={navBtn}>Les Pièces</button>
                 <button type="button" className="fx-dim" onClick={v.goPasseport} style={navBtn}>Passeport</button>
@@ -848,7 +862,7 @@ function Shell({ v }) {
             <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15V1M1 7l6-6 6 6" /></svg>
           </button>
         )}
-        <button type="button" className="fx-bordeaux fx-press" aria-label="Discuter avec la Maison" onClick={v.goContact} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer' }}>
+        <button type="button" className="fx-bordeaux fx-press" aria-label="Discuter avec la Maison" onClick={v.goContact} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer', boxShadow: '0 12px 24px -8px rgba(0,0,0,.32)' }}>
           <svg width="22" height="20" viewBox="0 0 22 20" fill="none" stroke="currentColor" strokeWidth="1"><path d="M21 9.5c0 4.4-4.5 8-10 8-1.2 0-2.4-.2-3.4-.5L1 19l1.6-3.8A7.4 7.4 0 0 1 1 9.5c0-4.4 4.5-8 10-8s10 3.6 10 8Z" /></svg>
         </button>
       </div>
@@ -948,9 +962,9 @@ function ScAccueil({ v }) {
       <div style={{ position: 'relative', height: 'calc(75vh + 130px)' }}>
         <ImageSlot id="cs-hero" placeholder="Visuel d'ouverture" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.15) 18%,rgba(0,0,0,.05) 45%,rgba(0,0,0,.55) 100%)', pointerEvents: 'none' }}></div>
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,.9)' }}>Maison ivoirienne de maroquinerie</p>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(255,255,255)', maxWidth: '16ch', textWrap: 'pretty' }}>Chaque pièce porte un nom</h1>
+          <h1 style={{ margin: '0 auto', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(255,255,255)', maxWidth: '16ch', textWrap: 'pretty' }}>Chaque pièce porte un nom</h1>
           <button type="button" className="ulink" onClick={v.goPieces} style={{ marginTop: 26, pointerEvents: 'auto', background: 'none', border: 0, padding: '0 0 6px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15, letterSpacing: '.06em' }}>Découvrir les pièces&nbsp;&nbsp;→</button>
         </div>
       </div>
@@ -1058,6 +1072,23 @@ function ScMaison({ v }) {
         <ImageSlot id="cs-maison-atelier2" placeholder="Atelier — détail du geste" />
       </div>
 
+      <div>
+        <div style={{ position: 'relative', height: 'clamp(420px,62vh,640px)' }}>
+          <ImageSlot id="cs-maison-huperano-portrait" placeholder="L'Huperano — portrait" />
+        </div>
+        <div style={{ position: 'relative', height: 'clamp(360px,52vh,540px)' }}>
+          <ImageSlot id="cs-maison-huperano-mains" placeholder="L'Huperano — le geste, les mains" />
+        </div>
+        <div style={{ padding: 'clamp(40px,6vw,72px) clamp(20px,5vw,140px)', maxWidth: 780, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 'clamp(20px,2.6vw,28px)', lineHeight: 1.5, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>« L'Huperano attire les regards sans jamais voler la lumière à celle qui le porte. »</p>
+        </div>
+      </div>
+
+      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 780, margin: '0 auto', textAlign: 'center' }}>
+        <p style={eyebrow}>La naissance de Radah</p>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.75, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Texte provisoire. Radah est né d'une pièce de cuir bordeaux refusée deux fois par l'atelier avant d'être acceptée : trop rigide, puis trop souple, puis juste. La Maison en a gardé le nom — Radah, celle qui règne — et la couleur, qu'aucune autre pièce de la collection ne porte.</p>
+      </div>
+
       <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
         <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Savoir-faire</p>
         <h2 style={{ margin: '0 0 48px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)', maxWidth: '20ch', textWrap: 'pretty' }}>Du cuir brut à la pièce numérotée</h2>
@@ -1143,18 +1174,20 @@ function ScPieces({ v }) {
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
                     </span>
                   </button>
-                  {v.secCat.open && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
-                      {v.categories.map((c, i) => (
-                        <button key={i} type="button" onClick={c.pick} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 28, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
-                          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 22, height: 22, background: c.boxBg, boxShadow: c.boxRing }}>
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="rgb(255,255,255)" strokeWidth="1.2" style={{ opacity: c.checkOpacity }}><path d="M1 6.3 4.6 10 11 1" /></svg>
-                          </span>
-                          <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)', whiteSpace: 'nowrap' }}>{c.label} <span style={{ color: 'rgb(140,140,140)', whiteSpace: 'nowrap' }}>({c.count})</span></span>
-                        </button>
-                      ))}
+                  <div style={{ display: 'grid', gridTemplateRows: v.secCat.open ? '1fr' : '0fr', transition: 'grid-template-rows .3s cubic-bezier(.2,0,0,1)' }}>
+                    <div style={{ overflow: 'hidden', minHeight: 0 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start', paddingTop: 2 }}>
+                        {v.categories.map((c, i) => (
+                          <button key={i} type="button" onClick={c.pick} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 28, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 22, height: 22, background: c.boxBg, boxShadow: c.boxRing }}>
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="rgb(255,255,255)" strokeWidth="1.2" style={{ opacity: c.checkOpacity }}><path d="M1 6.3 4.6 10 11 1" /></svg>
+                            </span>
+                            <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)', whiteSpace: 'nowrap' }}>{c.label} <span style={{ color: 'rgb(140,140,140)', whiteSpace: 'nowrap' }}>({c.count})</span></span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <div style={{ height: 0, borderTop: '1px dashed rgb(201,201,201)' }}></div>
@@ -1166,18 +1199,20 @@ function ScPieces({ v }) {
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
                     </span>
                   </button>
-                  {v.secDispo.open && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
-                      {v.dispos.map((d, i) => (
-                        <button key={i} type="button" onClick={d.pick} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 28, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
-                          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 22, height: 22, borderRadius: 120, boxShadow: d.ring }}>
-                            <span style={{ width: 12, height: 12, borderRadius: 120, background: d.dot }}></span>
-                          </span>
-                          <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)', whiteSpace: 'nowrap' }}>{d.label} <span style={{ color: 'rgb(140,140,140)', whiteSpace: 'nowrap' }}>({d.count})</span></span>
-                        </button>
-                      ))}
+                  <div style={{ display: 'grid', gridTemplateRows: v.secDispo.open ? '1fr' : '0fr', transition: 'grid-template-rows .3s cubic-bezier(.2,0,0,1)' }}>
+                    <div style={{ overflow: 'hidden', minHeight: 0 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start', paddingTop: 2 }}>
+                        {v.dispos.map((d, i) => (
+                          <button key={i} type="button" onClick={d.pick} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 28, padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 22, height: 22, borderRadius: 120, boxShadow: d.ring }}>
+                              <span style={{ width: 12, height: 12, borderRadius: 120, background: d.dot }}></span>
+                            </span>
+                            <span style={{ fontSize: 18, lineHeight: '28px', color: 'rgb(0,0,0)', whiteSpace: 'nowrap' }}>{d.label} <span style={{ color: 'rgb(140,140,140)', whiteSpace: 'nowrap' }}>({d.count})</span></span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <div style={{ height: 0, borderTop: '1px dashed rgb(201,201,201)' }}></div>
@@ -1189,15 +1224,17 @@ function ScPieces({ v }) {
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="rgb(0,0,0)" strokeWidth="1"><path d="M3.7 5.5 7.3 9.1l3.6-3.6" /></svg>
                     </span>
                   </button>
-                  {v.secPrix.open && (
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
-                        <span style={{ minWidth: 120, padding: '20px 30px', boxShadow: 'inset 0 0 0 1px rgb(0,0,0)', fontSize: 18, lineHeight: '28px', textAlign: 'center', color: 'rgb(0,0,0)' }}>0</span>
-                        <span style={{ minWidth: 130, padding: '20px 30px', boxShadow: 'inset 0 0 0 1px rgb(0,0,0)', fontSize: 18, lineHeight: '28px', textAlign: 'center', color: 'rgb(0,0,0)' }}>{v.prixNum}</span>
+                  <div style={{ display: 'grid', gridTemplateRows: v.secPrix.open ? '1fr' : '0fr', transition: 'grid-template-rows .3s cubic-bezier(.2,0,0,1)' }}>
+                    <div style={{ overflow: 'hidden', minHeight: 0 }}>
+                      <div style={{ paddingTop: 2 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+                          <span style={{ minWidth: 120, padding: '20px 30px', boxShadow: 'inset 0 0 0 1px rgb(0,0,0)', fontSize: 18, lineHeight: '28px', textAlign: 'center', color: 'rgb(0,0,0)' }}>0</span>
+                          <span style={{ minWidth: 130, padding: '20px 30px', boxShadow: 'inset 0 0 0 1px rgb(0,0,0)', fontSize: 18, lineHeight: '28px', textAlign: 'center', color: 'rgb(0,0,0)' }}>{v.prixNum}</span>
+                        </div>
+                        <input type="range" min="50000" max="600000" step="5000" value={v.fPrix} onChange={v.setPrix} aria-label="Prix maximum" style={{ marginTop: 22, width: '100%', accentColor: 'rgb(71,29,27)' }} />
                       </div>
-                      <input type="range" min="50000" max="600000" step="5000" value={v.fPrix} onChange={v.setPrix} aria-label="Prix maximum" style={{ marginTop: 22, width: '100%', accentColor: 'rgb(71,29,27)' }} />
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <div style={{ height: 0, borderTop: '1px dashed rgb(201,201,201)' }}></div>
@@ -1245,7 +1282,7 @@ function ScProduit({ v }) {
       <button type="button" onClick={v.goPieces} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, letterSpacing: '.06em' }}>← Les Pièces</button>
       <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
         <div>
-          <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+          <div style={{ position: 'relative', aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
             <ImageSlot id={c.slot} shape="circle" placeholder="Photo produit principale" />
           </div>
           <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12 }}>
@@ -1345,7 +1382,7 @@ function ScPanier({ v }) {
             <div>
               {v.lines.map((l, i) => (
                 <div key={i} style={{ display: 'flex', gap: 18, padding: '22px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
-                  <button type="button" onClick={l.open} aria-label={'Voir ' + l.name} style={{ flex: '0 0 84px', position: 'relative', width: 84, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px', padding: 0, background: 'none', border: 0, cursor: 'pointer' }}>
+                  <button type="button" onClick={l.open} aria-label={'Voir ' + l.name} style={{ flex: '0 0 84px', position: 'relative', width: 84, aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px', padding: 0, background: 'none', border: 0, cursor: 'pointer' }}>
                     <ImageSlot id={l.slot} shape="circle" placeholder="Photo" />
                   </button>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -1666,7 +1703,7 @@ function ScPasseport({ v }) {
           <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 2 sur 3 — pièce authentifiée</p>
           <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,4.6vw,48px)', lineHeight: 1.08, color: 'rgb(71,29,27)' }}>Passeport de la pièce</h1>
           <div style={{ background: 'rgb(255,255,255)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)', padding: 'clamp(20px,3.5vw,40px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 'clamp(24px,3vw,44px)', alignItems: 'start' }}>
-            <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+            <div style={{ position: 'relative', aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
               <ImageSlot id="cs-passeport-piece" shape="circle" placeholder="Photo de la pièce" />
             </div>
             <div>
@@ -1897,7 +1934,7 @@ function ScProfil({ v }) {
               <h2 style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Mes pièces</h2>
               <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>Les pièces associées à votre nom via leur passeport digital.</p>
               <div style={{ display: 'flex', gap: 18, alignItems: 'center', padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
-                <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+                <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
                   <ImageSlot id="cs-profil-piece" shape="circle" placeholder="Photo" />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -1939,7 +1976,7 @@ function ScCommande({ v }) {
         <p style={{ margin: '0 0 16px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièces</p>
         {o.lines.map((l, i) => (
           <div key={i} style={{ display: 'flex', gap: 18, padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
-            <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
+            <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '1', overflow: 'hidden', borderRadius: '50%', outline: '1px solid oklch(0 0 0 / 0.1)', outlineOffset: '-1px' }}>
               <ImageSlot id={l.slot} shape="circle" placeholder="Photo" />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
