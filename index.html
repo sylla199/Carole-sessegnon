@@ -142,15 +142,25 @@ const PH = {
   terrasse: 'assets/photos/lifestyle-terrasse.jpg',
   porte: 'assets/photos/piece-portee.jpg',
   studio: 'assets/photos/piece-studio.jpg',
-  coffret: 'assets/photos/coffret.jpg'
+  coffret: 'assets/photos/coffret.jpg',
+  huperanoHero: 'assets/photos/huperano-hero.jpeg',
+  portraitSoie: 'assets/photos/portrait-soie.jpeg',
+  huperanoMains: 'assets/photos/huperano-mains.jpeg',
+  radahMontgolfiere: 'assets/photos/radah-montgolfiere.jpeg',
+  croquisRadah: 'assets/photos/croquis-radah.jpeg'
+};
+const VIDEOS = {
+  'cs-hardware-flatlay': 'assets/photos/hardware-flatlay.mp4'
 };
 const PHOTOS = {
   'cs-maison-hero': PH.terrasse,
   'cs-maison-portrait': PH.porte,
   'cs-maison-atelier2': PH.coffret,
-  'cs-hero-huperano': PH.terrasse,
-  'cs-portrait-soie': PH.piscine,
-  'cs-huperano-mains': PH.porte,
+  'cs-hero-huperano': PH.huperanoHero,
+  'cs-portrait-soie': PH.portraitSoie,
+  'cs-huperano-mains': PH.huperanoMains,
+  'cs-radah-montgolfiere': PH.radahMontgolfiere,
+  'cs-croquis-radah': PH.croquisRadah,
   'cs-coffret-ferme': PH.coffret,
   'cs-maison-sentinelle': PH.coffret,
   'cs-sentinelle-accueil': PH.coffret,
@@ -174,6 +184,14 @@ function ImageSlot({ id, shape = 'rect', placeholder = 'Image', style }) {
   const box = hasSize
     ? { position: 'relative', ...style }
     : { position: 'absolute', inset: 0, width: '100%', height: '100%' };
+  const videoSrc = id && VIDEOS[id];
+  if (videoSrc) {
+    return (
+      <div style={{ ...box, overflow: 'hidden', borderRadius: shape === 'circle' ? '50%' : 0 }}>
+        <video src={videoSrc} aria-label={placeholder} autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      </div>
+    );
+  }
   const src = photoFor(id);
   if (src) {
     return (
