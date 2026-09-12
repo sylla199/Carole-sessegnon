@@ -44,6 +44,8 @@
   .ulink::before{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;opacity:.3}
   .ulink::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,0,0,1)}
   .ulink:hover::after,.ulink:focus-visible::after{transform:scaleX(1)}
+  .cs-grad-ulink{background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-position:0 100%;background-size:100% 1px;transition:background-size .3s ease-out}
+  .cs-grad-ulink:hover,.cs-grad-ulink:focus-visible{background-size:0% 1px}
   .fx-nudgeL{transition:transform .18s cubic-bezier(.2,0,0,1)}
   .fx-nudgeL:active{transform:translateX(-3px)}
   .fx-arrowL{transform:translateY(-50%);transition:transform .18s cubic-bezier(.2,0,0,1)}
@@ -1010,7 +1012,10 @@ function ScAccueil({ v }) {
       <div className="sec-reveal" style={{ position: 'relative', height: 'clamp(420px,72vh,760px)', marginTop: 'clamp(56px,9vw,100px)' }}>
         <ImageSlot id="cs-huperano-mains" placeholder="L'Huperano — le geste, les mains" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 40%)', pointerEvents: 'none' }}></div>
-        <p style={{ position: 'absolute', left: 0, right: 0, bottom: 0, margin: 0, padding: 'clamp(20px,5vw,140px) clamp(20px,5vw,140px) clamp(24px,4vw,40px)', fontFamily: 'var(--font-display)', fontSize: 'clamp(17px,2vw,20px)', lineHeight: 1.6, color: 'rgba(255,255,255,.92)', pointerEvents: 'none' }}>Nouveau design</p>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
+          <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontStyle: 'italic', fontSize: 'clamp(34px,6vw,64px)', lineHeight: 1.06, color: 'rgb(255,255,255)' }}>Nouveau design</p>
+          <button type="button" className="cs-grad-ulink" onClick={v.goPieces} style={{ marginTop: 14, pointerEvents: 'auto', background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15 }}>Découvrir&nbsp;&nbsp;→</button>
+        </div>
       </div>
 
       {/* 6. La naissance de Radah — texte seul, après l'image des mains */}
