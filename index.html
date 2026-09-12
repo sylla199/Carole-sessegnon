@@ -35,6 +35,10 @@
   @media (prefers-reduced-motion: no-preference){
     .reveal{opacity:0;transform:translateY(10px);transition:opacity .7s cubic-bezier(.2,0,0,1),transform .7s cubic-bezier(.2,0,0,1)}
     .reveal.in{opacity:1;transform:none}
+    /* transition "style Apple" entre chaque section, sur toutes les pages : fondu + léger
+       relèvement + très légère mise à l'échelle, posé, jamais de rebond */
+    .sec-reveal{opacity:0;transform:translateY(22px) scale(.98);transition:opacity .9s cubic-bezier(.2,0,0,1),transform .9s cubic-bezier(.2,0,0,1);will-change:opacity,transform}
+    .sec-reveal.in{opacity:1;transform:none}
   }
   .ulink{position:relative}
   .ulink::before{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;opacity:.3}
@@ -52,6 +56,7 @@
   .cs-badge-pulse{animation:cs-pulse .6s ease-in-out}
   @media (prefers-reduced-motion: reduce){
     .reveal{opacity:1 !important;transform:none !important}
+    .sec-reveal{opacity:1 !important;transform:none !important}
     .cs-badge-pulse{animation:none}
     .ulink::after{transition:none}
   }
@@ -460,9 +465,10 @@ function App() {
     return () => { clearTimeout(t); window.removeEventListener('resize', onR); window.removeEventListener('scroll', onScroll); };
   }, []);
 
-  /* fade-in on scroll for .reveal blocks (savoir-faire, cartes produits, FAQ) */
+  /* fade-in on scroll for .reveal blocks (cartes, FAQ…) and .sec-reveal blocks
+     (chaque bloc de section, sur toutes les pages — même mécanisme, même toggle .in) */
   useEffect(() => {
-    const nodes = document.querySelectorAll('#root .reveal:not(.in)');
+    const nodes = document.querySelectorAll('#root .reveal:not(.in), #root .sec-reveal:not(.in)');
     if (!nodes.length) return;
     if (prefersReduced() || !('IntersectionObserver' in window)) {
       nodes.forEach(n => n.classList.add('in'));
@@ -983,13 +989,13 @@ function ScAccueil({ v }) {
       </div>
 
       {/* 2. Le geste créatif */}
-      <div style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+      <div className="sec-reveal" style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
         <h2 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,3vw,32px)', color: 'rgb(71,29,27)' }}>Le geste créatif</h2>
         <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Explorer la forme, créer des silhouettes qui se distinguent.</p>
       </div>
 
       {/* 3. portrait soie — contenu, pas plein écran */}
-      <div style={{ padding: 'clamp(28px,4vw,44px) clamp(20px,5vw,140px) 0' }}>
+      <div className="sec-reveal" style={{ padding: 'clamp(28px,4vw,44px) clamp(20px,5vw,140px) 0' }}>
         <div style={{ position: 'relative', aspectRatio: '.72', maxWidth: 520, margin: '0 auto', overflow: 'hidden' }}>
           <ImageSlot id="cs-portrait-soie" placeholder="Portrait — soie" />
         </div>
@@ -1001,27 +1007,27 @@ function ScAccueil({ v }) {
       </div>
 
       {/* 5. plein écran — les mains, séparée de la citation par le margin-top */}
-      <div style={{ position: 'relative', height: 'clamp(420px,72vh,760px)', marginTop: 'clamp(56px,9vw,100px)' }}>
+      <div className="sec-reveal" style={{ position: 'relative', height: 'clamp(420px,72vh,760px)', marginTop: 'clamp(56px,9vw,100px)' }}>
         <ImageSlot id="cs-huperano-mains" placeholder="L'Huperano — le geste, les mains" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 40%)', pointerEvents: 'none' }}></div>
         <p style={{ position: 'absolute', left: 0, right: 0, bottom: 0, margin: 0, padding: 'clamp(20px,5vw,140px) clamp(20px,5vw,140px) clamp(24px,4vw,40px)', fontFamily: 'var(--font-display)', fontSize: 'clamp(17px,2vw,20px)', lineHeight: 1.6, color: 'rgba(255,255,255,.92)', pointerEvents: 'none' }}>Nouveau design</p>
       </div>
 
       {/* 6. La naissance de Radah — texte seul, après l'image des mains */}
-      <div style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px) clamp(28px,4vw,40px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+      <div className="sec-reveal" style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px) clamp(28px,4vw,40px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
         <h2 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,3vw,32px)', color: 'rgb(71,29,27)' }}>La naissance de Radah</h2>
         <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Avant la pièce, le geste. Avant le geste, l'esquisse.</p>
       </div>
 
       {/* 7. croquis crayonné — pas de scène salon/échecs ici */}
-      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(64px,10vw,120px)', maxWidth: 900, margin: '0 auto' }}>
+      <div className="sec-reveal" style={{ padding: '0 clamp(20px,5vw,140px) clamp(64px,10vw,120px)', maxWidth: 900, margin: '0 auto' }}>
         <div style={{ position: 'relative', aspectRatio: '.98' }}>
           <ImageSlot id="cs-croquis-radah" placeholder="Croquis crayonné — esquisse de la pièce Radah" />
         </div>
       </div>
 
       {/* Radah — mise en scène spectaculaire */}
-      <div style={{ position: 'relative', height: 'clamp(480px,86vh,860px)' }}>
+      <div className="sec-reveal" style={{ position: 'relative', height: 'clamp(480px,86vh,860px)' }}>
         <ImageSlot id="cs-radah-montgolfiere" placeholder="Radah — mise en scène spectaculaire (montgolfière, ciel)" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 45%)', pointerEvents: 'none' }}></div>
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
@@ -1031,7 +1037,7 @@ function ScAccueil({ v }) {
       </div>
 
       {/* Coffret signature */}
-      <div style={{ padding: 'clamp(56px,9vw,100px) clamp(20px,5vw,140px) 0', maxWidth: 900, margin: '0 auto' }}>
+      <div className="sec-reveal" style={{ padding: 'clamp(56px,9vw,100px) clamp(20px,5vw,140px) 0', maxWidth: 900, margin: '0 auto' }}>
         <div style={{ position: 'relative', aspectRatio: '1' }}>
           <ImageSlot id="cs-coffret-ferme" placeholder="Coffret CAROLE SESSEGNON — vue extérieure" />
         </div>
@@ -1042,7 +1048,7 @@ function ScAccueil({ v }) {
       </div>
 
       {/* Tout commence par les détails */}
-      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,100px)', maxWidth: 900, margin: '0 auto' }}>
+      <div className="sec-reveal" style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,100px)', maxWidth: 900, margin: '0 auto' }}>
         <p style={{ margin: '0 0 24px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,28px)', color: 'rgb(71,29,27)', textAlign: 'center' }}>Tout commence par les détails</p>
         <div style={{ position: 'relative', aspectRatio: '1' }}>
           <ImageSlot id="cs-hardware-flatlay" placeholder="Flatlay quincaillerie — fermoirs, fils, outils d'atelier" />
@@ -1050,7 +1056,7 @@ function ScAccueil({ v }) {
       </div>
 
       {/* La Maison — CAROLE SESSEGNON */}
-      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(64px,10vw,120px)', maxWidth: 760, margin: '0 auto' }}>
+      <div className="sec-reveal" style={{ padding: '0 clamp(20px,5vw,140px) clamp(64px,10vw,120px)', maxWidth: 760, margin: '0 auto' }}>
         <p style={{ margin: '0 0 8px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>La Maison</p>
         <h2 style={{ margin: '0 0 28px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>CAROLE SESSEGNON</h2>
         <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}><span style={{ letterSpacing: '.02em' }}>CAROLE SESSEGNON</span> est une Maison ivoirienne de maroquinerie, née d'une vocation.</p>
@@ -1077,7 +1083,7 @@ function ScMaison({ v }) {
           </div>
         </div>
       </div>
-      <div style={{ padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,320px),1fr))', gap: 'clamp(32px,5vw,80px)', alignItems: 'start' }}>
+      <div className="sec-reveal" style={{ padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,320px),1fr))', gap: 'clamp(32px,5vw,80px)', alignItems: 'start' }}>
         <div>
           <p style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,2.4vw,28px)', lineHeight: 1.45, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>La Maison est née d'un geste simple : couper, coudre, patiner, et recommencer jusqu'à ce que la pièce tienne toute seule.</p>
           <p style={{ margin: '0 0 18px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Texte provisoire. Les cuirs sont sélectionnés en Côte d'Ivoire, tannés au végétal, puis travaillés à la main dans l'atelier du Plateau. Chaque pièce reçoit un numéro qui l'accompagne toute sa vie.</p>
@@ -1090,7 +1096,7 @@ function ScMaison({ v }) {
           <p style={{ margin: '14px 0 0', fontSize: 13, letterSpacing: '.06em', color: 'rgb(94,94,94)' }}>Carole Sessegnon, fondatrice</p>
         </div>
       </div>
-      <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)' }}>
+      <div className="sec-reveal" style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)' }}>
         <div style={{ maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 'clamp(24px,4vw,60px)' }}>
           <div><p style={eyebrow}>Le cuir</p><p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Texte provisoire sur la provenance et le tannage des peaux.</p></div>
           <div><p style={eyebrow}>La main</p><p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Texte provisoire sur les gestes de l'atelier et le temps de fabrication.</p></div>
@@ -1098,11 +1104,11 @@ function ScMaison({ v }) {
         </div>
       </div>
 
-      <div style={{ position: 'relative', height: 'clamp(360px,58vh,600px)' }}>
+      <div className="sec-reveal" style={{ position: 'relative', height: 'clamp(360px,58vh,600px)' }}>
         <ImageSlot id="cs-maison-atelier2" placeholder="Atelier — détail du geste" />
       </div>
 
-      <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
+      <div className="sec-reveal" style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
         <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Savoir-faire</p>
         <h2 style={{ margin: '0 0 48px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)', maxWidth: '20ch', textWrap: 'pretty' }}>Du cuir brut à la pièce numérotée</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(28px,4vw,60px)' }}>
@@ -1116,7 +1122,7 @@ function ScMaison({ v }) {
         </div>
       </div>
 
-      <div style={{ background: 'rgb(71,29,27)', color: 'rgb(255,255,255)' }}>
+      <div className="sec-reveal" style={{ background: 'rgb(71,29,27)', color: 'rgb(255,255,255)' }}>
         <div style={{ maxWidth: 1640, margin: '0 auto', padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(32px,5vw,72px)', alignItems: 'center' }}>
           <div style={{ flex: '0 0 auto', width: 120 }}>
             <ImageSlot id="cs-maison-sentinelle" placeholder="Sentinelle — illustration à venir" style={{ width: 120, height: 156 }} />
@@ -1128,7 +1134,7 @@ function ScMaison({ v }) {
         </div>
       </div>
 
-      <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+      <div className="sec-reveal" style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
         <h2 style={{ margin: '0 0 24px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)' }}>Voir les pièces</h2>
         <Button variant="secondary" onClick={v.goPieces} style={v.btnUpper.style}>Découvrir les pièces</Button>
       </div>
@@ -1336,7 +1342,7 @@ function ScProduit({ v }) {
         </div>
       </div>
 
-      <div style={{ marginTop: 'clamp(48px,7vw,90px)' }}>
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)' }}>
         <h2 style={{ margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Vous aimerez aussi</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,200px),1fr))', gap: '32px 20px' }}>
           {v.related.map((p, i) => (
@@ -1351,7 +1357,7 @@ function ScProduit({ v }) {
         </div>
       </div>
 
-      <div style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900 }}>
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900 }}>
         <FAQBlock v={v} />
       </div>
     </section>
@@ -1414,7 +1420,7 @@ function ScPanier({ v }) {
             </div>
           </div>
 
-          <div style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900 }}>
+          <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900 }}>
             <FAQBlock v={v} />
           </div>
         </Fragment>
