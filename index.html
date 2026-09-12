@@ -154,8 +154,9 @@ const PHOTOS = {
   'cs-maison-hero': PH.terrasse,
   'cs-maison-portrait': PH.porte,
   'cs-maison-atelier2': PH.coffret,
-  'cs-maison-huperano-portrait': PH.terrasse,
-  'cs-maison-huperano-mains': PH.porte,
+  'cs-hero-huperano': PH.terrasse,
+  'cs-portrait-soie': PH.piscine,
+  'cs-huperano-mains': PH.porte,
   'cs-maison-sentinelle': PH.coffret,
   'cs-sentinelle-accueil': PH.coffret,
   'cs-sentinelle-verif': PH.coffret,
@@ -974,6 +975,54 @@ function ScAccueil({ v }) {
         <button type="button" className="ulink" onClick={v.goMaison} style={{ marginTop: 30, background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, letterSpacing: '.06em' }}>La Maison&nbsp;&nbsp;→</button>
       </div>
 
+      {/* 1. hero L'Huperano */}
+      <div style={{ position: 'relative', height: 'calc(100vh - ' + v.headerH + ')' }}>
+        <ImageSlot id="cs-hero-huperano" placeholder="L'Huperano — visuel d'ouverture" />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.05) 30%,rgba(0,0,0,0) 55%,rgba(0,0,0,.5) 100%)', pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 'clamp(20px,5vw,140px)', pointerEvents: 'none' }}>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(34px,6vw,64px)', color: 'rgb(255,255,255)' }}>L'Huperano</h1>
+          <button type="button" className="ulink" onClick={() => v.go('produit', { pid: 'huperano', open: 0 })} style={{ marginTop: 22, pointerEvents: 'auto', background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 15 }}>Découvrir&nbsp;&nbsp;→</button>
+        </div>
+      </div>
+
+      {/* 2. Le geste créatif */}
+      <div style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+        <h2 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,3vw,32px)', color: 'rgb(71,29,27)' }}>Le geste créatif</h2>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Explorer la forme, créer des silhouettes qui se distinguent.</p>
+      </div>
+
+      {/* 3. portrait soie — contenu, pas plein écran */}
+      <div style={{ padding: 'clamp(28px,4vw,44px) clamp(20px,5vw,140px) 0' }}>
+        <div style={{ position: 'relative', aspectRatio: '.72', maxWidth: 520, margin: '0 auto', overflow: 'hidden' }}>
+          <ImageSlot id="cs-portrait-soie" placeholder="Portrait — soie" />
+        </div>
+      </div>
+
+      {/* 4. citation — directement après le portrait, sans gap supplémentaire */}
+      <div style={{ padding: '24px clamp(20px,5vw,140px) 0', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+        <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 'clamp(17px,2vw,20px)', color: 'rgb(71,29,27)' }}>Attire les regards sans jamais voler la lumière à celle qui le porte.</p>
+      </div>
+
+      {/* 5. plein écran — les mains, séparée de la citation par le margin-top */}
+      <div style={{ position: 'relative', height: 'clamp(420px,72vh,760px)', marginTop: 'clamp(56px,9vw,100px)' }}>
+        <ImageSlot id="cs-huperano-mains" placeholder="L'Huperano — le geste, les mains" />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 40%)', pointerEvents: 'none' }}></div>
+        <p style={{ position: 'absolute', left: 0, right: 0, bottom: 0, margin: 0, padding: 'clamp(20px,5vw,140px) clamp(20px,5vw,140px) clamp(24px,4vw,40px)', fontFamily: 'var(--font-display)', fontSize: 'clamp(17px,2vw,20px)', lineHeight: 1.6, color: 'rgba(255,255,255,.92)', pointerEvents: 'none' }}>Nouveau design</p>
+      </div>
+
+      {/* 6. La naissance de Radah — texte seul, après l'image des mains */}
+      <div style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px) clamp(28px,4vw,40px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+        <h2 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,3vw,32px)', color: 'rgb(71,29,27)' }}>La naissance de Radah</h2>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Avant la pièce, le geste. Avant le geste, l'esquisse.</p>
+      </div>
+
+      {/* 7. croquis crayonné — pas de scène salon/échecs ici */}
+      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)' }}>
+        <div style={{ position: 'relative', aspectRatio: '.98', maxWidth: 900, margin: '0 auto', overflow: 'hidden' }}>
+          <ImageSlot id="cs-croquis-radah" placeholder="Croquis crayonné — La naissance de Radah" />
+        </div>
+      </div>
+
       <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(16px,2vw,28px)' }}>
           {v.tuiles.map((t, i) => (
@@ -1070,23 +1119,6 @@ function ScMaison({ v }) {
 
       <div style={{ position: 'relative', height: 'clamp(360px,58vh,600px)' }}>
         <ImageSlot id="cs-maison-atelier2" placeholder="Atelier — détail du geste" />
-      </div>
-
-      <div>
-        <div style={{ position: 'relative', height: 'clamp(420px,62vh,640px)' }}>
-          <ImageSlot id="cs-maison-huperano-portrait" placeholder="L'Huperano — portrait" />
-        </div>
-        <div style={{ position: 'relative', height: 'clamp(360px,52vh,540px)' }}>
-          <ImageSlot id="cs-maison-huperano-mains" placeholder="L'Huperano — le geste, les mains" />
-        </div>
-        <div style={{ padding: 'clamp(40px,6vw,72px) clamp(20px,5vw,140px)', maxWidth: 780, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 'clamp(20px,2.6vw,28px)', lineHeight: 1.5, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>« L'Huperano attire les regards sans jamais voler la lumière à celle qui le porte. »</p>
-        </div>
-      </div>
-
-      <div style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 780, margin: '0 auto', textAlign: 'center' }}>
-        <p style={eyebrow}>La naissance de Radah</p>
-        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.75, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Texte provisoire. Radah est né d'une pièce de cuir bordeaux refusée deux fois par l'atelier avant d'être acceptée : trop rigide, puis trop souple, puis juste. La Maison en a gardé le nom — Radah, celle qui règne — et la couleur, qu'aucune autre pièce de la collection ne porte.</p>
       </div>
 
       <div style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
