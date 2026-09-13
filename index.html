@@ -194,7 +194,8 @@ const PH = {
   artisanSketch: 'assets/photos/artisan-bordeaux.png',
   atelierCouturePatch: 'assets/photos/atelier-couture-patch.png',
   sentinelleFemme: 'assets/photos/sentinelle-femme.png',
-  sentinelleHomme: 'assets/photos/sentinelle-homme.png'
+  sentinelleHomme: 'assets/photos/sentinelle-homme.png',
+  lifestyleCoupleVoyage: 'assets/photos/lifestyle-couple-voyage.png'
 };
 const VIDEOS = {
   'cs-hardware-flatlay': 'assets/photos/hardware-flatlay.mp4'
@@ -211,6 +212,7 @@ const PHOTOS = {
   'cs-coffret-ferme': PH.coffret,
   'cs-maison-sentinelle-femme': PH.sentinelleFemme,
   'cs-maison-sentinelle-homme': PH.sentinelleHomme,
+  'cs-maison-voir-pieces': PH.lifestyleCoupleVoyage,
   'cs-sentinelle-accueil': PH.sentinelleFemme,
   'cs-sentinelle-saisie': PH.sentinelleFemme,
   'cs-sentinelle-verif': PH.sentinelleHomme,
@@ -1214,9 +1216,15 @@ function ScMaison({ v }) {
         </div>
       </div>
 
-      <div className="sec-reveal" style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-        <h2 style={{ margin: '0 0 24px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)' }}>Voir les pièces</h2>
-        <Button variant="secondary" onClick={v.goPieces} style={v.btnUpper.style}>Découvrir les pièces</Button>
+      <div className="sec-reveal" style={{ padding: '0 clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
+        <div style={{ position: 'relative', aspectRatio: '2.2', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ImageSlot id="cs-maison-voir-pieces" placeholder="Voir les pièces — image" />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,.15) 55%,rgba(0,0,0,.4) 100%)', pointerEvents: 'none' }}></div>
+          <div style={{ position: 'relative', textAlign: 'center', padding: 'clamp(20px,5vw,60px)' }}>
+            <h2 style={{ margin: '0 0 24px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(255,255,255)' }}>Voir les pièces</h2>
+            <Button variant="light" onClick={v.goPieces} style={v.btnUpper.style}>Découvrir les pièces</Button>
+          </div>
+        </div>
       </div>
     </section>
   );
