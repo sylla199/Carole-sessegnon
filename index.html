@@ -62,6 +62,10 @@
     .cs-badge-pulse{animation:none}
     .ulink::after{transition:none}
   }
+  @media (max-width: 700px){
+    .cs-footer-cols{justify-content:flex-start !important}
+    .cs-footer-cols>div{flex:1 1 100% !important;max-width:none !important}
+  }
 </style>
 </head>
 <body>
@@ -940,7 +944,7 @@ function Footer({ v }) {
   return (
     <footer style={{ background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(48px,7vw,80px) clamp(20px,5vw,140px) clamp(32px,4vw,48px)' }}>
       <div style={{ maxWidth: 1640, margin: '0 auto' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 'clamp(70px,4vw,110px)', textAlign: 'left', maxWidth: 920, margin: '0 auto', paddingBottom: 'clamp(24px,3.5vw,40px)', borderBottom: '1px solid rgba(255,255,255,.2)' }}>
+        <div className="cs-footer-cols" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 'clamp(70px,4vw,110px)', textAlign: 'left', maxWidth: 920, margin: '0 auto', paddingBottom: 'clamp(24px,3.5vw,40px)', borderBottom: '1px solid rgba(255,255,255,.2)' }}>
           <div style={{ flex: '0 1 180px' }}>
             <p style={eyebrow}>Menu</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
@@ -962,7 +966,7 @@ function Footer({ v }) {
           </div>
           <div style={{ flex: '1 1 280px', maxWidth: 360 }}>
             <p style={eyebrow}>L'univers <span style={{ fontFamily: "'Tamil MN', var(--font-display)" }}>Carole Sessegnon</span></p>
-            <p style={{ margin: '0 0 16px', fontSize: 15, lineHeight: 1.6, color: 'rgba(255,255,255,.82)' }}>Découvrir en avant-première les nouvelles pièces et les actualités de la maison</p>
+            <p style={{ margin: '0 0 16px', fontSize: 15, lineHeight: 1.6, color: 'rgba(255,255,255,.82)' }}>Découvrez en avant-première les nouvelles pièces et les actualités de la maison</p>
             <form onSubmit={v.submitNews} style={{ display: 'flex', gap: 0, flexWrap: 'wrap' }}>
               <input name="news" type="email" required placeholder="Votre e-mail" style={{ flex: 1, minWidth: 160, height: 52, padding: '0 16px', background: 'transparent', border: 0, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.45)', color: 'rgb(255,255,255)', fontSize: 15 }} />
               <button type="submit" style={{ height: 52, padding: '0 22px', background: 'rgb(255,255,255)', border: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 13, letterSpacing: '.1em', textTransform: 'uppercase' }}>OK</button>
