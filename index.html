@@ -1155,14 +1155,14 @@ function ScMaison({ v }) {
           </div>
         </div>
       </div>
-      <div className="sec-reveal" style={{ padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,320px),1fr))', gap: 'clamp(32px,5vw,80px)', alignItems: 'start' }}>
+      <div className="sec-reveal" style={{ padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,320px),1fr))', gap: 'clamp(32px,5vw,80px)', alignItems: 'stretch' }}>
         <div>
           <p style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,2.4vw,28px)', lineHeight: 1.45, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>La Maison est née d'un geste simple : couper, coudre, patiner, et recommencer jusqu'à ce que la pièce tienne toute seule.</p>
           <p style={{ margin: '0 0 18px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Texte provisoire. Les cuirs sont sélectionnés en Côte d'Ivoire, tannés au végétal, puis travaillés à la main dans l'atelier du Plateau. Chaque pièce reçoit un numéro qui l'accompagne toute sa vie.</p>
           <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Texte provisoire. Aucune pièce n'est produite deux fois à l'identique : les peaux, les fils et les patines varient, et c'est cette variation que le registre de la Maison conserve.</p>
         </div>
-        <div>
-          <div data-parallax-hero style={{ position: 'relative', aspectRatio: '.8', boxShadow: '0 12px 24px -8px rgba(0,0,0,.08),0 0 0 1px oklch(0 0 0 / 0.1)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 260 }}>
+          <div data-parallax-hero style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, boxShadow: '0 12px 24px -8px rgba(0,0,0,.08),0 0 0 1px oklch(0 0 0 / 0.1)' }}>
             <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
               <div ref={portraitImgRef} style={{ position: 'absolute', inset: 0 }}>
                 <ImageSlot id="cs-maison-portrait" placeholder="Portrait — Carole Sessegnon" />
