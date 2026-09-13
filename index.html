@@ -212,6 +212,7 @@ const PHOTOS = {
   'cs-maison-sentinelle-femme': PH.sentinelleFemme,
   'cs-maison-sentinelle-homme': PH.sentinelleHomme,
   'cs-sentinelle-accueil': PH.sentinelleFemme,
+  'cs-sentinelle-saisie': PH.sentinelleFemme,
   'cs-sentinelle-verif': PH.sentinelleHomme,
   'cs-sentinelle-confirm': PH.sentinelleFemme,
   'cs-passeport-piece': PH.studio,
@@ -1759,7 +1760,16 @@ function ScPasseport({ v }) {
         <div>
           <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 1 sur 3</p>
           <h1 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.4vw,44px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>Votre certificat</h1>
-          <p style={{ margin: '0 0 30px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>Les deux informations figurent sur le certificat d'origine placé dans votre coffret.</p>
+          <p style={{ margin: '0 0 24px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>Les deux informations figurent sur le certificat d'origine placé dans votre coffret.</p>
+          <div style={{ display: 'flex', gap: 'clamp(16px,2.5vw,28px)', flexWrap: 'wrap', alignItems: 'flex-start', maxWidth: 620, marginBottom: 30 }}>
+            <div style={{ position: 'relative', flex: '1 1 220px', background: 'rgb(255,255,255)', borderRadius: 20, padding: '16px 22px', boxShadow: '0 8px 20px -8px rgba(0,0,0,.12), inset 0 0 0 1px rgba(0,0,0,.07)' }}>
+              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>Vous ne trouvez pas ces informations ? Elles sont imprimées sur le certificat glissé dans votre coffret.</p>
+              <span style={{ position: 'absolute', right: -9, top: 26, width: 18, height: 18, background: 'rgb(255,255,255)', clipPath: 'polygon(0 0, 100% 50%, 0 100%)' }}></span>
+            </div>
+            <div style={{ flex: '0 0 auto', width: 74 }}>
+              <ImageSlot id="cs-sentinelle-saisie" placeholder="Sentinelle — illustration à venir" style={{ width: 74, height: 133 }} />
+            </div>
+          </div>
           <form onSubmit={v.verify} style={{ maxWidth: 460, display: 'flex', flexDirection: 'column', gap: 20 }}>
             <label style={st(LABEL)}>Numéro de série<input name="serie" required placeholder="CS-0042-2026" style={st(INPUT + ';letter-spacing:.08em')} /></label>
             <label style={st(LABEL)}>Code d'activation privé<input name="code" required placeholder="8F3K-22QD" style={st(INPUT + ';letter-spacing:.08em')} /></label>
