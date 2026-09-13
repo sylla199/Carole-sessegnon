@@ -102,7 +102,6 @@ function AnimatedNumber({ value, format }) {
 function IntroSeal({ onDone }) {
   const [closing, setClosing] = useState(false);
   useEffect(() => {
-    try { sessionStorage.setItem('cs-intro', '1'); } catch (e) {}
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const t1 = setTimeout(() => setClosing(true), 1200);
@@ -401,10 +400,7 @@ function App() {
   const [showIntro, setShowIntro] = useState(() => {
     try {
       if (typeof window === 'undefined') return false;
-      if (/[?&]intro=1\b/.test(location.search)) return true;   // ?intro=1 forces replay
-      if (!window.sessionStorage) return false;
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
-      if (sessionStorage.getItem('cs-intro')) return false;
     } catch (e) { return false; }
     return true;
   });
