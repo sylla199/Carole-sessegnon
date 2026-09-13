@@ -1123,15 +1123,12 @@ function ScAccueil({ v }) {
         </div>
       </div>
 
-      {/* La Maison — CAROLE SESSEGNON */}
-      <div className="sec-reveal" style={{ padding: '0 clamp(20px,5vw,140px) clamp(64px,10vw,120px)', maxWidth: 760, margin: '0 auto' }}>
-        <p style={{ margin: '0 0 8px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>La Maison</p>
-        <h2 style={{ margin: '0 0 28px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>CAROLE SESSEGNON</h2>
-        <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}><span style={{ letterSpacing: '.02em' }}>CAROLE SESSEGNON</span> est une Maison ivoirienne de maroquinerie, née d'une vocation.</p>
-        <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}>Elle repose sur une conviction profonde : chaque personne porte en elle une empreinte que nul autre ne saurait reproduire.</p>
-        <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}>Ses créations sont pensées pour accompagner, au quotidien, ce qui vous rend déjà unique.</p>
-        <p style={{ margin: '0 0 20px', fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}>La Maison explore les formes et les lignes pour imaginer des pièces qui se distinguent, avec un regard singulier sur la maroquinerie.</p>
-        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.75, color: 'rgb(70,70,70)' }}>À contre-courant de l'éphémère, elle choisit de créer des pièces que l'on prend plaisir à porter, à garder près de soi et à offrir.</p>
+      {/* La Maison — teaser, le récit complet vit sur la page dédiée */}
+      <div className="sec-reveal" style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+        <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>La Maison</p>
+        <h2 style={{ margin: '0 0 16px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>CAROLE SESSEGNON</h2>
+        <p style={{ margin: '0 0 22px', fontSize: 17, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Une Maison ivoirienne de maroquinerie, née d'une vocation : accompagner, au quotidien, ce qui vous rend déjà unique.</p>
+        <button type="button" className="ulink" onClick={v.goMaison} style={{ background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 15 }}>Découvrir la Maison&nbsp;&nbsp;→</button>
       </div>
     </section>
   );
