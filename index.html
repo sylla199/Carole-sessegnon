@@ -1787,8 +1787,14 @@ function ScPasseport({ v }) {
           <div style={{ width: 44, height: 44, margin: '0 auto 28px', border: '1px solid rgba(71,29,27,.2)', borderTopColor: 'rgb(71,29,27)', borderRadius: '50%', animation: 'cs-spin 1s linear infinite' }}></div>
           <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(20px,3vw,28px)', color: 'rgb(71,29,27)' }}>Vérification au registre</p>
           <p style={{ margin: '12px 0 0', fontSize: 15, color: 'rgb(94,94,94)' }}>Un instant, les Sentinelles consultent les archives.</p>
-          <div style={{ margin: '34px auto 0', width: 87 }}>
-            <ImageSlot id="cs-sentinelle-verif" placeholder="Sentinelle 2 — illustration à venir" style={{ width: 87, height: 156 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 34 }}>
+            <div style={{ position: 'relative', background: 'rgb(255,255,255)', borderRadius: 20, padding: '14px 20px', boxShadow: '0 8px 20px -8px rgba(0,0,0,.12), inset 0 0 0 1px rgba(0,0,0,.07)' }}>
+              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>Patience, j'examine chaque détail avec soin.</p>
+              <span style={{ position: 'absolute', bottom: -9, left: '50%', transform: 'translateX(-50%)', width: 18, height: 18, background: 'rgb(255,255,255)', clipPath: 'polygon(50% 100%, 0 0, 100% 0)' }}></span>
+            </div>
+            <div style={{ width: 87, marginTop: 16 }}>
+              <ImageSlot id="cs-sentinelle-verif" placeholder="Sentinelle 2 — illustration à venir" style={{ width: 87, height: 156 }} />
+            </div>
           </div>
         </div>
       )}
