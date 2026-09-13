@@ -1177,9 +1177,11 @@ function ScMaison({ v }) {
         </div>
       </div>
 
-      <div className="sec-reveal" data-parallax-hero style={{ position: 'relative', height: 'clamp(360px,58vh,600px)', overflow: 'hidden' }}>
-        <div ref={atelierImgRef} style={{ position: 'absolute', inset: 0 }}>
-          <ImageSlot id="cs-maison-atelier2" placeholder="Atelier — détail du geste" />
+      <div className="sec-reveal" style={{ padding: '0 clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
+        <div data-parallax-hero style={{ position: 'relative', aspectRatio: '2.2', overflow: 'hidden' }}>
+          <div ref={atelierImgRef} style={{ position: 'absolute', inset: 0 }}>
+            <ImageSlot id="cs-maison-atelier2" placeholder="Atelier — détail du geste" />
+          </div>
         </div>
       </div>
 
