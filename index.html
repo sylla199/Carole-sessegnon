@@ -211,9 +211,9 @@ const PHOTOS = {
   'cs-coffret-ferme': PH.coffret,
   'cs-maison-sentinelle-femme': PH.sentinelleFemme,
   'cs-maison-sentinelle-homme': PH.sentinelleHomme,
-  'cs-sentinelle-accueil': PH.coffret,
-  'cs-sentinelle-verif': PH.coffret,
-  'cs-sentinelle-confirm': PH.coffret,
+  'cs-sentinelle-accueil': PH.sentinelleFemme,
+  'cs-sentinelle-verif': PH.sentinelleHomme,
+  'cs-sentinelle-confirm': PH.sentinelleFemme,
   'cs-passeport-piece': PH.studio,
   'cs-profil-piece': PH.studio
 };
@@ -1745,7 +1745,6 @@ function ScPasseport({ v }) {
           <div style={{ display: 'flex', gap: 'clamp(20px,3vw,40px)', flexWrap: 'wrap', alignItems: 'center', padding: 'clamp(20px,3vw,32px)', background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)' }}>
             <div style={{ flex: '0 0 auto', width: 132 }}>
               <ImageSlot id="cs-sentinelle-accueil" placeholder="Sentinelle 1 — illustration à venir" style={{ width: 132, height: 172 }} />
-              <p style={{ margin: '8px 0 0', fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgb(94,94,94)', textAlign: 'center' }}>Emplacement Sentinelle</p>
             </div>
             <p style={{ flex: 1, minWidth: 220, margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(18px,2.4vw,24px)', lineHeight: 1.5, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>Les Sentinelles veillent sur chaque pièce, du registre à la vérification de son authenticité.</p>
           </div>
