@@ -791,7 +791,14 @@ function Shell({ v }) {
             )}
           </div>
           <button type="button" className="fx-press" aria-label="Accueil" onClick={v.goAccueil} style={{ gridColumn: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', padding: 0, color: 'inherit' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(17px,2.6vw,26px)', letterSpacing: '.04em', whiteSpace: 'nowrap' }}>CAROLE SESSEGNON</span>
+            <span role="img" aria-label="Carole Sessegnon" style={{
+              display: 'block', width: 'clamp(150px,22vw,300px)', aspectRatio: '770.11 / 56.86',
+              backgroundColor: 'currentColor',
+              WebkitMaskImage: 'url(assets/CS-LOGOTYPE.svg)', maskImage: 'url(assets/CS-LOGOTYPE.svg)',
+              WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+              WebkitMaskPosition: 'center', maskPosition: 'center',
+              WebkitMaskSize: 'contain', maskSize: 'contain'
+            }}></span>
           </button>
           <div style={{ gridColumn: 3, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'clamp(8px,2vw,30px)' }}>
             {v.wide && (
