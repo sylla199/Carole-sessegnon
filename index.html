@@ -882,13 +882,13 @@ function Shell({ v }) {
             <label htmlFor="cs-q" style={{ display: 'block', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)', marginBottom: 12 }}>Rechercher une pièce</label>
             <input id="cs-q" type="search" value={v.q} onChange={v.setQ} placeholder="Nom, matière, coloris" style={{ width: '100%', padding: '14px 0', background: 'none', border: 0, borderBottom: '1px solid rgb(71,29,27)', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,4vw,34px)', color: 'rgb(71,29,27)' }} />
             <p style={{ fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)', margin: '34px 0 14px' }}>Résultats</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,170px),1fr))', gap: '28px 20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,145px),1fr))', gap: '20px 14px' }}>
               {v.results.map((p, i) => (
                 <div key={i}>
                   <Oval p={p} />
                   <button type="button" onClick={p.open} style={{ display: 'block', width: '100%', padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
-                    <p style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontSize: 19, color: 'rgb(71,29,27)' }}>{p.name}</p>
-                    <p style={{ margin: '6px 0 0', fontSize: 14, color: p.priceColor }}>{p.priceLabel}</p>
+                    <p style={{ margin: '12px 0 0', fontFamily: 'var(--font-display)', fontSize: 17, color: 'rgb(71,29,27)' }}>{p.name}</p>
+                    <p style={{ margin: '5px 0 0', fontSize: 13, color: p.priceColor }}>{p.priceLabel}</p>
                   </button>
                 </div>
               ))}
