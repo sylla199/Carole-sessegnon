@@ -1482,19 +1482,19 @@ function ScProduit({ v }) {
 
     {lightbox && (
       <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgb(245,242,240)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <button type="button" aria-label="Fermer" onClick={() => setLightbox(false)} style={{ position: 'absolute', top: 24, right: 24, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
+        <button type="button" aria-label="Fermer" onClick={() => setLightbox(false)} style={{ position: 'absolute', top: 24, right: 24, zIndex: 2, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 2l16 16M18 2L2 18" /></svg>
         </button>
-        <button type="button" aria-label="Image précédente" onClick={prevImg} style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
+        <button type="button" aria-label="Image précédente" onClick={prevImg} style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
           <svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 1 2 11l10 10" /></svg>
         </button>
-        <button type="button" aria-label="Image suivante" onClick={nextImg} style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
+        <button type="button" aria-label="Image suivante" onClick={nextImg} style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
           <svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 1l10 10L2 21" /></svg>
         </button>
         <div style={{ position: 'relative', width: 'min(88vw,900px)', height: 'min(78vh,900px)' }}>
           <ImageSlot id={images[imgIdx]} placeholder={labels[imgIdx]} />
         </div>
-        <div style={{ position: 'absolute', right: 24, bottom: 24, display: 'flex', gap: 8 }}>
+        <div style={{ position: 'absolute', right: 24, bottom: 24, zIndex: 2, display: 'flex', gap: 8 }}>
           {images.map((id, i) => thumbBtn(i, 56))}
         </div>
       </div>
