@@ -711,6 +711,8 @@ function App() {
     secPrix: { open: s.secPrix, rot: s.secPrix ? 'rotate(180deg)' : 'none', toggle: () => setS(st => ({ ...st, secPrix: !st.secPrix })) },
     setSort: e => set({ sort: e.target.value }),
     current, addCurrent: () => addToCart(current.id, s.pqty), addTotal: current.price * s.pqty,
+    currentFav: s.fav.indexOf(current.id) >= 0,
+    toggleCurrentFav: () => setS(st => ({ ...st, fav: st.fav.indexOf(current.id) >= 0 ? st.fav.filter(x => x !== current.id) : st.fav.concat([current.id]) })),
     accordion: ACC.map((a, i) => ({ title: a.title, body: a.body, open: s.open === i, toggle: () => setS(st => ({ ...st, open: st.open === i ? -1 : i })) })),
     lines, subtotal: fmt(sub),
     hasCart: s.cart.length > 0, cartEmpty: s.cart.length === 0,
@@ -1368,12 +1370,45 @@ function ScPieces({ v }) {
 
 function ScProduit({ v }) {
   const c = v.current;
+  const images = [c.slot, 'cs-t1', 'cs-t2', 'cs-t3'];
+  const labels = ['Photo produit principale', 'Détail 1', 'Détail 2', 'Détail 3'];
+  const [imgIdx, setImgIdx] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
+  useEffect(() => { setImgIdx(0); setLightbox(false); }, [c.id]);
+  const prevImg = () => setImgIdx(i => (i - 1 + images.length) % images.length);
+  const nextImg = () => setImgIdx(i => (i + 1) % images.length);
+  const thumbBtn = (i, size) => (
+    <button key={i} type="button" aria-label={'Voir ' + labels[i]} onClick={() => setImgIdx(i)} style={{
+      position: 'relative', width: size, height: size, flex: '0 0 auto', overflow: 'hidden', padding: 0, cursor: 'pointer',
+      border: 0, boxShadow: i === imgIdx ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgba(0,0,0,.15)',
+      opacity: i === imgIdx ? 1 : .75
+    }}>
+      <ImageSlot id={images[i]} placeholder={labels[i]} />
+    </button>
+  );
   return (
+    <Fragment>
     <section style={{ padding: 'clamp(24px,4vw,60px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
       <button type="button" onClick={v.goPieces} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, letterSpacing: '.06em' }}>← Les Pièces</button>
-      <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'stretch' }}>
-        <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '50%', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px' }}>
-          <ImageSlot id={c.slot} shape="circle" placeholder="Photo produit principale" />
+      <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
+        <div style={{ position: 'relative', height: 'clamp(480px,78vh,820px)', overflow: 'hidden', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px', cursor: 'zoom-in' }} onClick={() => setLightbox(true)}>
+          <ImageSlot id={images[imgIdx]} placeholder={labels[imgIdx]} />
+
+          <button type="button" aria-label={v.currentFav ? 'Retirer des favoris' : 'Ajouter aux favoris'} onClick={e => { e.stopPropagation(); v.toggleCurrentFav(); }} style={{ position: 'absolute', top: 16, right: 16, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,.85)', border: 0, cursor: 'pointer', color: v.currentFav ? 'rgb(71,29,27)' : 'rgb(94,94,94)' }}>
+            <svg width="18" height="16" viewBox="0 0 15 14" fill={v.currentFav ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1"><path d="M7.5 12.6 2.1 7.4a3.2 3.2 0 0 1 4.5-4.5l.9.9.9-.9a3.2 3.2 0 0 1 4.5 4.5l-5.4 5.2Z" /></svg>
+          </button>
+
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 16, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} onClick={e => e.stopPropagation()}>
+            <button type="button" aria-label="Image précédente" onClick={prevImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,.85)', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 1 1 6l6 5" /></svg>
+            </button>
+            <div style={{ display: 'flex', gap: 6, background: 'rgba(255,255,255,.85)', padding: 6 }}>
+              {images.map((id, i) => thumbBtn(i, 40))}
+            </div>
+            <button type="button" aria-label="Image suivante" onClick={nextImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,.85)', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l6 5-6 5" /></svg>
+            </button>
+          </div>
         </div>
         <div>
           <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièce numérotée</p>
@@ -1417,11 +1452,7 @@ function ScProduit({ v }) {
       </div>
 
       <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12 }}>
-          {['Détail 1', 'Détail 2', 'Détail 3'].map((d, i) => (
-            <div key={i} style={{ position: 'relative', minWidth: 0, overflow: 'hidden', aspectRatio: '1', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px' }}><ImageSlot id={'cs-t' + (i + 1)} placeholder={d} /></div>
-          ))}
-        </div>
+        <div></div>
         <div>
           <div style={{ maxWidth: 520 }}>
             {v.accordion.map((a, i) => (
@@ -1452,6 +1483,27 @@ function ScProduit({ v }) {
         <FAQBlock v={v} />
       </div>
     </section>
+
+    {lightbox && (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgb(245,242,240)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <button type="button" aria-label="Fermer" onClick={() => setLightbox(false)} style={{ position: 'absolute', top: 24, right: 24, width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 2l16 16M18 2L2 18" /></svg>
+        </button>
+        <button type="button" aria-label="Image précédente" onClick={prevImg} style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
+          <svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 1 2 11l10 10" /></svg>
+        </button>
+        <button type="button" aria-label="Image suivante" onClick={nextImg} style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
+          <svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 1l10 10L2 21" /></svg>
+        </button>
+        <div style={{ position: 'relative', width: 'min(88vw,900px)', height: 'min(78vh,900px)' }}>
+          <ImageSlot id={images[imgIdx]} placeholder={labels[imgIdx]} />
+        </div>
+        <div style={{ position: 'absolute', right: 24, bottom: 24, display: 'flex', gap: 8 }}>
+          {images.map((id, i) => thumbBtn(i, 56))}
+        </div>
+      </div>
+    )}
+    </Fragment>
   );
 }
 
