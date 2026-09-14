@@ -1388,7 +1388,7 @@ function ScProduit({ v }) {
   );
   return (
     <Fragment>
-    <section style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
+    <section style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px) 0', maxWidth: 1640, margin: '0 auto' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
         <div style={{ position: 'relative', height: 'calc(100vh - ' + v.headerH + ')', overflow: 'hidden', cursor: 'zoom-in' }} onClick={() => setLightbox(true)}>
           <ImageSlot id={images[imgIdx]} placeholder={labels[imgIdx]} />
@@ -1458,7 +1458,7 @@ function ScProduit({ v }) {
       </div>
       </div>
 
-      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)' }}>
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', paddingLeft: 'clamp(20px,5vw,140px)' }}>
         <h2 style={{ margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Vous aimerez aussi</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,200px),1fr))', gap: '32px 20px' }}>
           {v.related.map((p, i) => (
@@ -1473,7 +1473,7 @@ function ScProduit({ v }) {
         </div>
       </div>
 
-      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900 }}>
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900, paddingLeft: 'clamp(20px,5vw,140px)' }}>
         <FAQBlock v={v} />
       </div>
     </section>
