@@ -1410,7 +1410,7 @@ function ScProduit({ v }) {
             </button>
           </div>
         </div>
-      <div>
+      <div style={{ paddingTop: 'clamp(28px,4vw,80px)' }}>
         <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièce numérotée</p>
         <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,4.6vw,48px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>{c.name}</h1>
         <p style={{ margin: '14px 0 0', fontSize: 17, lineHeight: 1.6, color: 'rgb(70,70,70)', maxWidth: '42ch', textWrap: 'pretty' }}>{c.tagline}</p>
@@ -1418,7 +1418,7 @@ function ScProduit({ v }) {
         <p style={{ margin: '8px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{c.material}</p>
 
         {c.available && (
-          <div style={{ marginTop: 30, maxWidth: 420 }}>
+          <div style={{ marginTop: 30 }}>
             {c.hasTeinte && (
               <Fragment>
                 <p style={{ margin: '0 0 12px', fontSize: 15, color: 'rgb(70,70,70)' }}>Teinte : <span style={{ color: 'rgb(0,0,0)' }}>{v.teinte}</span></p>
