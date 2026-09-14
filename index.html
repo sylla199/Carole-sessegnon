@@ -1371,16 +1371,9 @@ function ScProduit({ v }) {
   return (
     <section style={{ padding: 'clamp(24px,4vw,60px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
       <button type="button" onClick={v.goPieces} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, letterSpacing: '.06em' }}>← Les Pièces</button>
-      <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
-        <div>
-          <div style={{ position: 'relative', aspectRatio: '.78', overflow: 'hidden', borderRadius: '50%', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px' }}>
-            <ImageSlot id={c.slot} shape="circle" placeholder="Photo produit principale" />
-          </div>
-          <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12 }}>
-            {['Détail 1', 'Détail 2', 'Détail 3'].map((d, i) => (
-              <div key={i} style={{ position: 'relative', minWidth: 0, overflow: 'hidden', aspectRatio: '1', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px' }}><ImageSlot id={'cs-t' + (i + 1)} placeholder={d} /></div>
-            ))}
-          </div>
+      <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'stretch' }}>
+        <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '50%', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px' }}>
+          <ImageSlot id={c.slot} shape="circle" placeholder="Photo produit principale" />
         </div>
         <div>
           <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièce numérotée</p>
@@ -1420,7 +1413,17 @@ function ScProduit({ v }) {
           {c.soon && (
             <p style={{ margin: '30px 0 0', padding: 18, maxWidth: 420, textAlign: 'center', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.15)', fontSize: 13, letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Bientôt disponible</p>
           )}
-          <div style={{ marginTop: 36, maxWidth: 520 }}>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 12 }}>
+          {['Détail 1', 'Détail 2', 'Détail 3'].map((d, i) => (
+            <div key={i} style={{ position: 'relative', minWidth: 0, overflow: 'hidden', aspectRatio: '1', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px' }}><ImageSlot id={'cs-t' + (i + 1)} placeholder={d} /></div>
+          ))}
+        </div>
+        <div>
+          <div style={{ maxWidth: 520 }}>
             {v.accordion.map((a, i) => (
               <AccordionItem key={i} question={a.title} answer={a.body} open={a.open} onToggle={a.toggle} />
             ))}
