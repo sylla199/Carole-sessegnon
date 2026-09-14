@@ -1388,7 +1388,7 @@ function ScProduit({ v }) {
   );
   return (
     <Fragment>
-    <section style={{ padding: 'clamp(24px,4vw,60px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
+    <section style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
         <div style={{ position: 'relative', height: 'calc(100vh - ' + v.headerH + ')', overflow: 'hidden', cursor: 'zoom-in' }} onClick={() => setLightbox(true)}>
           <ImageSlot id={images[imgIdx]} placeholder={labels[imgIdx]} />
