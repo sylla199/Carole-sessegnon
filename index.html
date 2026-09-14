@@ -65,7 +65,8 @@
   @media (max-width: 700px){
     .cs-footer-cols{justify-content:flex-start !important}
     .cs-footer-cols>div{flex:1 1 100% !important;max-width:none !important}
-    .cs-pdp-hero-img{height:60vh !important}
+    .cs-pdp-hero-img{height:60vh !important;width:100vw !important;margin-left:calc(50% - 50vw) !important}
+    .cs-pdp-info{padding-left:20px !important;padding-right:20px !important}
   }
 </style>
 </head>
@@ -1410,7 +1411,7 @@ function ScProduit({ v }) {
             </button>
           </div>
         </div>
-      <div style={{ paddingTop: 'clamp(28px,4vw,80px)' }}>
+      <div className="cs-pdp-info" style={{ paddingTop: 'clamp(28px,4vw,80px)' }}>
         <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièce numérotée</p>
         <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,4.6vw,48px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>{c.name}</h1>
         <p style={{ margin: '14px 0 0', fontSize: 17, lineHeight: 1.6, color: 'rgb(70,70,70)', maxWidth: '42ch', textWrap: 'pretty' }}>{c.tagline}</p>
