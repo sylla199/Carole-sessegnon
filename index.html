@@ -72,6 +72,7 @@
     .cs-footer-cols>div{flex:1 1 100% !important;max-width:none !important}
     .cs-pdp-hero-img{height:60vh !important;width:100vw !important;margin-left:calc(50% - 50vw) !important}
     .cs-pdp-info{padding-left:20px !important;padding-right:20px !important}
+    .cs-profile-grid{grid-template-columns:1fr !important}
   }
 </style>
 </head>
@@ -2060,7 +2061,7 @@ function ScProfil({ v }) {
           {v.profInfos && (
             <div>
               <h2 style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Informations</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,200px),1fr))', gap: 16 }}>
+              <div className="cs-profile-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 16 }}>
                 <label style={st(LABEL)}>Prénom<input name="prenom" defaultValue="Awa" style={st(FIELD)} /></label>
                 <label style={st(LABEL)}>Nom<input name="nom" defaultValue="Koné" style={st(FIELD)} /></label>
                 <label style={st(LABEL)}>E-mail<input name="email" type="email" defaultValue="awa.kone@exemple.ci" style={st(FIELD)} /></label>
