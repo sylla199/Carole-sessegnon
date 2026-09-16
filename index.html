@@ -76,6 +76,7 @@
     .cs-pdp-hero-img{height:60vh !important;width:100vw !important;margin-left:calc(50% - 50vw) !important}
     .cs-pdp-info{padding-left:20px !important;padding-right:20px !important}
     .cs-profile-grid{grid-template-columns:1fr !important}
+    .cs-pieces-grid{grid-template-columns:repeat(2,1fr) !important;gap:20px 12px !important}
   }
 </style>
 </head>
@@ -1361,7 +1362,7 @@ function ScPieces({ v }) {
       )}
 
       <p style={{ margin: '30px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>{v.countLabel}</p>
-      <div style={{ marginTop: 26, display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,220px),1fr))', gap: 'clamp(28px,3.5vw,56px) clamp(16px,2.5vw,32px)' }}>
+      <div className="cs-pieces-grid" style={{ marginTop: 26, display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,220px),1fr))', gap: 'clamp(28px,3.5vw,56px) clamp(16px,2.5vw,32px)' }}>
         {v.shown.map((p, i) => (
           <div key={i} className="reveal" style={{ transitionDelay: ((i % 4) * 55) + 'ms' }}>
             <Oval p={p} />
