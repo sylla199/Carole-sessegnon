@@ -1301,17 +1301,16 @@ function ScPieces({ v }) {
       <p style={{ margin: '0 0 8px', fontSize: 14, letterSpacing: '.1em', color: 'rgb(94,94,94)' }}>Les Pièces</p>
       <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(71,29,27)' }}>Les Pièces</h1>
 
-      <div className="cs-cat-scroll" style={{ margin: 'clamp(32px,5vw,48px) 0 0', display: 'flex', gap: 'clamp(20px,3vw,40px)', overflowX: 'auto', borderBottom: '1px solid rgba(0,0,0,.12)' }}>
-        {v.categories.map((c, i) => (
-          <button key={i} type="button" onClick={c.pick} className={'cs-cat-tab' + (c.active ? ' is-active' : '')} style={{ color: c.active ? 'rgb(71,29,27)' : 'rgb(94,94,94)' }}>
-            {c.label} <span style={{ color: 'rgb(160,160,160)' }}>({c.count})</span>
-          </button>
-        ))}
-      </div>
-
-      <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, margin: '0', left: 0, right: 0, width: '100vw', marginLeft: 'calc(50% - 50vw)', padding: '14px clamp(20px,5vw,140px)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 16, flexWrap: 'wrap', background: v.s.scrolled ? 'rgba(255,255,255,.72)' : 'transparent', backdropFilter: v.s.scrolled ? 'blur(40px)' : 'none', WebkitBackdropFilter: v.s.scrolled ? 'blur(40px)' : 'none', transitionProperty: 'background-color,backdrop-filter', transitionDuration: '.2s' }}>
-        <div style={{ maxWidth: 1640, width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 16, flexWrap: 'wrap' }}>
-          <button type="button" onClick={v.toggleFilters} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, borderBottom: '1px solid rgb(0,0,0)', padding: '0 0 5px', color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 15 }}>
+      <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, margin: 'clamp(32px,5vw,48px) 0 0', left: 0, right: 0, width: '100vw', marginLeft: 'calc(50% - 50vw)', padding: '0 clamp(20px,5vw,140px)', background: v.s.scrolled ? 'rgba(255,255,255,.72)' : 'transparent', backdropFilter: v.s.scrolled ? 'blur(40px)' : 'none', WebkitBackdropFilter: v.s.scrolled ? 'blur(40px)' : 'none', transitionProperty: 'background-color,backdrop-filter', transitionDuration: '.2s' }}>
+        <div style={{ maxWidth: 1640, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, borderBottom: '1px solid rgba(0,0,0,.12)' }}>
+          <div className="cs-cat-scroll" style={{ display: 'flex', gap: 'clamp(20px,3vw,40px)', overflowX: 'auto', minWidth: 0 }}>
+            {v.categories.map((c, i) => (
+              <button key={i} type="button" onClick={c.pick} className={'cs-cat-tab' + (c.active ? ' is-active' : '')} style={{ color: c.active ? 'rgb(71,29,27)' : 'rgb(94,94,94)' }}>
+                {c.label} <span style={{ color: 'rgb(160,160,160)' }}>({c.count})</span>
+              </button>
+            ))}
+          </div>
+          <button type="button" className="fx-dim" onClick={v.toggleFilters} style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: '0 0 14px', color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 15 }}>
             Filtrer
             <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" strokeWidth="1"><path d="M0 1h16M3 6h10M6 11h4" /></svg>
           </button>
