@@ -441,7 +441,7 @@ function App() {
     route: 'accueil', menu: false, search: false, filters: false, cat: 'Tout', sort: 'default',
     pid: 'huperano', open: 0, cart: [{ id: 'radah', qty: 1 }], step: 1,
     pstep: 'intro', tries: 0, perr: '', assoc: null, skipped: false,
-    authTab: 'connexion', authMsg: '', contactSent: false, legal: 'mentions', pwdVisible: false,
+    authTab: 'connexion', authMsg: '', contactSent: false, legal: 'mentions', pwdVisible: false, loggedIn: false,
     fav: [], faq: -1, cIdx: 0, teinte: 'Noir Ébène', pqty: 1, q: '', savedProfile: false, cardImg: {},
     prof: 'infos', mode: 'domicile', ville: 'Abidjan', boutique: 'Riviéra CIAD',
     orderId: '#CS-2026-9482',
@@ -600,7 +600,7 @@ function App() {
     goProfil: () => go('profil'),
     saveLabel: s.savedProfile ? 'Enregistré' : 'Enregistrer',
     saveProfile: () => { set({ savedProfile: true }); setTimeout(() => set({ savedProfile: false }), 1800); },
-    logout: () => go('connexion'),
+    logout: () => go('connexion', { loggedIn: false }),
     modeDomicile: s.mode === 'domicile', modeRetrait: s.mode === 'retrait',
     pickDomicile: () => set({ mode: 'domicile' }), pickRetrait: () => set({ mode: 'retrait' }),
     villes: VILLES.map(v2 => ({ v: v2 })),
@@ -692,6 +692,9 @@ function App() {
     goPasseport: () => go('passeport'), goContact: () => go('contact'),
     goEntretien: () => go('entretien'),
     goConnexion: () => go('connexion'),
+    loggedIn: s.loggedIn,
+    acctLabel: s.loggedIn ? 'Mon compte' : 'Se connecter ou créer un compte',
+    acctAction: s.loggedIn ? () => go('profil') : () => go('connexion'),
     goLegal: () => go('legal', { legal: 'mentions' }),
     goCGV: () => go('legal', { legal: 'cgv' }),
     goRGPD: () => go('legal', { legal: 'rgpd' }),
@@ -786,7 +789,7 @@ function App() {
     tabSignupColor: s.authTab === 'inscription' ? 'rgb(71,29,27)' : 'rgb(127,127,127)',
     tabLoginLine: s.authTab === 'connexion' ? 'rgb(71,29,27)' : 'transparent',
     tabSignupLine: s.authTab === 'inscription' ? 'rgb(71,29,27)' : 'transparent',
-    submitAuth: e => { e.preventDefault(); set({ authMsg: "Démonstration — aucun compte n'est réellement créé." }); },
+    submitAuth: e => { e.preventDefault(); go('profil', { loggedIn: true, authMsg: '' }); },
     noopAuth: () => set({ authMsg: 'Démonstration — connexion tierce non branchée.' }),
     legalTabs: [{ key: 'mentions', label: 'Mentions légales' }, { key: 'cgv', label: 'CGV' }, { key: 'rgpd', label: 'Confidentialité' }].map(t => ({
       label: t.label, pick: () => set({ legal: t.key }),
@@ -852,9 +855,9 @@ function Shell({ v }) {
               <button key={label} type="button" onClick={fn} style={{ textAlign: 'left', background: 'none', border: 0, color: 'inherit', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(26px,5vw,40px)', lineHeight: 1.1 }}>{label}</button>
             ))}
             <div style={{ height: 1, background: 'rgba(255,255,255,.22)', margin: '10px 0' }}></div>
-            <button type="button" onClick={v.goConnexion} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', background: 'none', border: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', padding: 0, fontSize: 14, letterSpacing: '.12em', textTransform: 'uppercase' }}>
+            <button type="button" onClick={v.acctAction} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', background: 'none', border: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', padding: 0, fontSize: 14, letterSpacing: '.12em', textTransform: 'uppercase' }}>
               <svg width="16" height="16" viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="8.5" cy="5.5" r="3.5" /><path d="M1.5 16c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5" /></svg>
-              Mon compte
+              {v.acctLabel}
             </button>
             <button type="button" onClick={v.goProfil} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', background: 'none', border: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', padding: 0, fontSize: 14, letterSpacing: '.12em', textTransform: 'uppercase' }}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="8" cy="8" r="6.5" /><circle cx="8" cy="6" r="2.2" /><path d="M3.8 12.8c.7-1.8 2.3-2.8 4.2-2.8s3.5 1 4.2 2.8" /></svg>
@@ -1416,7 +1419,6 @@ function ScProduit({ v }) {
           </div>
         </div>
       <div className="cs-pdp-info" style={{ paddingTop: 'clamp(28px,4vw,80px)' }}>
-        <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièce numérotée</p>
         <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,4.6vw,48px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>{c.name}</h1>
         <p style={{ margin: '14px 0 0', fontSize: 17, lineHeight: 1.6, color: 'rgb(70,70,70)', maxWidth: '42ch', textWrap: 'pretty' }}>{c.tagline}</p>
         <p style={{ margin: '26px 0 0', fontSize: 20, letterSpacing: '.04em', color: 'rgb(0,0,0)' }}>{c.priceLabel}</p>
