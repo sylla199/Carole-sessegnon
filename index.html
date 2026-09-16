@@ -390,12 +390,6 @@ const LEGAL = {
     "Texte provisoire. Vous disposez d'un droit d'accès, de rectification et de suppression de vos données, exerçable à bonjour@carolesessegnon.com."
   ] }
 };
-const SAVOIR_FAIRE = [
-  { n: '01', title: 'Sélection', body: "Texte provisoire. Chaque peau est choisie à la main pour son grain, sa souplesse et sa tenue dans le temps." },
-  { n: '02', title: 'Matière', body: "Texte provisoire. Nous choisissons des cuirs tannés au végétal, pour un rendu plus doux et plus vivant sous la main." },
-  { n: '03', title: 'Façonnage', body: "Texte provisoire. Coupe, couture et patine à la main, pièce par pièce, dans nos ateliers." },
-  { n: '04', title: 'Numérotation', body: "Texte provisoire. Chaque pièce reçoit un numéro et un passeport numérique qui l'accompagnent toute sa vie." }
-];
 const REGLES_TENDRESSE = [
   { n: '01', title: 'Nettoyage', body: "Texte provisoire. Dépoussiérez la pièce avec un chiffon doux et sec, en suivant le sens du grain. Évitez tout produit alcoolisé ou solvant." },
   { n: '02', title: 'Exposition', body: "Texte provisoire. Préservez le cuir d'une exposition prolongée au soleil et de l'humidité, qui ternissent et déforment la matière avec le temps." },
@@ -586,7 +580,6 @@ function App() {
     backBtn: { style: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', padding: '20px 24px' } },
     confirmBtn: { style: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, textTransform: 'uppercase', letterSpacing: '.1em', fontSize: 14 } },
     btnUpper: { style: { textTransform: 'uppercase', letterSpacing: '.1em', fontSize: 14 } },
-    savoirFaire: SAVOIR_FAIRE,
     reglesTendresse: REGLES_TENDRESSE,
     faqItems: FAQ.map((it, i) => ({ q: it.q, a: it.a, open: s.faq === i, toggle: () => setS(st => ({ ...st, faq: st.faq === i ? -1 : i })) })),
     canaux: CANAUX,
@@ -1182,33 +1175,11 @@ function ScMaison({ v }) {
         <p style={{ margin: '0 0 18px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>La Maison propose une nouvelle vision de la maroquinerie : chaque pièce naît d'une exploration des lignes, des formes, des textures et des couleurs.</p>
         <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>À contre-courant de l'éphémère, elle choisit de créer des pièces que l'on prend plaisir à porter, à garder près de soi et à offrir.</p>
       </div>
-      <div className="sec-reveal" style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(48px,8vw,100px) clamp(20px,5vw,140px)' }}>
-        <div style={{ maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 'clamp(24px,4vw,60px)' }}>
-          <div><p style={eyebrow}>Le cuir</p><p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Texte provisoire. Des cuirs tannés au végétal, choisis pour leur grain et leur tenue dans le temps.</p></div>
-          <div><p style={eyebrow}>La main</p><p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Texte provisoire sur les gestes de l'atelier et le temps de fabrication.</p></div>
-          <div><p style={eyebrow}>Le registre</p><p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Texte provisoire sur la numérotation et le passeport numérique de chaque pièce.</p></div>
-        </div>
-      </div>
-
       <div className="sec-reveal" style={{ padding: '0 clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
         <div data-parallax-hero style={{ position: 'relative', aspectRatio: '2.2', overflow: 'hidden' }}>
           <div ref={atelierImgRef} style={{ position: 'absolute', inset: 0 }}>
             <ImageSlot id="cs-maison-atelier2" placeholder="Atelier — détail du geste" />
           </div>
-        </div>
-      </div>
-
-      <div className="sec-reveal" style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
-        <p style={{ margin: '0 0 6px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Savoir-faire</p>
-        <h2 style={{ margin: '0 0 48px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4vw,40px)', color: 'rgb(71,29,27)', maxWidth: '20ch', textWrap: 'pretty' }}>Du cuir brut à la pièce numérotée</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 'clamp(28px,4vw,60px)' }}>
-          {v.savoirFaire.map((sf, i) => (
-            <div key={i} className="reveal" style={{ transitionDelay: (i * 70) + 'ms' }}>
-              <p style={{ margin: '0 0 18px', fontFamily: 'var(--font-display)', fontSize: 32, color: 'rgba(71,29,27,.35)' }}>{sf.n}</p>
-              <p style={{ margin: '0 0 10px', fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>{sf.title}</p>
-              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{sf.body}</p>
-            </div>
-          ))}
         </div>
       </div>
 
