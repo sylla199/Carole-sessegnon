@@ -952,7 +952,7 @@ function Footer({ v }) {
           </div>
           <div style={{ flex: '1 1 280px', maxWidth: 360 }}>
             <p style={eyebrow}>L'univers <span style={{ fontFamily: "'Tamil MN', var(--font-display)" }}>Carole Sessegnon</span></p>
-            <p style={{ margin: '0 0 16px', fontSize: 15, lineHeight: 1.6, color: 'rgba(255,255,255,.82)' }}>Découvrez en avant-première les nouvelles pièces et les actualités de la maison</p>
+            <p style={{ margin: '0 0 16px', fontSize: 15, lineHeight: 1.6, color: 'rgba(255,255,255,.82)' }}>Découvrez en avant-première les nouvelles pièces et les actualités de la Maison</p>
             <form onSubmit={v.submitNews} style={{ display: 'flex', gap: 0, flexWrap: 'wrap' }}>
               <input name="news" type="email" required placeholder="Votre e-mail" style={{ flex: 1, minWidth: 160, height: 52, padding: '0 16px', background: 'transparent', border: 0, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.45)', color: 'rgb(255,255,255)', fontSize: 15 }} />
               <button type="submit" style={{ height: 52, padding: '0 22px', background: 'rgb(255,255,255)', border: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 13, letterSpacing: '.1em', textTransform: 'uppercase' }}>OK</button>
@@ -1030,10 +1030,9 @@ function ScAccueil({ v }) {
         </div>
       </div>
 
-      {/* 2. Le geste créatif */}
+      {/* 2. citation d'ouverture */}
       <div className="sec-reveal" style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px) clamp(36px,5vw,64px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
-        <h2 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,3vw,32px)', color: 'rgb(71,29,27)' }}>Le geste créatif</h2>
-        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Explorer la forme, créer des silhouettes qui se distinguent.</p>
+        <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,3vw,32px)', color: 'rgb(71,29,27)' }}>Attire les regards sans jamais voler la lumière à celle qui le porte.</p>
       </div>
 
       {/* 3. portrait soie — contenu, pas plein écran */}
@@ -1045,12 +1044,7 @@ function ScAccueil({ v }) {
         </div>
       </div>
 
-      {/* 4. citation — directement après le portrait, sans gap supplémentaire */}
-      <div style={{ padding: '24px clamp(20px,5vw,140px) 0', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
-        <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 'clamp(17px,2vw,20px)', color: 'rgb(71,29,27)' }}>Attire les regards sans jamais voler la lumière à celle qui le porte.</p>
-      </div>
-
-      {/* 5. plein écran — les mains, séparée de la citation par le margin-top */}
+      {/* 5. plein écran — les mains */}
       <div className="sec-reveal" data-parallax-hero style={{ position: 'relative', height: 'clamp(420px,72vh,760px)', marginTop: 'clamp(56px,9vw,100px)', overflow: 'hidden' }}>
         <div ref={mainsImgRef} style={{ position: 'absolute', inset: 0 }}>
           <ImageSlot id="cs-huperano-mains" placeholder="L'Huperano — le geste, les mains" />
@@ -1064,8 +1058,7 @@ function ScAccueil({ v }) {
 
       {/* 6. La naissance de Radah — texte seul, après l'image des mains */}
       <div className="sec-reveal" style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px) clamp(28px,4vw,40px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
-        <h2 style={{ margin: '0 0 14px', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,3vw,32px)', color: 'rgb(71,29,27)' }}>La naissance de Radah</h2>
-        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Avant la pièce, le geste. Avant le geste, l'esquisse.</p>
+        <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(24px,3vw,32px)', color: 'rgb(71,29,27)' }}>La naissance de Radah</h2>
       </div>
 
       {/* 7. croquis crayonné — pas de scène salon/échecs ici */}
@@ -1113,8 +1106,7 @@ function ScAccueil({ v }) {
       {/* La Maison — teaser, le récit complet vit sur la page dédiée */}
       <div className="sec-reveal" style={{ padding: 'clamp(64px,10vw,120px) clamp(20px,5vw,140px)', maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
         <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>La Maison</p>
-        <h2 style={{ margin: '0 0 16px', fontFamily: "'Tamil MN', var(--font-display)", fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>CAROLE SESSEGNON</h2>
-        <p style={{ margin: '0 0 22px', fontSize: 17, lineHeight: 1.7, color: 'rgb(80,80,80)' }}>Le geste, la main, la pièce qui vous ressemble.</p>
+        <h2 style={{ margin: '0 0 22px', fontFamily: "'Tamil MN', var(--font-display)", fontWeight: 400, fontSize: 'clamp(24px,3.4vw,32px)', color: 'rgb(71,29,27)' }}>CAROLE SESSEGNON</h2>
         <button type="button" className="ulink" onClick={v.goMaison} style={{ background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 15 }}>Découvrir la Maison&nbsp;&nbsp;→</button>
       </div>
     </section>
