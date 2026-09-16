@@ -843,7 +843,7 @@ function Shell({ v }) {
       </header>
 
       {v.menu && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(20px,5vw,60px)', animation: 'cs-in .25s ease-out' }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(20px,5vw,60px)', overflowY: 'auto', WebkitOverflowScrolling: 'touch', animation: 'cs-in .25s ease-out' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button type="button" aria-label="Fermer" onClick={v.closeOverlays} style={{ width: 44, height: 44, background: 'none', border: 0, color: 'inherit', cursor: 'pointer', fontSize: 22, fontFamily: 'var(--font-body)' }}>×</button>
           </div>
