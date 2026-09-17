@@ -605,7 +605,6 @@ function App() {
       color: s.prof === t.key ? 'rgb(71,29,27)' : 'rgb(70,70,70)',
       bg: s.prof === t.key ? 'rgb(255,251,248)' : 'transparent', ring: s.prof === t.key ? 'inset 0 0 0 1px rgba(0,0,0,.08)' : 'none'
     })),
-    goProfil: () => go('profil'),
     saveLabel: s.savedProfile ? 'Enregistré' : 'Enregistrer',
     saveProfile: () => { set({ savedProfile: true }); setTimeout(() => set({ savedProfile: false }), 1800); },
     logout: () => go('connexion', { loggedIn: false }),
@@ -945,14 +944,13 @@ function Footer({ v }) {
               <button type="button" onClick={v.goMaison} style={link}>La Maison</button>
               <button type="button" onClick={v.goPieces} style={link}>Les Pièces</button>
               <button type="button" onClick={v.goContact} style={link}>Contact</button>
+              <button type="button" onClick={v.goFaq} style={link}>FAQ</button>
             </div>
           </div>
           <div style={{ flex: '0 1 220px' }}>
             <p style={eyebrow}>Plus d'informations</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
               <button type="button" onClick={v.goPasseport} style={link}>Passeport numérique</button>
-              <button type="button" onClick={v.goFaq} style={link}>FAQ</button>
-              <button type="button" onClick={v.goProfil} style={link}>Mon profil</button>
               <button type="button" onClick={v.goLegal} style={link}>Mentions légales</button>
               <button type="button" onClick={v.goCGV} style={link}>CGV</button>
               <button type="button" onClick={v.goRGPD} style={link}>Politique de confidentialité</button>
