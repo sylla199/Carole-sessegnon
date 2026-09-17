@@ -683,7 +683,7 @@ function App() {
     menu: s.menu, search: s.search, filters: s.filters,
     isAccueil: s.route === 'accueil', isMaison: s.route === 'maison', isPieces: s.route === 'pieces',
     isProduit: s.route === 'produit', isPanier: s.route === 'panier', isPaiement: s.route === 'paiement',
-    isPasseport: s.route === 'passeport', isContact: s.route === 'contact', isEntretien: s.route === 'entretien',
+    isPasseport: s.route === 'passeport', isContact: s.route === 'contact', isEntretien: s.route === 'entretien', isFaq: s.route === 'faq',
     isConnexion: s.route === 'connexion', isLegal: s.route === 'legal',
     isProfil: s.route === 'profil', isCommande: s.route === 'commande',
     openMenu: () => set({ menu: true, search: false }),
@@ -699,6 +699,7 @@ function App() {
     goPaiement: () => go('paiement', { step: 1 }),
     goPasseport: () => go('passeport'), goContact: () => go('contact'),
     goEntretien: () => go('entretien'),
+    goFaq: () => go('faq'),
     goConnexion: () => go('connexion'),
     loggedIn: s.loggedIn,
     acctLabel: s.loggedIn ? 'Mon compte' : 'Se connecter ou créer un compte',
@@ -857,7 +858,7 @@ function Shell({ v }) {
             <button type="button" aria-label="Fermer" onClick={v.closeOverlays} style={{ width: 44, height: 44, background: 'none', border: 0, color: 'inherit', cursor: 'pointer', fontSize: 22, fontFamily: 'var(--font-body)' }}>×</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 22, marginTop: 40, maxWidth: 520 }}>
-            {[['Accueil', v.goAccueil], ['La Maison', v.goMaison], ['Les Pièces', v.goPieces], ['Les règles de tendresse', v.goEntretien], ['Passeport', v.goPasseport], ['Contact', v.goContact]].map(([label, fn]) => (
+            {[['Accueil', v.goAccueil], ['La Maison', v.goMaison], ['Les Pièces', v.goPieces], ['Les règles de tendresse', v.goEntretien], ['Passeport', v.goPasseport], ['Contact', v.goContact], ['FAQ', v.goFaq]].map(([label, fn]) => (
               <button key={label} type="button" onClick={fn} className="cs-menu-link" style={{ display: 'inline-block', alignSelf: 'flex-start', textAlign: 'left', background: 'none', border: 0, color: 'inherit', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(26px,5vw,40px)', lineHeight: 1.1 }}>{label}</button>
             ))}
             <div style={{ height: 1, background: 'rgba(255,255,255,.22)', margin: '10px 0' }}></div>
@@ -907,6 +908,7 @@ function Shell({ v }) {
         {v.isPaiement && <ScPaiement v={v} />}
         {v.isPasseport && <ScPasseport v={v} />}
         {v.isContact && <ScContact v={v} />}
+        {v.isFaq && <ScFAQ v={v} />}
         {v.isConnexion && <ScConnexion v={v} />}
         {v.isProfil && <ScProfil v={v} />}
         {v.isCommande && <ScCommande v={v} />}
@@ -949,6 +951,7 @@ function Footer({ v }) {
             <p style={eyebrow}>Plus d'informations</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
               <button type="button" onClick={v.goPasseport} style={link}>Passeport numérique</button>
+              <button type="button" onClick={v.goFaq} style={link}>FAQ</button>
               <button type="button" onClick={v.goProfil} style={link}>Mon profil</button>
               <button type="button" onClick={v.goLegal} style={link}>Mentions légales</button>
               <button type="button" onClick={v.goCGV} style={link}>CGV</button>
@@ -2001,8 +2004,17 @@ function ScContact({ v }) {
       </div>
 
       <div style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900, marginLeft: 'auto', marginRight: 'auto', textAlign: 'center' }}>
-        <FAQBlock v={v} center />
+        <p style={{ margin: 0, fontSize: 16, color: 'rgb(70,70,70)' }}>Une question fréquente ?</p>
+        <button type="button" className="ulink" onClick={v.goFaq} style={{ marginTop: 10, background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 15 }}>Voir toutes les questions&nbsp;&nbsp;→</button>
       </div>
+    </section>
+  );
+}
+
+function ScFAQ({ v }) {
+  return (
+    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 900, margin: '0 auto' }}>
+      <FAQBlock v={v} />
     </section>
   );
 }
