@@ -47,6 +47,9 @@
   .ulink::before{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;opacity:.3}
   .ulink::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,0,0,1)}
   .ulink:hover::after,.ulink:focus-visible::after{transform:scaleX(1)}
+  .cs-menu-link{position:relative}
+  .cs-menu-link::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,0,0,1)}
+  .cs-menu-link:hover::after,.cs-menu-link:focus-visible::after{transform:scaleX(1)}
   .cs-grad-ulink{background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-position:0 100%;background-size:100% 1px;transition:background-size .3s ease-out}
   .cs-grad-ulink:hover,.cs-grad-ulink:focus-visible{background-size:0% 1px}
   .cs-cat-tab{position:relative;flex:0 0 auto;background:none;border:0;padding:0 0 14px;cursor:pointer;font-size:13px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;transition:color .2s cubic-bezier(.2,0,0,1)}
@@ -855,7 +858,7 @@ function Shell({ v }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 22, marginTop: 40, maxWidth: 520 }}>
             {[['Accueil', v.goAccueil], ['La Maison', v.goMaison], ['Les Pièces', v.goPieces], ['Les règles de tendresse', v.goEntretien], ['Passeport', v.goPasseport], ['Contact', v.goContact]].map(([label, fn]) => (
-              <button key={label} type="button" onClick={fn} style={{ textAlign: 'left', background: 'none', border: 0, color: 'inherit', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(26px,5vw,40px)', lineHeight: 1.1 }}>{label}</button>
+              <button key={label} type="button" onClick={fn} className="cs-menu-link" style={{ display: 'inline-block', textAlign: 'left', background: 'none', border: 0, color: 'inherit', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(26px,5vw,40px)', lineHeight: 1.1 }}>{label}</button>
             ))}
             <div style={{ height: 1, background: 'rgba(255,255,255,.22)', margin: '10px 0' }}></div>
             <button type="button" onClick={v.acctAction} style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', background: 'none', border: 0, color: 'rgba(255,255,255,.85)', cursor: 'pointer', padding: 0, fontSize: 14, letterSpacing: '.12em', textTransform: 'uppercase' }}>
