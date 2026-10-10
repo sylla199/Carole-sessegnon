@@ -337,8 +337,8 @@ function AccordionItem({ open = false, question, answer, onToggle, className, st
         color: 'var(--ink)', textAlign: 'left'
       }}>
         <span>{question}</span>
-        <svg width="16" height="8" viewBox="0 0 8 4" style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .32s cubic-bezier(.2,0,0,1)' }}>
-          <path d="M 4 4 L 3.47 4.53 C 3.763 4.823 4.237 4.823 4.53 4.53 L 4 4 Z M 0 0 L -0.53 0.53 L 3.47 4.53 L 4 4 L 4.53 3.47 L 0.53 -0.53 L 0 0 Z M 4 4 L 4.53 4.53 L 8.53 0.53 L 8 0 L 7.47 -0.53 L 3.47 3.47 L 4 4 Z" fill="var(--ink)" />
+        <svg width="16" height="8" viewBox="0 0 8 4" fill="none" stroke="var(--ink)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .32s cubic-bezier(.2,0,0,1)' }}>
+          <path d="M1 1 4 3.3 7 1" />
         </svg>
       </button>
       <div style={{ display: 'grid', gridTemplateRows: open ? '1fr' : '0fr', transition: 'grid-template-rows .35s cubic-bezier(.2,0,0,1)' }}>
