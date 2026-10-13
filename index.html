@@ -1871,7 +1871,17 @@ function ScPasseport({ v }) {
             <form onSubmit={v.verify} style={{ maxWidth: 460, display: 'flex', flexDirection: 'column', gap: 20 }}>
               <label style={st(LABEL)}>Numéro de série<input name="serie" required placeholder="CS-0042-2026" style={st(INPUT + ';letter-spacing:.08em')} /></label>
               <label style={st(LABEL)}>Code d'activation privé<input name="code" required placeholder="8F3K-22QD" style={st(INPUT + ';letter-spacing:.08em')} /></label>
-              {v.pErr && <p style={{ margin: 0, padding: 14, background: 'rgb(254,247,246)', boxShadow: 'inset 0 0 0 1px rgb(253,83,83)', fontSize: 14, lineHeight: 1.6, color: 'rgb(155,24,33)' }}>{v.pErr.split('contact@carolesessegnon.com').map((part, i, a) => i < a.length - 1 ? [part, <a key={i} href="mailto:contact@carolesessegnon.com" style={{ color: 'inherit', textDecoration: 'underline' }}>contact@carolesessegnon.com</a>] : part)}</p>}
+              {v.pErr && (
+                <div style={{ margin: 0, padding: 14, background: 'rgb(254,247,246)', boxShadow: 'inset 0 0 0 1px rgb(253,83,83)', fontSize: 14, lineHeight: 1.6, color: 'rgb(155,24,33)' }}>
+                  {v.pLocked ? (
+                    <>
+                      <p style={{ margin: '0 0 8px', fontWeight: 600 }}>Vérification suspendue</p>
+                      <p style={{ margin: '0 0 10px' }}>Pour des raisons de sécurité, l'accès au passeport numérique a été temporairement suspendu après plusieurs tentatives infructueuses.</p>
+                      <p style={{ margin: 0 }}>Nous vous invitons à contacter la Maison à l'adresse <a href="mailto:contact@carolesessegnon.com" style={{ color: 'inherit', textDecoration: 'underline' }}>contact@carolesessegnon.com</a> afin de bénéficier d'une assistance.</p>
+                    </>
+                  ) : <p style={{ margin: 0 }}>{v.pErr}</p>}
+                </div>
+              )}
               <Button type="submit" variant="primary" disabled={v.pLocked} style={v.btnBlock.style}>Vérifier</Button>
               <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Démonstration : numéro <span style={{ color: 'rgb(0,0,0)' }}>CS-0042-2026</span>, code <span style={{ color: 'rgb(0,0,0)' }}>8F3K-22QD</span>. Cinq tentatives erronées bloquent la saisie.</p>
             </form>
