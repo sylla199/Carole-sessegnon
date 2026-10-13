@@ -71,10 +71,10 @@
   @keyframes cs-door-r{from{transform:translateX(0)}to{transform:translateX(101%)}}
   .cs-doors{position:fixed;inset:0;z-index:100;display:flex;pointer-events:none}
   .cs-door{position:relative;width:50%;height:100%;background:rgb(71,29,27);display:flex;align-items:center;justify-content:center}
-  .cs-door-emblem{width:clamp(60px,12vw,150px);aspect-ratio:310.69/531.16;background-color:rgb(252,249,248);-webkit-mask-image:url(assets/CS-LOGOMARK.svg);mask-image:url(assets/CS-LOGOMARK.svg);-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain}
+  .cs-door-letter{font-family:var(--font-display);font-weight:400;font-size:clamp(48px,10vw,120px);color:rgb(252,249,248);line-height:1}
   @media (prefers-reduced-motion: no-preference){
-    .cs-door-l{animation:cs-door-l 1.6s cubic-bezier(.2,0,0,1) .2s both}
-    .cs-door-r{animation:cs-door-r 1.6s cubic-bezier(.2,0,0,1) .2s both}
+    .cs-door-l{animation:cs-door-l 1.6s cubic-bezier(.2,0,0,1) 2s both}
+    .cs-door-r{animation:cs-door-r 1.6s cubic-bezier(.2,0,0,1) 2s both}
   }
   @media (prefers-reduced-motion: reduce){
     .reveal{opacity:1 !important;transform:none !important}
@@ -1904,8 +1904,8 @@ function ScPasseport({ v }) {
       {v.pShow && (
         <Fragment>
           <div className="cs-doors">
-            <div className="cs-door cs-door-l"><span className="cs-door-emblem"></span></div>
-            <div className="cs-door cs-door-r"><span className="cs-door-emblem"></span></div>
+            <div className="cs-door cs-door-l"><span className="cs-door-letter">C</span></div>
+            <div className="cs-door cs-door-r"><span className="cs-door-letter">S</span></div>
           </div>
           <div style={{ animation: 'cs-in .4s ease-out' }}>
           <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 2 sur 3 — pièce authentifiée</p>
