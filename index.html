@@ -782,23 +782,23 @@ function App() {
     backStep1: () => set({ step: 1 }),
     pIntro: s.pstep === 'intro', pSaisie: s.pstep === 'saisie', pVerif: s.pstep === 'verif',
     pShow: s.pstep === 'passeport', pDone: s.pstep === 'confirme',
-    pErr: s.perr, pLocked: s.tries >= 3,
+    pErr: s.perr, pLocked: s.tries >= 5,
     pGoSaisie: () => set({ pstep: 'saisie', perr: '' }),
     verify: e => {
       e.preventDefault();
       const f = e.target.elements;
       const serie = (f.serie.value || '').trim().toUpperCase();
       const code = (f.code.value || '').trim().toUpperCase();
-      if (s.tries >= 3) return;
+      if (s.tries >= 5) return;
       if (serie === 'CS-0042-2026' && code === '8F3K-22QD') {
         set({ pstep: 'verif', perr: '' });
         setTimeout(() => set({ pstep: 'passeport' }), 1700);
       } else {
         setS(st => {
           const tries = st.tries + 1;
-          return { ...st, tries, perr: tries >= 3
-            ? "Trois tentatives erronées. La saisie est bloquée pour cette session ; écrivez-nous à bonjour@carolesessegnon.com."
-            : "Le numéro de série et le code d'activation ne correspondent pas. Tentative " + tries + " sur 3." };
+          return { ...st, tries, perr: tries >= 5
+            ? "Pour des raisons de sécurité, l'accès au passeport numérique a été temporairement suspendu après plusieurs tentatives infructueuses. Nous vous invitons à contacter la Maison à l'adresse contact@carolesessegnon.com afin de bénéficier d'une assistance."
+            : "Le numéro de série et le code d'activation ne correspondent pas. Tentative " + tries + " sur 5." };
         });
       }
     },
@@ -1873,11 +1873,11 @@ function ScPasseport({ v }) {
               <label style={st(LABEL)}>Code d'activation privé<input name="code" required placeholder="8F3K-22QD" style={st(INPUT + ';letter-spacing:.08em')} /></label>
               {v.pErr && <p style={{ margin: 0, padding: 14, background: 'rgb(254,247,246)', boxShadow: 'inset 0 0 0 1px rgb(253,83,83)', fontSize: 14, lineHeight: 1.6, color: 'rgb(155,24,33)' }}>{v.pErr}</p>}
               <Button type="submit" variant="primary" disabled={v.pLocked} style={v.btnBlock.style}>Vérifier</Button>
-              <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Démonstration : numéro <span style={{ color: 'rgb(0,0,0)' }}>CS-0042-2026</span>, code <span style={{ color: 'rgb(0,0,0)' }}>8F3K-22QD</span>. Trois tentatives erronées bloquent la saisie.</p>
+              <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Démonstration : numéro <span style={{ color: 'rgb(0,0,0)' }}>CS-0042-2026</span>, code <span style={{ color: 'rgb(0,0,0)' }}>8F3K-22QD</span>. Cinq tentatives erronées bloquent la saisie.</p>
             </form>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 8 }}>
               <div style={{ position: 'relative', background: 'rgb(255,255,255)', borderRadius: 20, padding: '16px 20px', boxShadow: '0 8px 20px -8px rgba(0,0,0,.12), inset 0 0 0 1px rgba(0,0,0,.07)' }}>
-                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'rgb(71,29,27)', textAlign: 'center', textWrap: 'pretty' }}>Vous ne trouvez pas ces informations ? Elles sont imprimées sur le certificat glissé dans votre coffret.</p>
+                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'rgb(71,29,27)', textAlign: 'center', textWrap: 'pretty' }}>Vous ne trouvez pas ces <span style={{ whiteSpace: 'nowrap' }}>informations&nbsp;?</span> Elles sont imprimées sur le certificat glissé dans votre coffret.</p>
                 <span style={{ position: 'absolute', bottom: -9, left: '50%', transform: 'translateX(-50%)', width: 18, height: 18, background: 'rgb(255,255,255)', clipPath: 'polygon(50% 100%, 0 0, 100% 0)' }}></span>
               </div>
               <div style={{ width: 74, marginTop: 16 }}>
