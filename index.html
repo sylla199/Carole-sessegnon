@@ -70,8 +70,10 @@
   @keyframes cs-door-l{from{transform:translateX(0)}to{transform:translateX(-101%)}}
   @keyframes cs-door-r{from{transform:translateX(0)}to{transform:translateX(101%)}}
   .cs-doors{position:fixed;inset:0;z-index:100;display:flex;pointer-events:none}
-  .cs-door{position:relative;width:50%;height:100%;background:rgb(71,29,27);display:flex;align-items:center;justify-content:center}
-  .cs-door-letter{font-family:var(--font-display);font-weight:400;font-size:clamp(48px,10vw,120px);color:rgb(252,249,248);line-height:1}
+  .cs-door{position:relative;width:50%;height:100%;background:rgb(71,29,27);display:flex;align-items:center}
+  .cs-door-l{justify-content:flex-end;padding-right:clamp(6px,1.5vw,18px)}
+  .cs-door-r{justify-content:flex-start;padding-left:clamp(6px,1.5vw,18px)}
+  .cs-door-letter{font-family:'Tamil MN',var(--font-display);font-weight:400;font-size:clamp(48px,10vw,120px);color:rgb(252,249,248);line-height:1}
   @media (prefers-reduced-motion: no-preference){
     .cs-door-l{animation:cs-door-l 1.6s cubic-bezier(.2,0,0,1) 2s both}
     .cs-door-r{animation:cs-door-r 1.6s cubic-bezier(.2,0,0,1) 2s both}
