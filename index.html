@@ -69,14 +69,17 @@
   .cs-badge-pulse{animation:cs-pulse .6s ease-in-out}
   @keyframes cs-door-l{from{transform:translateX(0)}to{transform:translateX(-101%)}}
   @keyframes cs-door-r{from{transform:translateX(0)}to{transform:translateX(101%)}}
+  @keyframes cs-door-glow{0%,30%{opacity:0}55%{opacity:1}100%{opacity:0}}
   .cs-doors{position:fixed;inset:0;z-index:100;display:flex;pointer-events:none}
+  .cs-door-glow{position:fixed;top:0;bottom:0;left:50%;width:min(50vw,560px);transform:translateX(-50%);z-index:99;pointer-events:none;background:radial-gradient(ellipse at center,rgba(255,214,164,.65),rgba(255,214,164,0) 70%);opacity:0}
   .cs-door{position:relative;width:50%;height:100%;display:flex;align-items:center;background-color:rgb(71,29,27);filter:drop-shadow(0 22px 40px rgba(0,0,0,.4))}
-  .cs-door-l{justify-content:flex-end;padding-right:clamp(6px,1.5vw,18px);background-image:linear-gradient(90deg,transparent 85%,rgba(0,0,0,.4)),repeating-linear-gradient(91deg,rgba(255,255,255,.02) 0 1px,transparent 1px 5px),repeating-linear-gradient(100deg,rgba(0,0,0,.015) 0 1px,transparent 1px 7px),linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.05) 45%,rgba(0,0,0,.22));box-shadow:inset -2px 0 0 rgba(196,160,98,.65),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
-  .cs-door-r{justify-content:flex-start;padding-left:clamp(6px,1.5vw,18px);background-image:linear-gradient(270deg,transparent 85%,rgba(0,0,0,.4)),repeating-linear-gradient(91deg,rgba(255,255,255,.02) 0 1px,transparent 1px 5px),repeating-linear-gradient(100deg,rgba(0,0,0,.015) 0 1px,transparent 1px 7px),linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.05) 45%,rgba(0,0,0,.22));box-shadow:inset 2px 0 0 rgba(196,160,98,.65),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
+  .cs-door-l{justify-content:flex-end;padding-right:clamp(6px,1.5vw,18px);background-image:linear-gradient(90deg,transparent 85%,rgba(0,0,0,.4)),linear-gradient(rgba(71,29,27,.82),rgba(71,29,27,.82)),url(assets/photos/atelier-texture-cuir.png);background-size:100% 100%,100% 100%,cover;background-position:0 0,0 0,center;background-repeat:no-repeat,no-repeat,no-repeat;box-shadow:inset -2px 0 0 rgba(196,160,98,.65),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
+  .cs-door-r{justify-content:flex-start;padding-left:clamp(6px,1.5vw,18px);background-image:linear-gradient(270deg,transparent 85%,rgba(0,0,0,.4)),linear-gradient(rgba(71,29,27,.82),rgba(71,29,27,.82)),url(assets/photos/atelier-texture-cuir.png);background-size:100% 100%,100% 100%,cover;background-position:0 0,0 0,center;background-repeat:no-repeat,no-repeat,no-repeat;box-shadow:inset 2px 0 0 rgba(196,160,98,.65),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
   .cs-door-letter{font-family:'Tamil MN',var(--font-display);font-weight:400;font-size:clamp(48px,10vw,120px);color:rgb(252,249,248);line-height:1}
   @media (prefers-reduced-motion: no-preference){
-    .cs-door-l{animation:cs-door-l 1.6s cubic-bezier(.2,0,0,1) 2s both}
-    .cs-door-r{animation:cs-door-r 1.6s cubic-bezier(.2,0,0,1) 2s both}
+    .cs-door-l{animation:cs-door-l 2.2s cubic-bezier(.3,0,.1,1) 2s both}
+    .cs-door-r{animation:cs-door-r 2.2s cubic-bezier(.3,0,.1,1) 2s both}
+    .cs-door-glow{animation:cs-door-glow 2.2s ease-out 2s both}
   }
   @media (prefers-reduced-motion: reduce){
     .reveal{opacity:1 !important;transform:none !important}
@@ -84,6 +87,7 @@
     .cs-badge-pulse{animation:none}
     .ulink::after{transition:none}
     .cs-doors{display:none}
+    .cs-door-glow{display:none}
   }
   @media (max-width: 700px){
     .cs-footer-cols{justify-content:flex-start !important}
@@ -1917,6 +1921,7 @@ function ScPasseport({ v }) {
 
       {v.pBienvenue && (
         <Fragment>
+          <div className="cs-door-glow"></div>
           <div className="cs-doors">
             <div className="cs-door cs-door-l"><span className="cs-door-letter">C</span></div>
             <div className="cs-door cs-door-r"><span className="cs-door-letter">S</span></div>
