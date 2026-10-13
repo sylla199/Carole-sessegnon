@@ -70,7 +70,7 @@
   @keyframes cs-door-l{from{transform:translateX(0)}to{transform:translateX(-101%)}}
   @keyframes cs-door-r{from{transform:translateX(0)}to{transform:translateX(101%)}}
   .cs-doors{position:fixed;inset:0;z-index:100;display:flex;pointer-events:none}
-  .cs-door{position:relative;width:50%;height:100%;display:flex;align-items:center;background-color:rgb(71,29,27)}
+  .cs-door{position:relative;width:50%;height:100%;display:flex;align-items:center;background-color:rgb(71,29,27);filter:drop-shadow(0 22px 40px rgba(0,0,0,.4))}
   .cs-door-l{justify-content:flex-end;padding-right:clamp(6px,1.5vw,18px);background-image:linear-gradient(90deg,transparent 85%,rgba(0,0,0,.4)),repeating-linear-gradient(91deg,rgba(255,255,255,.02) 0 1px,transparent 1px 5px),repeating-linear-gradient(100deg,rgba(0,0,0,.015) 0 1px,transparent 1px 7px),linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.05) 45%,rgba(0,0,0,.22));box-shadow:inset -2px 0 0 rgba(196,160,98,.65),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
   .cs-door-r{justify-content:flex-start;padding-left:clamp(6px,1.5vw,18px);background-image:linear-gradient(270deg,transparent 85%,rgba(0,0,0,.4)),repeating-linear-gradient(91deg,rgba(255,255,255,.02) 0 1px,transparent 1px 5px),repeating-linear-gradient(100deg,rgba(0,0,0,.015) 0 1px,transparent 1px 7px),linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.05) 45%,rgba(0,0,0,.22));box-shadow:inset 2px 0 0 rgba(196,160,98,.65),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
   .cs-door-letter{font-family:'Tamil MN',var(--font-display);font-weight:400;font-size:clamp(48px,10vw,120px);color:rgb(252,249,248);line-height:1}
@@ -781,9 +781,11 @@ function App() {
     },
     backStep1: () => set({ step: 1 }),
     pIntro: s.pstep === 'intro', pSaisie: s.pstep === 'saisie', pVerif: s.pstep === 'verif',
+    pBienvenue: s.pstep === 'bienvenue',
     pShow: s.pstep === 'passeport', pDone: s.pstep === 'confirme',
     pErr: s.perr, pLocked: s.tries >= 5,
     pGoSaisie: () => set({ pstep: 'saisie', perr: '' }),
+    pDecouvrirPiece: () => set({ pstep: 'passeport' }),
     verify: e => {
       e.preventDefault();
       const f = e.target.elements;
@@ -792,7 +794,7 @@ function App() {
       if (s.tries >= 5) return;
       if (serie === 'CS-0042-2026' && code === '8F3K-22QD') {
         set({ pstep: 'verif', perr: '' });
-        setTimeout(() => set({ pstep: 'passeport' }), 1700);
+        setTimeout(() => set({ pstep: 'bienvenue' }), 1700);
       } else {
         setS(st => {
           const tries = st.tries + 1;
@@ -1913,12 +1915,21 @@ function ScPasseport({ v }) {
         </div>
       )}
 
-      {v.pShow && (
+      {v.pBienvenue && (
         <Fragment>
           <div className="cs-doors">
             <div className="cs-door cs-door-l"><span className="cs-door-letter">C</span></div>
             <div className="cs-door cs-door-r"><span className="cs-door-letter">S</span></div>
           </div>
+          <div style={{ padding: 'clamp(60px,14vw,140px) 0', textAlign: 'center' }}>
+            <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.6vw,34px)', lineHeight: 1.3, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>La Maison <span style={{ fontFamily: "'Tamil MN', var(--font-display)" }}>CAROLE SESSEGNON</span> vous souhaite la bienvenue.</p>
+            <Button variant="primary" onClick={v.pDecouvrirPiece} style={{ ...v.btnUpper.style, marginTop: 30 }}>Découvrir ma pièce</Button>
+          </div>
+        </Fragment>
+      )}
+
+      {v.pShow && (
+        <Fragment>
           <div style={{ animation: 'cs-in .4s ease-out' }}>
           <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 2 sur 3 — pièce authentifiée</p>
           <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,4.6vw,48px)', lineHeight: 1.08, color: 'rgb(71,29,27)' }}>Passeport de la pièce</h1>
