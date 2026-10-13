@@ -70,9 +70,9 @@
   @keyframes cs-door-l{from{transform:translateX(0)}to{transform:translateX(-101%)}}
   @keyframes cs-door-r{from{transform:translateX(0)}to{transform:translateX(101%)}}
   .cs-doors{position:fixed;inset:0;z-index:100;display:flex;pointer-events:none}
-  .cs-door{position:relative;width:50%;height:100%;display:flex;align-items:center;background-color:rgb(71,29,27);background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 5px),linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.05) 45%,rgba(0,0,0,.22));box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
-  .cs-door-l{justify-content:flex-end;padding-right:clamp(6px,1.5vw,18px)}
-  .cs-door-r{justify-content:flex-start;padding-left:clamp(6px,1.5vw,18px)}
+  .cs-door{position:relative;width:50%;height:100%;display:flex;align-items:center;background-color:rgb(71,29,27)}
+  .cs-door-l{justify-content:flex-end;padding-right:clamp(6px,1.5vw,18px);background-image:linear-gradient(90deg,transparent 85%,rgba(0,0,0,.4)),repeating-linear-gradient(91deg,rgba(255,255,255,.02) 0 1px,transparent 1px 5px),repeating-linear-gradient(100deg,rgba(0,0,0,.015) 0 1px,transparent 1px 7px),linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.05) 45%,rgba(0,0,0,.22));box-shadow:inset -2px 0 0 rgba(196,160,98,.65),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
+  .cs-door-r{justify-content:flex-start;padding-left:clamp(6px,1.5vw,18px);background-image:linear-gradient(270deg,transparent 85%,rgba(0,0,0,.4)),repeating-linear-gradient(91deg,rgba(255,255,255,.02) 0 1px,transparent 1px 5px),repeating-linear-gradient(100deg,rgba(0,0,0,.015) 0 1px,transparent 1px 7px),linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.05) 45%,rgba(0,0,0,.22));box-shadow:inset 2px 0 0 rgba(196,160,98,.65),inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 90px rgba(0,0,0,.3)}
   .cs-door-letter{font-family:'Tamil MN',var(--font-display);font-weight:400;font-size:clamp(48px,10vw,120px);color:rgb(252,249,248);line-height:1}
   @media (prefers-reduced-motion: no-preference){
     .cs-door-l{animation:cs-door-l 1.6s cubic-bezier(.2,0,0,1) 2s both}
@@ -804,18 +804,18 @@ function App() {
     },
     passportRows: [
       { k: 'Modèle', v: 'Huperano' }, { k: 'Numéro de série', v: 'CS-0042-2026' },
-      { k: 'Numérotation', v: '042 / 100' }, { k: 'Coloris', v: 'Cuir naturel & bordeaux' },
-      { k: 'Matière', v: 'Cuir de vachette, tannage végétal' }, { k: 'Date de fabrication', v: '12 mars 2026' },
-      { k: 'Atelier', v: 'Abidjan, Plateau' }
+      { k: 'Coloris', v: 'Cuir naturel & bordeaux' },
+      { k: 'Matière', v: 'Cuir de vachette' }, { k: 'Date de fabrication', v: '12 mars 2026' }
     ],
     pAssocDone: !!s.assoc, pAssocOpen: !s.assoc,
     assocName, assocDate: s.assoc ? s.assoc.date : '',
     associate: e => {
       e.preventDefault();
       const f = e.target.elements;
-      const name = ((f.prenom.value || '') + ' ' + (f.nom.value || '')).trim();
+      const civilite = f.civilite.value || '';
+      const name = (civilite + ' ' + (f.prenom.value || '') + ' ' + (f.nom.value || '')).trim();
       const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-      set({ assoc: { name, date }, pstep: 'confirme' });
+      set({ assoc: { name, civilite, email: f.email.value, date }, pstep: 'confirme' });
       try { window.scrollTo(0, 0); } catch (x) {}
     },
     skipAssoc: () => go('accueil'),
@@ -1935,11 +1935,18 @@ function ScPasseport({ v }) {
               <h2 style={{ margin: '0 0 10px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Associer la pièce à votre nom</h2>
               <p style={{ margin: '0 0 24px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>L'association est facultative et définitive. Vous pouvez également la faire plus tard.</p>
               <form onSubmit={v.associate} style={{ maxWidth: 520, display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <label style={st(LABEL)}>Civilité (facultatif)
+                  <select name="civilite" defaultValue="" style={st(INPUT)}>
+                    <option value="">Ne pas préciser</option>
+                    <option value="Madame">Madame</option>
+                    <option value="Monsieur">Monsieur</option>
+                  </select>
+                </label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,160px),1fr))', gap: 16 }}>
                   <label style={st(LABEL)}>Prénom<input name="prenom" required style={st(INPUT)} /></label>
                   <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
                 </div>
-                <label style={st(LABEL)}>E-mail (facultatif)<input name="email" type="email" style={st(INPUT)} /></label>
+                <label style={st(LABEL)}>E-mail<input name="email" type="email" required style={st(INPUT)} /></label>
                 <label style={st(LABEL)}>Pays (facultatif)
                   <select name="pays" style={st(INPUT)}>
                     {PAYS.map((p, i) => <option key={i}>{p}</option>)}
@@ -1970,8 +1977,9 @@ function ScPasseport({ v }) {
             <div style={{ flex: 1, minWidth: 240 }}>
               <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Étape 3 sur 3</p>
               <h1 style={{ margin: '0 0 16px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(26px,4.4vw,44px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>La pièce porte votre nom</h1>
-              <p style={{ margin: '0 0 10px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Huperano, n° 042/100, est désormais associée à {v.assocName}.</p>
-              <p style={{ margin: 0, fontSize: 15, color: 'rgb(94,94,94)' }}>Association enregistrée au registre de la Maison le {v.assocDate}.</p>
+              <p style={{ margin: '0 0 10px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Votre Huperano, numéro de série HU260042, est désormais associée à {v.assocName}.</p>
+              <p style={{ margin: '0 0 10px', fontSize: 15, color: 'rgb(94,94,94)' }}>Association enregistrée le {v.assocDate}.</p>
+              <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Nous sommes ravis de vous accueillir au sein de la Maison CAROLE SESSEGNON.</p>
               <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginTop: 28 }}>
                 <Button variant="primary" onClick={v.pBackToPasseport} style={v.btnUpper.style}>Revoir le passeport</Button>
                 <button type="button" onClick={v.goAccueil} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Retour à l'accueil</button>
@@ -2159,7 +2167,7 @@ function ScProfil({ v }) {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 20, color: 'rgb(71,29,27)' }}>Huperano</p>
-                  <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>n° 042/100 — CS-0042-2026</p>
+                  <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>CS-0042-2026</p>
                 </div>
                 <button type="button" onClick={v.goPasseport} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Passeport</button>
               </div>
