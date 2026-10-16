@@ -68,7 +68,8 @@
   @keyframes cs-pulse{0%{opacity:1}50%{opacity:.35}100%{opacity:1}}
   .cs-badge-pulse{animation:cs-pulse .6s ease-in-out}
   .cs-door3d{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:rgb(252,249,248);padding:env(safe-area-inset-top,0) 12px env(safe-area-inset-bottom,0);overflow:hidden}
-  .d3-scene{--d3-w:min(92vw,470px,calc(78vh * 1218 / 2048));--d3-duree:3.2s;--d3-ease:cubic-bezier(.62,.04,.2,1);position:relative;width:var(--d3-w);aspect-ratio:1218/2048;perspective:calc(var(--d3-w) * 2.4);perspective-origin:50% 50%}
+  .d3-scene{--d3-w:min(96vw,calc(94vh * 1218 / 2048));--d3-duree:2s;--d3-ease:cubic-bezier(.62,.04,.2,1);position:relative;width:var(--d3-w);aspect-ratio:1218/2048;perspective:calc(var(--d3-w) * 2.4);perspective-origin:50% 50%;transition:transform .5s cubic-bezier(.3,0,.2,1)}
+  .d3-scene.d3-zoom{transform:scale(2.6)}
   .d3-fond{position:absolute;inset:0}
   .d3-fond svg,.d3-face svg{display:block;width:100%;height:100%}
   .d3-lueur{position:absolute;left:8.292%;top:10.645%;width:83.087%;height:79.492%;background:radial-gradient(ellipse 45% 55% at 50% 45%,#FCEFD4,#EFD9B3 60%,#CDB28B);z-index:1;opacity:0;transition:opacity .8s ease}
@@ -1873,22 +1874,28 @@ const D3_FACE_D = '<svg viewBox="0 0 506 1628" preserveAspectRatio="none" xmlns=
 
 function Portes3D({ v }) {
   const [ouvert, setOuvert] = useState(false);
+  const [zoom, setZoom] = useState(false);
   useEffect(() => {
     if (prefersReduced()) { setOuvert(true); return; }
     const t = setTimeout(() => setOuvert(true), 2000);
     return () => clearTimeout(t);
   }, []);
+  const decouvrir = () => {
+    if (prefersReduced()) { v.pDecouvrirPiece(); return; }
+    setZoom(true);
+    setTimeout(v.pDecouvrirPiece, 500);
+  };
   return (
     <div className="cs-door3d">
       <div dangerouslySetInnerHTML={{ __html: D3_DEFS }}></div>
-      <div className={'d3-scene' + (ouvert ? ' d3-ouvert' : '')}>
+      <div className={'d3-scene' + (ouvert ? ' d3-ouvert' : '') + (zoom ? ' d3-zoom' : '')}>
         <div className="d3-fond" dangerouslySetInnerHTML={{ __html: D3_FOND }}></div>
         <div className="d3-lueur"></div>
         <section className="d3-passeport">
           <p className="d3-intro">La Maison</p>
           <h1 className="d3-marque" dangerouslySetInnerHTML={{ __html: D3_MARQUE }}></h1>
           <p>vous souhaite la bienvenue.</p>
-          <Button variant="primary" onClick={v.pDecouvrirPiece} style={v.btnUpper.style}>Découvrir ma pièce</Button>
+          <Button variant="primary" onClick={decouvrir} style={v.btnUpper.style}>Découvrir ma pièce</Button>
         </section>
         <div className="d3-ombre-baie"></div>
         <div className="d3-porte d3-gauche">
