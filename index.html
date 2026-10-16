@@ -1180,7 +1180,6 @@ function ScAccueil({ v }) {
 function ScMaison({ v }) {
   const eyebrow = { margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' };
   const heroImgRef = useHeroParallax(0.06, { scale: 1.1 });
-  const portraitImgRef = useHeroParallax(0.05, { scale: 1.08 });
   const atelierImgRef = useHeroParallax(0.08, { scale: 1.15 });
   return (
     <section>
@@ -1206,25 +1205,6 @@ function ScMaison({ v }) {
           <div ref={atelierImgRef} style={{ position: 'absolute', inset: 0 }}>
             <ImageSlot id="cs-maison-atelier2" placeholder="Atelier — détail du geste" />
           </div>
-        </div>
-      </div>
-
-      <div className="sec-reveal" style={{ padding: 'clamp(56px,9vw,110px) clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,320px),1fr))', gap: 'clamp(32px,5vw,80px)', alignItems: 'center' }}>
-        <div>
-          <div data-parallax-hero style={{ position: 'relative', width: 410, maxWidth: '100%', aspectRatio: '.8', margin: '0 auto' }}>
-            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-              <div ref={portraitImgRef} style={{ position: 'absolute', inset: 0 }}>
-                <ImageSlot id="cs-maison-portrait" placeholder="Portrait — Carole Sessegnon" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <p style={eyebrow}>La fondatrice</p>
-          <h2 style={{ margin: '0 0 22px', fontFamily: "'Tamil MN', var(--font-display)", fontWeight: 400, fontSize: 'clamp(26px,3.4vw,36px)', color: 'rgb(71,29,27)' }}>Carole Sessegnon</h2>
-          <p style={{ margin: '0 0 18px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Née à Abidjan, Carole Sessegnon trouve dans la création un espace de liberté. L'envie d'imaginer, de construire et de donner forme à ses propres idées l'accompagne dans son parcours, jusqu'à ce que la maroquinerie s'impose à elle comme un appel.</p>
-          <p style={{ margin: '0 0 18px', fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>En 2022, elle donne forme à la Maison <span style={{ fontFamily: "'Tamil MN', var(--font-display)" }}>CAROLE SESSEGNON</span>. Depuis, elle la construit avec patience et exigence, en prenant le temps de développer chaque élément avec attention afin de bâtir une Maison fidèle à son regard et à sa manière de créer.</p>
-          <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>Autour de Carole, une équipe travaille à donner forme à chaque idée avec la même exigence de précision et de soin. Chacun, par son savoir-faire, contribue à faire de chaque création l'expression la plus fidèle possible de la vision de la Maison.</p>
         </div>
       </div>
 
