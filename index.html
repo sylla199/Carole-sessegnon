@@ -57,6 +57,8 @@
   .cs-cat-tab.is-active::after,.cs-cat-tab:hover::after,.cs-cat-tab:focus-visible::after{transform:scaleX(1)}
   .cs-cat-scroll{scrollbar-width:none}
   .cs-cat-scroll::-webkit-scrollbar{display:none}
+  .cs-pdp-gallery{display:flex;flex-direction:column;gap:clamp(8px,1vw,14px)}
+  .cs-pdp-shot{position:relative;flex:0 0 auto;aspect-ratio:4/5;overflow:hidden;cursor:zoom-in}
   .fx-nudgeL{transition:transform .18s cubic-bezier(.2,0,0,1)}
   .fx-nudgeL:active{transform:translateX(-3px)}
   .fx-arrowL{transform:translateY(-50%);transition:transform .18s cubic-bezier(.2,0,0,1)}
@@ -107,8 +109,10 @@
   @media (max-width: 700px){
     .cs-footer-cols{justify-content:flex-start !important}
     .cs-footer-cols>div{flex:1 1 100% !important;max-width:none !important}
-    .cs-pdp-hero-img{height:60vh !important;width:100vw !important;margin-left:calc(50% - 50vw) !important}
-    .cs-pdp-info{padding:clamp(24px,6vw,32px) 20px 0 !important}
+    .cs-pdp-gallery{flex-direction:row !important;gap:10px !important;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100vw;margin-left:calc(50% - 50vw);padding:0 20px}
+    .cs-pdp-gallery::-webkit-scrollbar{display:none}
+    .cs-pdp-shot{flex:0 0 86% !important;scroll-snap-align:center}
+    .cs-pdp-info{position:static !important;padding:clamp(24px,6vw,32px) 20px 0 !important}
     .cs-related-grid{grid-template-columns:repeat(2,1fr) !important;gap:24px 12px !important}
     .cs-profile-grid{grid-template-columns:1fr !important}
     .cs-faq-grid{grid-template-columns:1fr !important}
@@ -408,12 +412,18 @@ function Oval({ p, ar = '.68', ph = 'Photo produit — cadrage ovale' }) {
 
 /* ================================ data ================================ */
 const PRODUCTS = [
-  { id: 'huperano', name: 'Huperano', tagline: "Attire les regards sans jamais voler la lumière à celle qui le porte", price: 420000, cat: 'Sacs', material: "Cuir de vachette, tannage végétal", hasTeinte: true },
-  { id: 'radah', name: 'Radah', tagline: "Elle règne à chaque pas", price: 385000, cat: 'Pochettes', material: "Cuir bordeaux, doublure daim", hasTeinte: false },
-  { id: 'nafi', name: 'Nafi', tagline: "Le geste juste, répété mille fois", price: 295000, cat: 'Petite maroquinerie', material: "Cuir naturel patiné à la main", hasTeinte: false },
-  { id: 'sikadi', name: 'Sikadi', tagline: "Un cuir qui garde la mémoire du jour", price: 510000, cat: 'Sacs', material: "Cuir grainé, ferrures bronze", hasTeinte: true },
-  { id: 'ayaba', name: 'Ayaba', tagline: "Portée haut, sans jamais être levée", price: 460000, cat: 'Sacs', soon: true, material: "Cuir tressé, pièce d'atelier", hasTeinte: false },
-  { id: 'wele', name: 'Wèlè', tagline: "Discrète le matin, souveraine le soir", price: 340000, cat: 'Pochettes', material: "Cuir souple, fermoir aimanté", hasTeinte: true }
+  { id: 'huperano', name: 'Huperano', tagline: "Attire les regards sans jamais voler la lumière à celle qui le porte", price: 420000, cat: 'Sacs', material: "Cuir de vachette, tannage végétal", hasTeinte: true,
+    story: { lead: "Une ouverture en éventail, qui part du médaillon et s'ouvre en rayons.", body: "Chaque rayon est coupé, paré puis cousu un à un : la découpe ne tolère aucune reprise, et c'est ce qui donne à la Huperano sa ligne tendue. Tenue à la main ou portée au bras, elle passe du jour au soir sans jamais changer de voix." } },
+  { id: 'radah', name: 'Radah', tagline: "Elle règne à chaque pas", price: 385000, cat: 'Pochettes', material: "Cuir bordeaux, doublure daim", hasTeinte: false,
+    story: { lead: "Radah porte son nom comme une démarche : droite, calme, assumée.", body: "Le cuir enveloppe la pièce d'un seul tenant, sans couture apparente sur le dessus. À l'intérieur, la doublure daim fait le reste, en silence." } },
+  { id: 'nafi', name: 'Nafi', tagline: "Le geste juste, répété mille fois", price: 295000, cat: 'Petite maroquinerie', material: "Cuir naturel patiné à la main", hasTeinte: false,
+    story: { lead: "Nafi est née de la répétition : le même geste, mille fois, jusqu'à ce que la mesure devienne juste.", body: "Le cuir naturel est patiné à la main avant l'assemblage, ce qui explique que deux pièces ne soient jamais tout à fait identiques. C'est celle que l'on glisse dans la main sans y penser, et que l'on garde des années." } },
+  { id: 'sikadi', name: 'Sikadi', tagline: "Un cuir qui garde la mémoire du jour", price: 510000, cat: 'Sacs', material: "Cuir grainé, ferrures bronze", hasTeinte: true,
+    story: { lead: "Le grain de Sikadi retient la lumière comme il retient les jours.", body: "Le cuir fonce, s'adoucit, prend peu à peu la trace de vos gestes ; les ferrures bronze se patinent au même rythme. C'est une pièce qui ne ressemble vraiment à rien tant qu'on ne l'a pas portée." } },
+  { id: 'ayaba', name: 'Ayaba', tagline: "Portée haut, sans jamais être levée", price: 460000, cat: 'Sacs', soon: true, material: "Cuir tressé, pièce d'atelier", hasTeinte: false,
+    story: { lead: "Ayaba se porte haut, et se fabrique lentement.", body: "Le tressage se monte brin par brin sur plusieurs jours d'atelier et n'autorise aucune approximation : une seule erreur de tension se voit sur toute la pièce. C'est à ce titre une pièce d'atelier à part entière." } },
+  { id: 'wele', name: 'Wèlè', tagline: "Discrète le matin, souveraine le soir", price: 340000, cat: 'Pochettes', material: "Cuir souple, fermoir aimanté", hasTeinte: true,
+    story: { lead: "Wèlè change d'heure avec vous.", body: "Glissée sous le bras le matin, elle se détache le soir d'un seul geste, son fermoir aimanté cédant sans bruit. Le cuir souple a été choisi pour cela : il se plie à la journée au lieu de la contraindre." } }
 ];
 const CATS = ['Tout', 'Sacs', 'Pochettes', 'Petite maroquinerie'];
 const LEGAL = {
@@ -461,7 +471,11 @@ const CANAUX = [
   { k: "EMAIL", t: "Ecrivez nous", d: "NOUS NOUS EFFORÇONS DE VOUS RÉPONDRE SOUS 48 HEURES (JOURS OUVRABLES)." }
 ];
 const TUILES = [{ t: "Sacs", c: "Sacs" }, { t: "Pochettes", c: "Pochettes" }, { t: "Maroquineries", c: "Petite maroquinerie" }];
-const TEINTES = ["Noir Ébène", "Cuir naturel", "Bordeaux"];
+const TEINTES = [
+  { label: "Noir Ébène", hex: "#2E2724" },
+  { label: "Cuir naturel", hex: "#C2A079" },
+  { label: "Bordeaux", hex: "#6A2430" }
+];
 const VILLES = ["Abidjan", "Bouaké", "Yamoussoukro"];
 const PAYS = ["Côte d'Ivoire", "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre", "Angola", "Arabie saoudite", "Argentine", "Arménie", "Australie", "Autriche", "Azerbaïdjan", "Bahamas", "Bahreïn", "Bangladesh", "Barbade", "Belgique", "Belize", "Bénin", "Bhoutan", "Biélorussie", "Birmanie", "Bolivie", "Bosnie-Herzégovine", "Botswana", "Brésil", "Brunei", "Bulgarie", "Burkina Faso", "Burundi", "Cambodge", "Cameroun", "Canada", "Cap-Vert", "Chili", "Chine", "Chypre", "Colombie", "Comores", "Congo", "Congo (RDC)", "Corée du Nord", "Corée du Sud", "Costa Rica", "Croatie", "Cuba", "Danemark", "Djibouti", "Dominique", "Égypte", "Émirats arabes unis", "Équateur", "Érythrée", "Espagne", "Estonie", "Eswatini", "États-Unis", "Éthiopie", "Fidji", "Finlande", "France", "Gabon", "Gambie", "Géorgie", "Ghana", "Grèce", "Grenade", "Guatemala", "Guinée", "Guinée-Bissau", "Guinée équatoriale", "Guyana", "Haïti", "Honduras", "Hongrie", "Inde", "Indonésie", "Irak", "Iran", "Irlande", "Islande", "Israël", "Italie", "Jamaïque", "Japon", "Jordanie", "Kazakhstan", "Kenya", "Kirghizistan", "Kiribati", "Kosovo", "Koweït", "Laos", "Lesotho", "Lettonie", "Liban", "Liberia", "Libye", "Liechtenstein", "Lituanie", "Luxembourg", "Macédoine du Nord", "Madagascar", "Malaisie", "Malawi", "Maldives", "Mali", "Malte", "Maroc", "Maurice", "Mauritanie", "Mexique", "Micronésie", "Moldavie", "Monaco", "Mongolie", "Monténégro", "Mozambique", "Namibie", "Nauru", "Népal", "Nicaragua", "Niger", "Nigeria", "Norvège", "Nouvelle-Zélande", "Oman", "Ouganda", "Ouzbékistan", "Pakistan", "Palaos", "Palestine", "Panama", "Papouasie-Nouvelle-Guinée", "Paraguay", "Pays-Bas", "Pérou", "Philippines", "Pologne", "Portugal", "Qatar", "République centrafricaine", "République dominicaine", "République tchèque", "Roumanie", "Royaume-Uni", "Russie", "Rwanda", "Saint-Marin", "Sainte-Lucie", "Salomon", "Salvador", "Samoa", "São Tomé-et-Principe", "Sénégal", "Serbie", "Seychelles", "Sierra Leone", "Singapour", "Slovaquie", "Slovénie", "Somalie", "Soudan", "Soudan du Sud", "Sri Lanka", "Suède", "Suisse", "Suriname", "Syrie", "Tadjikistan", "Tanzanie", "Tchad", "Thaïlande", "Timor oriental", "Togo", "Tonga", "Trinité-et-Tobago", "Tunisie", "Turkménistan", "Turquie", "Tuvalu", "Ukraine", "Uruguay", "Vanuatu", "Vatican", "Venezuela", "Vietnam", "Yémen", "Zambie", "Zimbabwe", "Autre"];
 const BOUTIQUES = [
@@ -633,8 +647,7 @@ function App() {
     carPrev: () => setS(st => ({ ...st, cIdx: (st.cIdx + dec.length - 1) % dec.length })),
     carNext: () => setS(st => ({ ...st, cIdx: (st.cIdx + 1) % dec.length })),
     teintes: TEINTES.map(t => ({
-      label: t, pick: () => set({ teinte: t }),
-      ring: s.teinte === t ? 'inset 0 0 0 1px rgb(71,29,27)' : 'inset 0 0 0 1px rgba(0,0,0,.25)'
+      label: t.label, hex: t.hex, active: s.teinte === t.label, pick: () => set({ teinte: t.label })
     })),
     teinte: s.teinte,
     related: dec.filter(p => p.id !== s.pid).slice(0, 4),
@@ -1443,49 +1456,46 @@ function ScProduit({ v }) {
     <Fragment>
     <section style={{ padding: '0 0 clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'center' }}>
-        <div className="cs-pdp-hero-img" style={{ position: 'relative', height: 'calc(100vh - ' + v.headerH + ')', overflow: 'hidden', cursor: 'zoom-in' }} onClick={() => setLightbox(true)}>
-          <ImageSlot id={images[imgIdx]} placeholder={labels[imgIdx]} />
-
-          <button type="button" aria-label={v.currentFav ? 'Retirer des favoris' : 'Ajouter aux favoris'} onClick={e => { e.stopPropagation(); v.toggleCurrentFav(); }} style={{ position: 'absolute', top: 16, right: 16, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,.85)', border: 0, cursor: 'pointer', color: v.currentFav ? 'rgb(71,29,27)' : 'rgb(94,94,94)' }}>
-            <svg width="18" height="16" viewBox="0 0 15 14" fill={v.currentFav ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1"><path d="M7.5 12.6 2.1 7.4a3.2 3.2 0 0 1 4.5-4.5l.9.9.9-.9a3.2 3.2 0 0 1 4.5 4.5l-5.4 5.2Z" /></svg>
-          </button>
-
-          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 16, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} onClick={e => e.stopPropagation()}>
-            <button type="button" aria-label="Image précédente" onClick={prevImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,.85)', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
-              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 1 1 6l6 5" /></svg>
-            </button>
-            <div style={{ display: 'flex', gap: 6, background: 'rgba(255,255,255,.85)', padding: 6 }}>
-              {images.map((id, i) => thumbBtn(i, 40))}
+        <div className="cs-pdp-gallery">
+          {images.map((id, i) => (
+            <div key={i} className="cs-pdp-shot" onClick={() => { setImgIdx(i); setLightbox(true); }}>
+              <ImageSlot id={id} placeholder={labels[i]} />
             </div>
-            <button type="button" aria-label="Image suivante" onClick={nextImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,.85)', border: 0, cursor: 'pointer', color: 'rgb(0,0,0)' }}>
-              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l6 5-6 5" /></svg>
-            </button>
-          </div>
+          ))}
         </div>
-      <div className="cs-pdp-info" style={{ paddingRight: 'clamp(20px,5vw,140px)' }}>
-        <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,4.6vw,48px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>{c.name}</h1>
-        <p style={{ margin: '14px 0 0', fontSize: 17, lineHeight: 1.6, color: 'rgb(70,70,70)', maxWidth: '42ch', textWrap: 'pretty' }}>{c.tagline}</p>
-        <p style={{ margin: '26px 0 0', fontSize: 20, letterSpacing: '.04em', color: 'rgb(0,0,0)' }}>{c.priceLabel}</p>
-        <p style={{ margin: '8px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{c.material}</p>
+      <div className="cs-pdp-info" style={{ position: 'sticky', alignSelf: 'start', top: 'calc(' + v.headerH + ' + clamp(20px,3vw,48px))', paddingRight: 'clamp(20px,5vw,140px)' }}>
+        <p style={{ margin: '0 0 14px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{c.cat}</p>
+        <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(34px,4.8vw,54px)', lineHeight: 1.05, color: 'rgb(71,29,27)' }}>{c.name}</h1>
+        <p style={{ margin: '18px 0 0', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(19px,2vw,23px)', lineHeight: 1.45, color: 'rgba(71,29,27,.75)', maxWidth: '30ch', textWrap: 'pretty' }}>{c.tagline}</p>
+        <div style={{ width: 'min(100%,260px)', height: 1, background: 'rgba(71,29,27,.18)', margin: 'clamp(28px,3.4vw,38px) 0' }}></div>
+        <p style={{ margin: 0, fontSize: 19, letterSpacing: '.06em', color: 'rgb(0,0,0)', fontVariantNumeric: 'tabular-nums' }}>{c.priceLabel}</p>
+        <p style={{ margin: '12px 0 0', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{c.material}</p>
 
         {c.available && (
-          <div style={{ marginTop: 30 }}>
+          <div style={{ marginTop: 'clamp(28px,3.4vw,38px)' }}>
             {c.hasTeinte && (
               <Fragment>
-                <p style={{ margin: '0 0 12px', fontSize: 15, color: 'rgb(70,70,70)' }}>Couleur : <span style={{ color: 'rgb(0,0,0)' }}>{v.teinte}</span></p>
-                <div style={{ display: 'flex', gap: 'clamp(6px,1.5vw,10px)', flexWrap: 'wrap' }}>
+                <p style={{ margin: '0 0 16px', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Couleur — <span style={{ color: 'rgb(71,29,27)' }}>{v.teinte}</span></p>
+                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
                   {v.teintes.map((t, i) => (
-                    <button key={i} type="button" onClick={t.pick} style={{ padding: '10px clamp(11px,3vw,16px)', background: 'none', border: 0, boxShadow: t.ring, color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 14, whiteSpace: 'nowrap' }}>{t.label}</button>
+                    <button key={i} type="button" onClick={t.pick} aria-label={t.label} aria-pressed={t.active} title={t.label} style={{
+                      width: 34, height: 34, padding: 0, borderRadius: '50%', border: 0, cursor: 'pointer', background: t.hex,
+                      boxShadow: t.active ? '0 0 0 2px rgb(252,249,248), 0 0 0 3px rgb(71,29,27)' : 'inset 0 0 0 1px rgba(0,0,0,.2)'
+                    }}></button>
                   ))}
                 </div>
               </Fragment>
             )}
-            <div style={{ marginTop: 22 }}>
+            <div style={{ marginTop: 'clamp(26px,3vw,34px)' }}>
               <Button variant="primary" onClick={v.addCurrent} style={v.btnUpper.style}>
                 <svg width="15" height="17" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1"><path d="M1 5h14l-1 12H2L1 5Z" /><path d="M5.5 5V3.5a2.5 2.5 0 0 1 5 0V5" /></svg>
                 Ajouter au panier
               </Button>
             </div>
+            <button type="button" className="ulink" onClick={v.toggleCurrentFav} style={{ display: 'inline-flex', alignItems: 'center', gap: 9, marginTop: 22, background: 'none', border: 0, padding: '0 0 5px', color: v.currentFav ? 'rgb(71,29,27)' : 'rgb(94,94,94)', cursor: 'pointer', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase' }}>
+              <svg width="15" height="14" viewBox="0 0 15 14" fill={v.currentFav ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1"><path d="M7.5 12.6 2.1 7.4a3.2 3.2 0 0 1 4.5-4.5l.9.9.9-.9a3.2 3.2 0 0 1 4.5 4.5l-5.4 5.2Z" /></svg>
+              {v.currentFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+            </button>
           </div>
         )}
         {c.soon && (
@@ -1506,6 +1516,22 @@ function ScProduit({ v }) {
       </div>
 
       <div style={{ padding: '0 clamp(20px,5vw,140px)' }}>
+      {c.story && (
+        <div className="sec-reveal" style={{ marginTop: 'clamp(56px,8vw,110px)', maxWidth: 820 }}>
+          <p style={{ margin: '0 0 18px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Le récit de la pièce</p>
+          <p style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(21px,2.6vw,30px)', lineHeight: 1.4, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>{c.story.lead}</p>
+          <p style={{ margin: 0, fontSize: 17, lineHeight: 1.8, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>{c.story.body}</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(24px,5vw,64px)', marginTop: 'clamp(30px,4vw,46px)', paddingTop: 'clamp(22px,3vw,30px)', borderTop: '1px solid rgba(71,29,27,.15)' }}>
+            {[['Atelier', 'Abidjan, Côte d’Ivoire'], ['Numérotation', 'Pièce numérotée à la main'], ['Passeport numérique', 'Inclus dans le coffret']].map(([k, val], i) => (
+              <div key={i} style={{ flex: '1 1 180px', minWidth: 150 }}>
+                <p style={{ margin: '0 0 8px', fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{k}</p>
+                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'rgb(71,29,27)' }}>{val}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 820 }}>
         {v.accordion.map((a, i) => (
           <AccordionItem key={i} question={a.title} answer={a.body} open={a.open} onToggle={a.toggle} />
