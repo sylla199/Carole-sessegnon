@@ -108,7 +108,8 @@
     .cs-footer-cols{justify-content:flex-start !important}
     .cs-footer-cols>div{flex:1 1 100% !important;max-width:none !important}
     .cs-pdp-hero-img{height:60vh !important;width:100vw !important;margin-left:calc(50% - 50vw) !important}
-    .cs-pdp-info{padding-left:20px !important;padding-right:20px !important}
+    .cs-pdp-info{padding:clamp(24px,6vw,32px) 20px 0 !important}
+    .cs-related-grid{grid-template-columns:repeat(2,1fr) !important;gap:24px 12px !important}
     .cs-profile-grid{grid-template-columns:1fr !important}
     .cs-faq-grid{grid-template-columns:1fr !important}
     .cs-pieces-grid{grid-template-columns:repeat(2,1fr) !important;gap:20px 12px !important}
@@ -156,27 +157,6 @@ function useHeroParallax(speed, opts) {
     return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); if (raf) cancelAnimationFrame(raf); };
   }, [speed, opts && opts.up, opts && opts.fade, opts && opts.fadeOver, opts && opts.scale]);
   return ref;
-}
-
-/* count-up number: tweens value -> value over ~500ms, cubic ease-out */
-function AnimatedNumber({ value, format }) {
-  const [, tick] = useState(0);
-  const disp = useRef(value), to = useRef(value), raf = useRef(0);
-  useEffect(() => {
-    if (value === to.current) return;
-    to.current = value;
-    if (prefersReduced()) { disp.current = value; tick(x => x + 1); return; }
-    const from = disp.current, t0 = performance.now(), dur = 350;
-    cancelAnimationFrame(raf.current);
-    const step = now => {
-      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
-      disp.current = Math.round(from + (value - from) * e); tick(x => x + 1);
-      if (k < 1) raf.current = requestAnimationFrame(step);
-    };
-    raf.current = requestAnimationFrame(step);
-  }, [value]);
-  useEffect(() => () => cancelAnimationFrame(raf.current), []);
-  return <span style={{ fontVariantNumeric: 'tabular-nums' }}>{format ? format(disp.current) : disp.current}</span>;
 }
 
 /* intro / loading screen: full-bleed bordeaux, CS monogram centred and still.
@@ -508,7 +488,7 @@ function App() {
     pid: 'huperano', open: 0, cart: [{ id: 'radah', qty: 1 }], step: 1,
     pstep: 'intro', tries: 0, perr: '', assoc: null, skipped: false,
     authTab: 'connexion', authMsg: '', contactSent: false, legal: 'mentions', pwdVisible: false, loggedIn: false,
-    fav: [], faq: -1, cIdx: 0, teinte: 'Noir Ébène', pqty: 1, q: '', savedProfile: false, cardImg: {},
+    fav: [], faq: -1, cIdx: 0, teinte: 'Noir Ébène', q: '', savedProfile: false, cardImg: {},
     prof: 'infos', mode: 'domicile', ville: 'Abidjan', boutique: 'Riviéra CIAD',
     orderId: '#CS-2026-9482',
     factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
@@ -656,11 +636,7 @@ function App() {
       label: t, pick: () => set({ teinte: t }),
       ring: s.teinte === t ? 'inset 0 0 0 1px rgb(71,29,27)' : 'inset 0 0 0 1px rgba(0,0,0,.25)'
     })),
-    teinte: s.teinte, pqty: s.pqty,
-    qtyMinus: () => setS(st => ({ ...st, pqty: Math.max(1, st.pqty - 1) })),
-    qtyPlus: () => setS(st => ({ ...st, pqty: st.pqty + 1 })),
-    buyNow: () => { add(current.id, s.pqty); go('paiement', { step: 1 }); },
-    addToCartLabel: 'Ajouter au panier — ' + fmt(current.price * s.pqty),
+    teinte: s.teinte,
     related: dec.filter(p => p.id !== s.pid).slice(0, 4),
     panierTitle: 'Panier (' + s.cart.reduce((t, l) => t + l.qty, 0) + ')',
     clearCart: () => set({ cart: [] }),
@@ -787,7 +763,7 @@ function App() {
     secDispo: { open: s.secDispo, rot: s.secDispo ? 'rotate(180deg)' : 'none', toggle: () => setS(st => ({ ...st, secDispo: !st.secDispo })) },
     secPrix: { open: s.secPrix, rot: s.secPrix ? 'rotate(180deg)' : 'none', toggle: () => setS(st => ({ ...st, secPrix: !st.secPrix })) },
     setSort: e => set({ sort: e.target.value }),
-    current, addCurrent: () => addToCart(current.id, s.pqty), addTotal: current.price * s.pqty,
+    current, addCurrent: () => addToCart(current.id, 1),
     showCartToast: !!s.cartToast,
     openGift: () => setS(st => ({ ...st, giftOpen: true, giftMsg: st.gift ? st.gift.message : '', giftTo: st.gift ? st.gift.to : '' })),
     closeGift: () => set({ giftOpen: false }),
@@ -1465,8 +1441,8 @@ function ScProduit({ v }) {
   );
   return (
     <Fragment>
-    <section style={{ padding: '0 clamp(20px,5vw,140px) clamp(56px,9vw,110px) 0', maxWidth: 1640, margin: '0 auto' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'start' }}>
+    <section style={{ padding: '0 0 clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 'clamp(28px,4vw,80px)', alignItems: 'center' }}>
         <div className="cs-pdp-hero-img" style={{ position: 'relative', height: 'calc(100vh - ' + v.headerH + ')', overflow: 'hidden', cursor: 'zoom-in' }} onClick={() => setLightbox(true)}>
           <ImageSlot id={images[imgIdx]} placeholder={labels[imgIdx]} />
 
@@ -1486,7 +1462,7 @@ function ScProduit({ v }) {
             </button>
           </div>
         </div>
-      <div className="cs-pdp-info" style={{ paddingTop: 'clamp(28px,4vw,80px)' }}>
+      <div className="cs-pdp-info" style={{ paddingRight: 'clamp(20px,5vw,140px)' }}>
         <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,4.6vw,48px)', lineHeight: 1.1, color: 'rgb(71,29,27)' }}>{c.name}</h1>
         <p style={{ margin: '14px 0 0', fontSize: 17, lineHeight: 1.6, color: 'rgb(70,70,70)', maxWidth: '42ch', textWrap: 'pretty' }}>{c.tagline}</p>
         <p style={{ margin: '26px 0 0', fontSize: 20, letterSpacing: '.04em', color: 'rgb(0,0,0)' }}>{c.priceLabel}</p>
@@ -1497,9 +1473,9 @@ function ScProduit({ v }) {
             {c.hasTeinte && (
               <Fragment>
                 <p style={{ margin: '0 0 12px', fontSize: 15, color: 'rgb(70,70,70)' }}>Couleur : <span style={{ color: 'rgb(0,0,0)' }}>{v.teinte}</span></p>
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 'clamp(6px,1.5vw,10px)', flexWrap: 'wrap' }}>
                   {v.teintes.map((t, i) => (
-                    <button key={i} type="button" onClick={t.pick} style={{ padding: '10px 16px', background: 'none', border: 0, boxShadow: t.ring, color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 14 }}>{t.label}</button>
+                    <button key={i} type="button" onClick={t.pick} style={{ padding: '10px clamp(11px,3vw,16px)', background: 'none', border: 0, boxShadow: t.ring, color: 'rgb(0,0,0)', cursor: 'pointer', fontSize: 14, whiteSpace: 'nowrap' }}>{t.label}</button>
                   ))}
                 </div>
               </Fragment>
@@ -1529,16 +1505,17 @@ function ScProduit({ v }) {
       </div>
       </div>
 
-      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900, margin: '0 auto', padding: '0 clamp(20px,5vw,140px)' }}>
+      <div style={{ padding: '0 clamp(20px,5vw,140px)' }}>
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 820 }}>
         {v.accordion.map((a, i) => (
           <AccordionItem key={i} question={a.title} answer={a.body} open={a.open} onToggle={a.toggle} />
         ))}
         <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
       </div>
 
-      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', padding: '0 clamp(20px,5vw,140px)' }}>
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)' }}>
         <h2 style={{ margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Vous aimerez aussi</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,200px),1fr))', gap: '32px 20px' }}>
+        <div className="cs-related-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,200px),1fr))', gap: '32px 20px' }}>
           {v.related.map((p, i) => (
             <div key={i} className="reveal" style={{ transitionDelay: (i * 55) + 'ms' }}>
               <Oval p={p} />
@@ -1551,8 +1528,9 @@ function ScProduit({ v }) {
         </div>
       </div>
 
-      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900, paddingLeft: 'clamp(20px,5vw,140px)' }}>
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 820 }}>
         <FAQBlock v={v} />
+      </div>
       </div>
     </section>
 
