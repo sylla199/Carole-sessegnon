@@ -1291,7 +1291,6 @@ function ScEntretien({ v }) {
 function ScPieces({ v }) {
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1640, margin: '0 auto' }}>
-      <p style={{ margin: '0 0 8px', fontSize: 14, letterSpacing: '.1em', color: 'rgb(94,94,94)' }}>Les Pièces</p>
       <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(32px,6vw,60px)', lineHeight: 1.06, letterSpacing: '-.02em', color: 'rgb(71,29,27)' }}>Les Pièces</h1>
 
       <div style={{ position: 'sticky', top: v.headerH, zIndex: 20, margin: 'clamp(32px,5vw,48px) 0 0', left: 0, right: 0, width: '100vw', marginLeft: 'calc(50% - 50vw)', padding: '0 clamp(20px,5vw,140px)', background: v.s.scrolled ? 'rgba(255,255,255,.72)' : 'transparent', backdropFilter: v.s.scrolled ? 'blur(40px)' : 'none', WebkitBackdropFilter: v.s.scrolled ? 'blur(40px)' : 'none', transitionProperty: 'background-color,backdrop-filter', transitionDuration: '.2s' }}>
@@ -2080,7 +2079,7 @@ function ScContact({ v }) {
             <label style={st(LABEL)}>Numéro de commande (facultatif)<input name="commande" placeholder="#CS-2026-0000" style={st(INPUT)} /></label>
             <label style={st(LABEL)}>Objet
               <select name="objet" style={st(INPUT)}>
-                <option>Livraison</option><option>Retour et échange</option><option>Commande en ligne</option><option>Service après-vente</option><option>Autre demande</option>
+                <option>Une pièce</option><option>Une commande</option><option>Le passeport numérique</option><option>Presse</option><option>Livraison</option><option>Retour et échange</option><option>Commande en ligne</option><option>Service après-vente</option><option>Autre demande</option>
               </select>
             </label>
             <label style={st(LABEL)}>Comment souhaiteriez-vous être contacté(e) ?
