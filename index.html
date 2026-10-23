@@ -1005,7 +1005,7 @@ function Shell({ v }) {
       </div>
 
       {v.showCartToast && (
-        <div style={{ position: 'fixed', right: 'clamp(14px,4vw,32px)', top: 'calc(' + v.headerH + 'px + clamp(10px,2vw,20px))', zIndex: 70, display: 'flex', alignItems: 'center', gap: 16, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: '14px 20px', boxShadow: '0 14px 30px -10px rgba(0,0,0,.4)', animation: 'cs-in .25s ease-out', maxWidth: 'calc(100vw - 28px)' }}>
+        <div style={{ position: 'fixed', right: 'clamp(14px,4vw,32px)', top: 'calc(' + v.headerH + ' + clamp(10px,2vw,20px))', zIndex: 70, display: 'flex', alignItems: 'center', gap: 16, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: '14px 20px', boxShadow: '0 14px 30px -10px rgba(0,0,0,.4)', animation: 'cs-in .25s ease-out', maxWidth: 'calc(100vw - 28px)' }}>
           <span style={{ fontSize: 14, whiteSpace: 'nowrap' }}>Ajouté au panier</span>
           <button type="button" onClick={v.goPanier} style={{ flexShrink: 0, background: 'none', border: 0, padding: 0, color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 13, letterSpacing: '.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,.6)' }}>Voir le panier</button>
         </div>
