@@ -1506,14 +1506,6 @@ function ScProduit({ v }) {
           <p style={{ margin: '0 0 18px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Le récit de la pièce</p>
           <p style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(21px,2.6vw,30px)', lineHeight: 1.4, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>{c.story.lead}</p>
           <p style={{ margin: 0, fontSize: 17, lineHeight: 1.8, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>{c.story.body}</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(24px,5vw,64px)', marginTop: 'clamp(30px,4vw,46px)', paddingTop: 'clamp(22px,3vw,30px)', borderTop: '1px solid rgba(71,29,27,.15)' }}>
-            {[['Atelier', 'Abidjan, Côte d’Ivoire'], ['Numérotation', 'Pièce numérotée à la main'], ['Passeport numérique', 'Inclus dans le coffret']].map(([k, val], i) => (
-              <div key={i} style={{ flex: '1 1 180px', minWidth: 150 }}>
-                <p style={{ margin: '0 0 8px', fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{k}</p>
-                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'rgb(71,29,27)' }}>{val}</p>
-              </div>
-            ))}
-          </div>
         </div>
       )}
 
