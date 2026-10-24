@@ -1470,6 +1470,9 @@ function ScProduit({ v }) {
         <div style={{ width: 'min(100%,260px)', height: 1, background: 'rgba(71,29,27,.18)', margin: 'clamp(28px,3.4vw,38px) 0' }}></div>
         <p style={{ margin: 0, fontSize: 19, letterSpacing: '.06em', color: 'rgb(0,0,0)', fontVariantNumeric: 'tabular-nums' }}>{c.priceLabel}</p>
         <p style={{ margin: '12px 0 0', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{c.material}</p>
+        {c.hasTeinte && (
+          <p style={{ margin: '10px 0 0', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Couleur — <span style={{ color: 'rgb(71,29,27)' }}>{v.teinte}</span></p>
+        )}
 
         {c.available && (
           <div style={{ marginTop: 'clamp(28px,3.4vw,38px)' }}>
@@ -1502,14 +1505,14 @@ function ScProduit({ v }) {
 
       <div style={{ padding: '0 clamp(20px,5vw,140px)' }}>
       {c.story && (
-        <div className="sec-reveal" style={{ marginTop: 'clamp(56px,8vw,110px)', maxWidth: 820 }}>
+        <div className="sec-reveal" style={{ marginTop: 'clamp(56px,8vw,110px)', maxWidth: 820, marginLeft: 'auto', marginRight: 'auto', textAlign: 'center' }}>
           <p style={{ margin: '0 0 18px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Le récit de la pièce</p>
           <p style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(21px,2.6vw,30px)', lineHeight: 1.4, color: 'rgb(71,29,27)', textWrap: 'pretty' }}>{c.story.lead}</p>
           <p style={{ margin: 0, fontSize: 17, lineHeight: 1.8, color: 'rgb(70,70,70)', textWrap: 'pretty' }}>{c.story.body}</p>
         </div>
       )}
 
-      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 820 }}>
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 820, marginLeft: 'auto', marginRight: 'auto' }}>
         {v.accordion.map((a, i) => (
           <AccordionItem key={i} question={a.title} answer={a.body} open={a.open} onToggle={a.toggle} />
         ))}
@@ -1517,7 +1520,7 @@ function ScProduit({ v }) {
       </div>
 
       <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)' }}>
-        <h2 style={{ margin: '0 0 32px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Vous aimerez aussi</h2>
+        <h2 style={{ margin: '0 0 32px', textAlign: 'center', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(24px,3.4vw,34px)', color: 'rgb(71,29,27)' }}>Vous aimerez aussi</h2>
         <div className="cs-related-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,200px),1fr))', gap: '32px 20px' }}>
           {v.related.map((p, i) => (
             <div key={i} className="reveal" style={{ transitionDelay: (i * 55) + 'ms' }}>
@@ -1531,8 +1534,8 @@ function ScProduit({ v }) {
         </div>
       </div>
 
-      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 820 }}>
-        <FAQBlock v={v} />
+      <div className="sec-reveal" style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 820, marginLeft: 'auto', marginRight: 'auto' }}>
+        <FAQBlock v={v} center />
       </div>
       </div>
     </section>
