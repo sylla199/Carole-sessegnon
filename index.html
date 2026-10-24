@@ -458,10 +458,21 @@ const ACC = [
 const FAQ = [
   { cat: "Contact", q: "Comment puis-je contacter la Maison Carole Sessegnon ?", a: "Chaque pièce de la Maison Carole Sessegnon est confectionnée à la main à partir de cuir sélectionné avec soin. Pour toute question sur nos créations, nos délais de fabrication ou une commande en cours, notre équipe est disponible par e-mail ou via nos réseaux sociaux. Nous nous engageons à vous répondre sous 48 heures." },
   { cat: "Contact", q: "Dans quel délai puis-je espérer recevoir une réponse ?", a: "Texte provisoire. Nous répondons sous 48 heures ouvrées, du lundi au samedi, de 9h à 19h." },
+  { cat: "Contact", q: "Puis-je vous joindre par téléphone ou par WhatsApp ?", a: "Texte provisoire. Oui, un conseiller de la Maison vous répond du lundi au samedi, de 9h à 18h (GMT), au +225 07 20 00 95 20 ou par WhatsApp." },
+  { cat: "Contact", q: "Comment suivre une demande déjà envoyée ?", a: "Texte provisoire. Indiquez votre numéro de commande dans le formulaire de contact : l'équipe retrouve votre dossier et vous répond sur le canal que vous avez choisi." },
   { cat: "Les pièces", q: "Comment puis-je en savoir plus sur le cuir utilisé dans vos créations ?", a: "Texte provisoire. Nos cuirs sont sélectionnés avec soin et tannés au végétal ; l'atelier peut vous détailler la provenance de chaque lot." },
+  { cat: "Les pièces", q: "Quelles sont les couleurs disponibles ?", a: "Texte provisoire. Chaque pièce est proposée dans plusieurs coloris, par exemple Noir Ébène, Cuir naturel et Bordeaux. Les couleurs disponibles figurent sur la fiche de la pièce." },
+  { cat: "Les pièces", q: "Comment entretenir ma pièce en cuir ?", a: "Texte provisoire. Rangez-la dans sa housse, à l'abri de l'humidité et de la lumière directe, et nourrissez le cuir avec un soin neutre une à deux fois par an." },
+  { cat: "Les pièces", q: "Qu'est-ce que le passeport numérique ?", a: "Texte provisoire. Chaque pièce est livrée avec un certificat d'origine numéroté. Son numéro de série et son code d'activation ouvrent le passeport numérique, qui retrace la fabrication et associe la pièce à votre nom." },
   { cat: "Commandes", q: "Proposez-vous des commandes sur mesure ou des personnalisations de pièces ?", a: "Texte provisoire. Certaines pièces peuvent être personnalisées (coloris, initiales). Écrivez-nous pour en discuter." },
+  { cat: "Commandes", q: "Quels sont les délais de fabrication et de livraison ?", a: "Texte provisoire. Comptez environ trois semaines de fabrication, puis le délai de livraison indiqué au moment de la commande." },
+  { cat: "Commandes", q: "Quels moyens de paiement acceptez-vous ?", a: "Texte provisoire. Carte bancaire, PayPal, Wave et Orange Money. Le paiement est sécurisé." },
+  { cat: "Commandes", q: "Puis-je offrir une pièce avec un message ?", a: "Texte provisoire. Oui, depuis le panier, ajoutez un message cadeau de 250 caractères au maximum. Il sera glissé dans l'écrin avec la pièce." },
+  { cat: "Commandes", q: "Puis-je retourner ou échanger ma pièce ?", a: "Texte provisoire. Écrivez-nous en indiquant votre numéro de commande : l'équipe vous explique les conditions de retour et d'échange." },
   { cat: "Rendez-vous", q: "Comment se déroule un rendez-vous à l'atelier ?", a: "Texte provisoire. Le rendez-vous dure environ une heure, en présence d'un conseiller de la Maison." },
-  { cat: "Rendez-vous", q: "Puis-je visiter votre atelier à Abidjan ?", a: "Texte provisoire. L'atelier du Plateau reçoit sur rendez-vous, du lundi au samedi." }
+  { cat: "Rendez-vous", q: "Puis-je visiter votre atelier à Abidjan ?", a: "Texte provisoire. L'atelier du Plateau reçoit sur rendez-vous, du lundi au samedi." },
+  { cat: "Rendez-vous", q: "Comment prendre rendez-vous ?", a: "Texte provisoire. Utilisez le bouton « Échanger avec la Maison » de la page Contact ou écrivez-nous : un ambassadeur vous propose un créneau." },
+  { cat: "Rendez-vous", q: "Puis-je modifier ou annuler mon rendez-vous ?", a: "Texte provisoire. Oui, prévenez la Maison au moins 24 heures à l'avance par e-mail ou par téléphone." }
 ];
 const FAQ_CATS = ["Contact", "Les pièces", "Commandes", "Rendez-vous"];
 const CANAUX = [
@@ -2089,6 +2100,8 @@ function ScPasseport({ v }) {
 
 function ScContact({ v }) {
   const eyebrow = { margin: '0 0 10px', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' };
+  const [fileName, setFileName] = useState('');
+  const fileInputRef = useRef(null);
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
       <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Contact</p>
@@ -2128,7 +2141,16 @@ function ScContact({ v }) {
               </select>
             </label>
             <label style={st(LABEL)}>Message<textarea name="message" rows="6" required style={st(INPUT + ';height:auto;resize:vertical')} /></label>
-            <label style={st(LABEL)}>Pièce jointe (facultatif)<input name="piece" type="file" style={st(INPUT + ';padding:14px 20px')} /></label>
+            <label style={st(LABEL)}>Pièce jointe (facultatif)
+              <div onClick={() => fileInputRef.current && fileInputRef.current.click()} style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 14, height: 60, padding: '0 10px', background: 'var(--surface-page)', boxShadow: 'inset 0 0 0 1px var(--color-secondary-50)', cursor: 'pointer' }}>
+                <span style={{ flex: '0 0 auto', padding: '10px 16px', boxShadow: 'inset 0 0 0 1px rgb(71,29,27)', color: 'rgb(71,29,27)', fontSize: 12, letterSpacing: '.1em', textTransform: 'uppercase' }}>Choisir un fichier</span>
+                <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 14, color: fileName ? 'rgb(0,0,0)' : 'rgb(148,148,148)' }}>{fileName || 'Aucun fichier choisi'}</span>
+                {fileName && (
+                  <button type="button" aria-label="Retirer le fichier" onClick={e => { e.stopPropagation(); setFileName(''); if (fileInputRef.current) fileInputRef.current.value = ''; }} style={{ flex: '0 0 auto', background: 'none', border: 0, padding: 4, cursor: 'pointer', color: 'rgb(94,94,94)', fontSize: 18, lineHeight: 1 }}>×</button>
+                )}
+              </div>
+              <input ref={fileInputRef} name="piece" type="file" onChange={e => setFileName(e.target.files && e.target.files[0] ? e.target.files[0].name : '')} style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }} />
+            </label>
             <Button type="submit" variant="primary" style={{ ...v.btnBlock.style, marginTop: 6 }}>Envoyer</Button>
           </form>
         )}
