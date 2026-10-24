@@ -1,6 +1,6 @@
 # Modifications front impactant le back-office
 
-Période : 22 – 23 octobre 2026
+Période : 22 – 24 octobre 2026
 
 Seules les modifications qui touchent des données à gérer côté back-office sont listées. Les ajustements de mise en page et de texte ne sont pas concernés.
 
@@ -86,12 +86,21 @@ Commit `c9c6718` et `1b0e8a7`
 - Le message de blocage invite à écrire à contact@carolesessegnon.com.
 - Si le back-office gère le déblocage d'une saisie suspendue, la règle des 5 essais s'applique.
 
-## 8. Fiche produit : « Couleur »
+## 8. Fiche produit : « Couleur » — affichée, mais plus sélectionnable
 
-Commit `5b5f684`
+Commits `5b5f684`, `757b30c`, `4f1c981`, et un passage ultérieur non numéroté (24/10)
 
-- Le libellé « Teinte » devient « Couleur ». Le champ correspondant dans le catalogue doit s'appeler « couleur ».
+- Le libellé « Teinte » devient « Couleur » (commit `5b5f684`). À l'origine, trois pastilles cliquables permettaient de choisir la couleur.
+- Les pastilles ont ensuite été retirées à la demande de la cliente (commits `757b30c`, `4f1c981`) : la couleur n'est plus modifiable depuis la fiche produit.
+- Une ligne de rappel « Couleur — [valeur] » a été remise en lecture seule, affichée uniquement sur les pièces marquées `hasTeinte: true`.
+- **Point d'attention pour le catalogue** : il n'existe aujourd'hui aucun champ « couleur » propre à chaque pièce dans les données du site — la valeur affichée vient d'un état de démonstration partagé (toujours « Noir Ébène », quelle que soit la pièce), pas d'une donnée produit réelle. Si la couleur doit rester affichée, le back-office devra fournir un champ `couleur` par pièce (ou par variante) pour que cette ligne soit juste.
+
+## 9. Formulaire de contact : pièce jointe
+
+Commit du 24/10 (non numéroté)
+
+- Le champ « Pièce jointe » est resté un envoi de fichier classique (un seul fichier, aucun type ni poids limité côté interface) ; seul son habillage visuel a changé. Pas de nouveau champ ni de changement de contrat de données pour le back-office.
 
 ## Sans impact back-office
 
-Mise en page de la fiche produit, de la FAQ et du toast « Ajouté au panier » ; retrait du bouton « Acheter maintenant » et du sélecteur de quantité sur la fiche produit ; renommage « Passeport numérique » ; footer, newsletter et page La Maison.
+Mise en page de la fiche produit (galerie, structure, alignements, centrage des sections, bouton « Ajouter aux favoris ») et de la FAQ ; contenu supplémentaire ajouté dans les quatre catégories de FAQ existantes (pas de nouvelle catégorie) ; toast « Ajouté au panier » ; retrait du bouton « Acheter maintenant », du sélecteur de quantité et de la ligne de repères Atelier / Numérotation / Passeport numérique sur la fiche produit ; renommage « Passeport numérique » ; corrections d'orthographe ; footer, newsletter et page La Maison.
