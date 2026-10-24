@@ -2219,7 +2219,7 @@ function ScFAQ({ v }) {
           </div>
           <div style={{ maxWidth: 760 }}>
             {items.map((i, k) => (
-              <AccordionItem key={cat + k} className="reveal" question={i.q} answer={i.a} open={i.open} onToggle={i.toggle} style={{ textAlign: 'left', transitionDelay: (k * 45) + 'ms' }} />
+              <AccordionItem key={cat + k} question={i.q} answer={i.a} open={i.open} onToggle={i.toggle} style={{ textAlign: 'left', animation: 'cs-in .35s ease-out both', animationDelay: (k * 45) + 'ms' }} />
             ))}
           </div>
         </div>
