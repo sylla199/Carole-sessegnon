@@ -528,7 +528,7 @@ function App() {
     prof: 'infos', mode: 'domicile', ville: 'Abidjan', boutique: 'Riviera CIAD',
     orderId: '#CS-2026-9482',
     factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
-    secCat: true, secDispo: true, secPrix: true, cartBump: 0, cartToast: 0, gift: null, giftOpen: false, giftMsg: '', giftTo: '',
+    secCat: true, secDispo: true, secPrix: true, cartBump: 0, cartToast: 0, gift: null, gifts: {}, giftOpen: false, giftTarget: null, giftKind: 'message', giftMsg: '', giftTo: '',
     headerH: 112, scrolled: false
   });
 
@@ -648,8 +648,16 @@ function App() {
 
   const lines = s.cart.map(l => {
     const p = dec.find(x => x.id === l.id) || dec[0];
+    /* cadeau effectif : le message de la ligne prime, sinon celui du panier comble,
+       sauf si la ligne a été explicitement exclue (kind 'none') */
+    const own = s.gifts[l.id] || null;
+    const giftEff = own ? (own.kind === 'none' ? null : own) : (s.gift || null);
     return {
       id: l.id, qty: l.qty, name: p.name, slot: p.slot, material: p.material,
+      gift: giftEff,
+      giftOwn: !!(own && own.kind !== 'none'),
+      giftSkipped: !!(own && own.kind === 'none'),
+      giftHerite: !own && !!s.gift,
       label: p.name + ' × ' + l.qty, total: fmt(p.price * l.qty),
       inc: () => qty(l.id, 1), dec: () => qty(l.id, -1), remove: () => remove(l.id),
       favLabel: s.fav.indexOf(l.id) >= 0 ? 'Dans mes favoris' : 'Ajouter à mes favoris',
@@ -807,17 +815,42 @@ function App() {
     setSort: e => set({ sort: e.target.value }),
     current, addCurrent: () => addToCart(current.id, 1),
     showCartToast: !!s.cartToast,
-    openGift: () => setS(st => ({ ...st, giftOpen: true, giftMsg: st.gift ? st.gift.message : '', giftTo: st.gift ? st.gift.to : '' })),
+    openGift: target => setS(st => {
+      const cur = target ? st.gifts[target] : st.gift;
+      const c = cur && cur.kind !== 'none' ? cur : null;
+      return { ...st, giftOpen: true, giftTarget: target || null,
+        giftKind: c ? c.kind : 'message', giftMsg: c && c.message ? c.message : '', giftTo: c && c.to ? c.to : '' };
+    }),
     closeGift: () => set({ giftOpen: false }),
+    setGiftKind: k => set({ giftKind: k }),
     setGiftMsg: e => set({ giftMsg: e.target.value.slice(0, 250) }),
     setGiftTo: e => set({ giftTo: e.target.value.slice(0, 60) }),
     saveGift: e => {
       if (e && e.preventDefault) e.preventDefault();
-      const message = s.giftMsg.trim();
-      setS(st => ({ ...st, giftOpen: false, gift: message ? { message, to: st.giftTo.trim() } : null }));
+      setS(st => {
+        const msg = st.giftMsg.trim();
+        const to = st.giftTo.trim();
+        const g = st.giftKind === 'vierge' ? { kind: 'vierge', message: '', to }
+          : (msg ? { kind: 'message', message: msg, to } : null);
+        if (st.giftTarget) {
+          const gifts = Object.assign({}, st.gifts);
+          if (g) gifts[st.giftTarget] = g; else delete gifts[st.giftTarget];
+          return Object.assign({}, st, { giftOpen: false, gifts });
+        }
+        return Object.assign({}, st, { giftOpen: false, gift: g });
+      });
     },
-    removeGift: () => set({ gift: null, giftMsg: '', giftTo: '' }),
-    orderGift: s.order ? s.order.gift : null,
+    removeGift: target => setS(st => {
+      if (target) {
+        const gifts = Object.assign({}, st.gifts);
+        delete gifts[target];
+        return Object.assign({}, st, { gifts });
+      }
+      return Object.assign({}, st, { gift: null });
+    }),
+    skipGift: target => setS(st => Object.assign({}, st, { gifts: Object.assign({}, st.gifts, { [target]: { kind: 'none' } }) })),
+    giftModalTitre: s.giftTarget ? 'Offrir cette pièce' : 'Le plaisir d\'offrir',
+    orderGifts: s.order ? (s.order.lines || []).filter(l => l.gift) : [],
     currentFav: s.fav.indexOf(current.id) >= 0,
     toggleCurrentFav: () => setS(st => ({ ...st, fav: st.fav.indexOf(current.id) >= 0 ? st.fav.filter(x => x !== current.id) : st.fav.concat([current.id]) })),
     accordion: ACC.map((a, i) => ({ title: a.title, body: a.body, open: s.open === i, toggle: () => setS(st => ({ ...st, open: st.open === i ? -1 : i })) })),
@@ -833,8 +866,8 @@ function App() {
       const no = '#CS-2026-' + String(9000 + Math.floor(Math.random() * 999));
       const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
       const payLabel = ({ carte: 'Carte bancaire', mobile: 'Mobile money', paypal: 'PayPal' })[s.moyen] || 'Carte bancaire';
-      const orderLines = lines.map(l => ({ slot: l.slot, name: l.name, material: l.material, qty: l.qty, total: l.total }));
-      set({ step: 3, cart: [], gift: null, order: { no, date, payment: payLabel, lines: orderLines, subtotal: sub, shipping: 0, gift: s.gift } });
+      const orderLines = lines.map(l => ({ slot: l.slot, name: l.name, material: l.material, qty: l.qty, total: l.total, gift: l.gift }));
+      set({ step: 3, cart: [], gift: null, gifts: {}, order: { no, date, payment: payLabel, lines: orderLines, subtotal: sub, shipping: 0, gift: s.gift } });
       try { window.scrollTo(0, 0); } catch (x) {}
     },
     backStep1: () => set({ step: 1 }),
@@ -1657,6 +1690,31 @@ function ScPanier({ v }) {
                       </button>
                       <button type="button" onClick={l.remove} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid rgba(0,0,0,.3)' }}>Retirer</button>
                     </div>
+                    {/* cadeau de la ligne : propre à la pièce, hérité du panier, ou exclu */}
+                    <div style={{ marginTop: 12 }}>
+                      {l.gift ? (
+                        <div style={{ padding: '10px 12px', background: 'rgba(71,29,27,.04)', fontSize: 13, lineHeight: 1.6 }}>
+                          <p style={{ margin: 0, color: 'rgb(71,29,27)' }}>
+                            {l.giftOwn ? 'Offerte — carte personnalisée' : 'Offerte — carte du panier'}
+                            {l.gift.to ? ' · pour ' + l.gift.to : ''}
+                          </p>
+                          {l.gift.kind === 'message'
+                            ? <p style={{ margin: '4px 0 0', fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {l.gift.message} »</p>
+                            : <p style={{ margin: '4px 0 0', color: 'rgb(94,94,94)' }}>Carte vierge</p>}
+                          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 8 }}>
+                            <button type="button" onClick={() => v.openGift(l.id)} style={{ ...{ background: 'none', border: 0, padding: 0, cursor: 'pointer', fontSize: 13 }, color: 'rgb(71,29,27)', borderBottom: '1px solid rgb(71,29,27)' }}>{l.giftOwn ? 'Modifier' : 'Personnaliser'}</button>
+                            <button type="button" onClick={() => v.skipGift(l.id)} style={{ ...{ background: 'none', border: 0, padding: 0, cursor: 'pointer', fontSize: 13 }, color: 'rgb(94,94,94)', borderBottom: '1px solid rgba(0,0,0,.3)' }}>Ne pas offrir cette pièce</button>
+                          </div>
+                        </div>
+                      ) : l.giftSkipped ? (
+                        <button type="button" onClick={() => v.removeGift(l.id)} style={{ ...{ background: 'none', border: 0, padding: 0, cursor: 'pointer', fontSize: 13 }, color: 'rgb(94,94,94)', borderBottom: '1px solid rgba(0,0,0,.3)' }}>Pièce non offerte — rétablir</button>
+                      ) : (
+                        <button type="button" onClick={() => v.openGift(l.id)} style={{ ...{ background: 'none', border: 0, padding: 0, cursor: 'pointer', fontSize: 13 }, display: 'flex', alignItems: 'center', gap: 8, color: 'rgb(71,29,27)' }}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="8" width="17" height="4" /><path d="M5 12v8h14v-8M12 8v12M12 8c-1.5-3.5-5.5-3.5-5.5-1.2C6.5 8 8.5 8 12 8zM12 8c1.5-3.5 5.5-3.5 5.5-1.2C17.5 8 15.5 8 12 8z" /></svg>
+                          <span style={{ borderBottom: '1px solid rgb(71,29,27)' }}>Offrir cette pièce</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p style={{ margin: 0, fontSize: 15, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{l.total}</p>
                 </div>
@@ -1676,20 +1734,22 @@ function ScPanier({ v }) {
                     : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="8" width="17" height="4" /><path d="M5 12v8h14v-8M12 8v12M12 8c-1.5-3.5-5.5-3.5-5.5-1.2C6.5 8 8.5 8 12 8zM12 8c1.5-3.5 5.5-3.5 5.5-1.2C17.5 8 15.5 8 12 8z" /></svg>}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 18, color: 'rgb(71,29,27)' }}>{v.s.gift ? 'Cadeau activé' : 'Offrir cette pièce'}</p>
+                  <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 18, color: 'rgb(71,29,27)' }}>Le plaisir d'offrir</p>
                   {v.s.gift ? (
                     <>
-                      {v.s.gift.to && <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>Pour {v.s.gift.to}</p>}
-                      <p style={{ margin: '8px 0 0', fontSize: 14, lineHeight: 1.6, fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {v.s.gift.message} »</p>
+                      <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>S'applique aux pièces sans message propre{v.s.gift.to ? ' · pour ' + v.s.gift.to : ''}</p>
+                      {v.s.gift.kind === 'message'
+                        ? <p style={{ margin: '8px 0 0', fontSize: 14, lineHeight: 1.6, fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {v.s.gift.message} »</p>
+                        : <p style={{ margin: '8px 0 0', fontSize: 14, color: 'rgb(70,70,70)' }}>Carte vierge</p>}
                       <div style={{ display: 'flex', gap: 16, marginTop: 10 }}>
-                        <button type="button" onClick={v.openGift} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid rgb(71,29,27)' }}>Modifier</button>
-                        <button type="button" onClick={v.removeGift} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid rgba(0,0,0,.3)' }}>Retirer</button>
+                        <button type="button" onClick={() => v.openGift()} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid rgb(71,29,27)' }}>Modifier</button>
+                        <button type="button" onClick={() => v.removeGift()} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(94,94,94)', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid rgba(0,0,0,.3)' }}>Retirer</button>
                       </div>
                     </>
                   ) : (
                     <>
-                      <p style={{ margin: '4px 0 12px', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Un mot de votre main, glissé dans l'écrin.</p>
-                      <Button variant="secondary" size="sm" onClick={v.openGift} style={{ width: '100%' }}>Ajouter un message</Button>
+                      <p style={{ margin: '4px 0 12px', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Accompagnez votre cadeau d'une attention personnelle.</p>
+                      <Button variant="secondary" size="sm" onClick={() => v.openGift()} style={{ width: '100%' }}>Ajouter un message</Button>
                     </>
                   )}
                 </div>
@@ -1697,17 +1757,29 @@ function ScPanier({ v }) {
               {v.s.giftOpen && (
                 <div onClick={v.closeGift} style={{ position: 'fixed', inset: 0, zIndex: 90, background: 'rgba(0,0,0,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'cs-in .2s ease-out' }}>
                   <form onClick={e => e.stopPropagation()} onSubmit={v.saveGift} role="dialog" aria-modal="true" aria-label="Votre message" style={{ background: 'rgb(255,251,248)', width: 'min(520px,100%)', maxHeight: '100%', overflow: 'auto', padding: 'clamp(22px,4vw,36px)' }}>
-                    <h2 style={{ margin: '0 0 6px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 26, color: 'rgb(71,29,27)' }}>Votre message</h2>
-                    <p style={{ margin: '0 0 22px', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Il accompagnera la pièce, de la part de la Maison.</p>
+                    <h2 style={{ margin: '0 0 6px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 26, color: 'rgb(71,29,27)' }}>{v.giftModalTitre}</h2>
+                    <p style={{ margin: '0 0 22px', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>{v.s.giftTarget ? 'Cette carte accompagnera cette pièce uniquement.' : 'Cette carte accompagnera les pièces sans message propre.'}</p>
+                    <div role="radiogroup" aria-label="Type de carte" style={{ display: 'flex', gap: 12, marginBottom: 22 }}>
+                      {[{ k: 'message', l: 'Message' }, { k: 'vierge', l: 'Carte vierge' }].map(o => (
+                        <button key={o.k} type="button" role="radio" aria-checked={v.s.giftKind === o.k} onClick={() => v.setGiftKind(o.k)}
+                          style={{ flex: 1, padding: '12px 10px', background: v.s.giftKind === o.k ? 'rgba(71,29,27,.06)' : 'none', cursor: 'pointer', border: 0,
+                            boxShadow: 'inset 0 0 0 ' + (v.s.giftKind === o.k ? '2px rgb(71,29,27)' : '1px rgba(0,0,0,.2)'),
+                            color: v.s.giftKind === o.k ? 'rgb(71,29,27)' : 'rgb(94,94,94)', fontSize: 14 }}>{o.l}</button>
+                      ))}
+                    </div>
                     <label style={{ display: 'block', fontSize: 13, color: 'rgb(94,94,94)' }}>Prénom du destinataire (facultatif)
                       <input type="text" value={v.s.giftTo} onChange={v.setGiftTo} style={{ display: 'block', marginTop: 8, width: '100%', height: 48, padding: '0 14px', background: 'rgb(255,255,255)', border: 0, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)', fontSize: 16, color: 'rgb(0,0,0)' }} />
                     </label>
+                    {v.s.giftKind === 'vierge' ? (
+                      <p style={{ margin: '18px 0 0', padding: 14, background: 'rgb(255,255,255)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Une carte vierge sera glissée dans l'écrin, pour que vous y écriviez vous-même.</p>
+                    ) : (
                     <label style={{ display: 'block', marginTop: 18, fontSize: 13, color: 'rgb(94,94,94)' }}>Votre message
                       <textarea autoFocus rows={5} value={v.s.giftMsg} onChange={v.setGiftMsg} maxLength={250} style={{ display: 'block', marginTop: 8, width: '100%', padding: 14, background: 'rgb(255,255,255)', border: 0, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)', fontSize: 16, lineHeight: 1.6, color: 'rgb(0,0,0)', resize: 'vertical', fontFamily: 'inherit' }} />
                     </label>
-                    <p style={{ margin: '6px 0 0', fontSize: 12, textAlign: 'right', color: 'rgb(94,94,94)' }}>{v.s.giftMsg.length} / 250</p>
+                    )}
+                    {v.s.giftKind === 'message' && <p style={{ margin: '6px 0 0', fontSize: 12, textAlign: 'right', color: 'rgb(94,94,94)' }}>{v.s.giftMsg.length} / 250</p>}
                     <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap', marginTop: 20 }}>
-                      <Button variant="primary" type="submit" disabled={!v.s.giftMsg.trim()}>Enregistrer le message</Button>
+                      <Button variant="primary" type="submit" disabled={v.s.giftKind === 'message' && !v.s.giftMsg.trim()}>{v.s.giftKind === 'vierge' ? 'Enregistrer' : 'Enregistrer le message'}</Button>
                       <button type="button" onClick={v.closeGift} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Annuler</button>
                     </div>
                   </form>
@@ -1919,10 +1991,17 @@ function ScPaiement({ v }) {
               <p style={{ margin: '0 0 12px', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Mode de paiement</p>
               <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{v.paymentLabel}</p>
             </div>
-            {v.orderGift && (
+            {v.orderGifts.length > 0 && (
               <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 22 }}>
-                <p style={{ margin: '0 0 12px', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Message cadeau{v.orderGift.to ? ' — pour ' + v.orderGift.to : ''}</p>
-                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {v.orderGift.message} »</p>
+                <p style={{ margin: '0 0 12px', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Cartes cadeau</p>
+                {v.orderGifts.map((l, i) => (
+                  <div key={i} style={{ marginTop: i ? 14 : 0 }}>
+                    <p style={{ margin: 0, fontSize: 14, color: 'rgb(71,29,27)' }}>{l.name}{l.gift.to ? ' · pour ' + l.gift.to : ''}</p>
+                    {l.gift.kind === 'message'
+                      ? <p style={{ margin: '4px 0 0', fontSize: 14, lineHeight: 1.6, fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {l.gift.message} »</p>
+                      : <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>Carte vierge</p>}
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -2220,7 +2299,7 @@ function ScContact({ v }) {
       <div style={{ marginTop: 'clamp(32px,4vw,48px)', padding: 'clamp(24px,4vw,44px)', background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <div>
           <p style={{ margin: '0 0 8px', fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,3vw,30px)' }}>La Maison vous accompagne</p>
-          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'rgba(255,255,255,.82)', maxWidth: '52ch' }}>Les ambassadeurs Carole Sessegnon sont à votre écoute pour vous guider dans vos choix, vous aider à passer commande et vous proposer des idées cadeau. N'hésitez pas à nous contacter, nous serons là pour vous aider.</p>
+          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: 'rgba(255,255,255,.82)', maxWidth: '52ch' }}>Les ambassadeurs Carole Sessegnon sont à votre écoute pour vous guider dans vos choix, vous aider à passer commande et vous proposer des idées cadeaux. N'hésitez pas à nous contacter, nous serons ravis de vous aider.</p>
         </div>
         <Button variant="light" onClick={v.goContactRdv} style={v.btnUpper.style}>Échanger avec la Maison</Button>
       </div>
@@ -2417,6 +2496,14 @@ function ScCommande({ v }) {
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 19, color: 'rgb(71,29,27)' }}>{l.name}</p>
               <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{l.material} — qté {l.qty}</p>
+              {l.gift && (
+                <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(71,29,27,.04)', fontSize: 13, lineHeight: 1.6 }}>
+                  <p style={{ margin: 0, color: 'rgb(71,29,27)' }}>Offerte{l.gift.to ? ' · pour ' + l.gift.to : ''}</p>
+                  {l.gift.kind === 'message'
+                    ? <p style={{ margin: '4px 0 0', fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {l.gift.message} »</p>
+                    : <p style={{ margin: '4px 0 0', color: 'rgb(94,94,94)' }}>Carte vierge</p>}
+                </div>
+              )}
             </div>
             <p style={{ margin: 0, fontSize: 15, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{l.total}</p>
           </div>
@@ -2434,12 +2521,6 @@ function ScCommande({ v }) {
           <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>{o.paiement}</p>
         </div>
       </div>
-      {o.gift && (
-        <div style={{ marginTop: 36 }}>
-          <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Message cadeau{o.gift.to ? ' — pour ' + o.gift.to : ''}</p>
-          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {o.gift.message} »</p>
-        </div>
-      )}
 
       <div style={{ marginTop: 36, maxWidth: 400, marginLeft: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 15, padding: '8px 0' }}><span>Sous-total</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{o.subtotal}</span></div>

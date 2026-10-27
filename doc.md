@@ -8,7 +8,7 @@ Seules les modifications qui touchent des données à gérer côté back-office 
 
 ## 1. Commande : message cadeau
 
-Commit `128a34b`
+Commit `128a34b` — ⚠️ **remplacé par le point 11** (une carte par pièce)
 
 Une commande peut porter un message cadeau.
 
@@ -151,6 +151,39 @@ Commit du 27/10
 - Le choix est mémorisé uniquement dans le navigateur du visiteur (`localStorage`), pour ne plus réafficher la bannière. **Rien n'est envoyé ni enregistré côté serveur** : pas de champ, pas de table à prévoir pour l'instant.
 - Le site n'a aujourd'hui aucun cookie de mesure d'audience ou publicitaire réellement actif derrière ce choix — la bannière anticipe un futur outil (analytics) qui n'est pas encore branché. Si un tel outil est ajouté plus tard, il devra respecter le choix mémorisé (ne pas se charger si « Refuser »).
 - Si la Maison a besoin un jour de prouver le consentement (obligation légale, audit), il faudra faire remonter ce choix au serveur avec sa date — ce n'est pas le cas actuellement.
+
+## 11. Cadeau : une carte par pièce (remplace le cadeau unique)
+
+Commit du 27/10
+
+**Ceci remplace le point 1.** Le message cadeau n'est plus unique pour toute la commande : **chaque pièce porte sa propre carte**.
+
+### Ce que reçoit le back-office
+
+Chaque ligne de commande porte un champ `gift`, soit `null`, soit :
+
+| Champ | Type | Règle |
+|---|---|---|
+| `gift.kind` | `"message"` ou `"vierge"` | `"vierge"` = carte vierge, à remplir à la main par le client |
+| `gift.message` | texte | 250 caractères maximum ; **vide** quand `kind` vaut `"vierge"` |
+| `gift.to` | texte | prénom du destinataire, facultatif, 60 caractères maximum |
+
+- **Une seule carte par ligne**, quelle que soit la quantité. Une ligne à 2 exemplaires reçoit une carte, pas deux.
+- L'ancien champ `gift` au niveau de la commande n'est plus la source : il ne faut plus le lire.
+
+### Point important : la règle d'héritage ne concerne pas le back-office
+
+Dans le panier, le client dispose de deux niveaux :
+
+1. une carte **globale** (encadré Récapitulatif, « Le plaisir d'offrir ») ;
+2. une carte **par pièce**, qui prime sur la globale ;
+3. un retrait par pièce (« Ne pas offrir cette pièce »), qui l'emporte sur les deux.
+
+**Cette résolution est faite côté site avant l'envoi.** Le back-office reçoit déjà le résultat ligne par ligne et n'a aucune logique de repli à implémenter.
+
+### Reste à faire
+
+Rien n'est encore enregistré : comme le reste du site, la commande ne vit que dans la page. Le back-office devra stocker `gift` par ligne de commande et le faire remonter sur le bon de préparation, pour que l'atelier glisse la bonne carte dans chaque écrin.
 
 ## Sans impact back-office
 
