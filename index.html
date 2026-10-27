@@ -462,6 +462,7 @@ const LEGAL = {
   rgpd: { title: "Politique de confidentialité", body: [
     "Texte provisoire. La Maison collecte uniquement les données nécessaires au traitement des commandes et, si vous le souhaitez, à l'association d'une pièce à votre nom : prénom, nom, e-mail et pays.",
     "Texte provisoire. Les codes d'activation privés ne sont jamais exposés publiquement et ne servent qu'à la vérification d'authenticité.",
+    "Texte provisoire. Le site utilise un cookie technique pour mémoriser votre choix d'acceptation des cookies. Vous pouvez accepter ou refuser ce suivi via la bannière affichée lors de votre première visite.",
     `Texte provisoire. Vous disposez d'un droit d'accès, de rectification et de suppression de vos données, exerçable à ${CONTACT.email}.`
   ] }
 };
@@ -544,6 +545,17 @@ function App() {
     } catch (e) { return false; }
     return true;
   });
+
+  const [cookieChoice, setCookieChoiceState] = useState(() => {
+    try {
+      if (typeof window === 'undefined') return null;
+      return window.localStorage.getItem('cs_cookies') || null;
+    } catch (e) { return null; }
+  });
+  const setCookieChoice = choice => {
+    setCookieChoiceState(choice);
+    try { window.localStorage.setItem('cs_cookies', choice); } catch (e) {}
+  };
 
   const set = patch => setS(p => ({ ...p, ...(typeof patch === 'function' ? patch(p) : patch) }));
   const go = (route, extra = {}) => { setS(p => ({ ...p, route, menu: false, search: false, ...extra })); try { window.scrollTo(0, 0); } catch (e) {} };
@@ -776,6 +788,7 @@ function App() {
     goLegal: () => go('legal', { legal: 'mentions' }),
     goCGV: () => go('legal', { legal: 'cgv' }),
     goRGPD: () => go('legal', { legal: 'rgpd' }),
+    cookieChoice, acceptCookies: () => setCookieChoice('accepted'), rejectCookies: () => setCookieChoice('rejected'),
     shown, countLabel: shown.length + (shown.length > 1 ? ' pièces' : ' pièce'),
     toggleFilters: () => setS(st => ({ ...st, filters: !st.filters })),
     categories: CATS.map(c => ({
@@ -1015,6 +1028,21 @@ function Shell({ v }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ fontSize: 14, maxWidth: 220 }}>Cette pièce a été ajoutée au panier</span>
             <button type="button" onClick={v.goPanier} style={{ alignSelf: 'flex-start', flexShrink: 0, background: 'none', border: 0, padding: 0, color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 13, letterSpacing: '.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,.6)' }}>Voir le panier</button>
+          </div>
+        </div>
+      )}
+
+      {!v.cookieChoice && (
+        <div role="region" aria-label="Gestion des cookies" style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 95, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(18px,3vw,26px) clamp(16px,4vw,40px)', boxShadow: '0 -14px 30px -10px rgba(0,0,0,.35)', animation: 'cs-in .25s ease-out' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, maxWidth: 640, color: 'rgba(255,255,255,.9)' }}>
+              Ce site utilise des cookies pour améliorer votre expérience. Vous pouvez les accepter ou les refuser.
+              {' '}<button type="button" onClick={v.goRGPD} style={{ background: 'none', border: 0, padding: 0, margin: 0, color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgba(255,255,255,.6)' }}>En savoir plus</button>
+            </p>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              <button type="button" onClick={v.rejectCookies} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgba(255,255,255,.6)' }}>Refuser</button>
+              <Button variant="secondary" size="sm" onClick={v.acceptCookies} style={{ background: 'rgb(255,255,255)', color: 'rgb(71,29,27)' }}>Accepter</Button>
+            </div>
           </div>
         </div>
       )}

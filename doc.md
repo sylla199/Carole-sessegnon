@@ -143,6 +143,15 @@ Commit du 27/10
 - **Moyens de paiement** : « Carte de crédit » est renommé **« Carte bancaire »** (cohérent avec le reste du site). **« Paiement en espèces » est retiré** : il ne reste que Carte bancaire et Mobile money. Si le back-office avait prévu une réconciliation pour les règlements en espèces à la livraison, elle n'a plus lieu d'être pour les nouvelles commandes.
 - **Commande sans compte** : vérifié, déjà possible aujourd'hui — aucune étape du tunnel n'exige une connexion, le bouton « Se connecter » reste une option. Rien à changer ici, mentionné pour mémoire.
 
+## 12. Bannière de cookies
+
+Commit du 27/10
+
+- Une bannière s'affiche en bas de toutes les pages à la première visite, avec deux boutons **Accepter** / **Refuser** et un lien vers la Politique de confidentialité.
+- Le choix est mémorisé uniquement dans le navigateur du visiteur (`localStorage`), pour ne plus réafficher la bannière. **Rien n'est envoyé ni enregistré côté serveur** : pas de champ, pas de table à prévoir pour l'instant.
+- Le site n'a aujourd'hui aucun cookie de mesure d'audience ou publicitaire réellement actif derrière ce choix — la bannière anticipe un futur outil (analytics) qui n'est pas encore branché. Si un tel outil est ajouté plus tard, il devra respecter le choix mémorisé (ne pas se charger si « Refuser »).
+- Si la Maison a besoin un jour de prouver le consentement (obligation légale, audit), il faudra faire remonter ce choix au serveur avec sa date — ce n'est pas le cas actuellement.
+
 ## Sans impact back-office
 
 Mise en page de la fiche produit (galerie, structure, alignements, centrage des sections, bouton « Ajouter aux favoris ») et de la FAQ, y compris un bug corrigé où les questions restaient invisibles après un changement de catégorie ; contenu supplémentaire ajouté dans les quatre catégories de FAQ existantes (pas de nouvelle catégorie) ; retrait de la ligne de matière (« Cuir de vachette, tannage végétal »…) de la fiche produit — la donnée existe toujours et reste utilisée dans le panier et la commande, seul l'affichage change ; reformulation du toast d'ajout au panier (« Cette pièce a été ajoutée au panier ») ; retrait du bouton « Acheter maintenant », du sélecteur de quantité et de la ligne de repères Atelier / Numérotation / Passeport numérique sur la fiche produit ; renommage « Passeport numérique » ; corrections d'orthographe ; footer, newsletter et page La Maison.
