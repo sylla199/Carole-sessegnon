@@ -1,6 +1,6 @@
 # Modifications front impactant le back-office
 
-Période : 22 – 24 octobre 2026
+Période : 22 – 27 octobre 2026
 
 Seules les modifications qui touchent des données à gérer côté back-office sont listées. Les ajustements de mise en page et de texte ne sont pas concernés.
 
@@ -100,6 +100,27 @@ Commits `5b5f684`, `757b30c`, `4f1c981`, et un passage ultérieur non numéroté
 Commit du 24/10 (non numéroté)
 
 - Le champ « Pièce jointe » est resté un envoi de fichier classique (un seul fichier, aucun type ni poids limité côté interface) ; seul son habillage visuel a changé. Pas de nouveau champ ni de changement de contrat de données pour le back-office.
+
+## 10. Coordonnées de contact : source unique
+
+Commit du 27/10
+
+- Les quatre cartes de canaux de la page Contact (WhatsApp, Téléphone, Chat en direct, Email) sont supprimées. Elles étaient décoratives : aucun lien, texte générique répété. **« Chat en direct » disparaît** — aucun chat n'était branché derrière, et rien n'est prévu côté back-office.
+- WhatsApp et le téléphone sont repliés dans le bloc latéral de la page Contact, et deviennent cliquables (`mailto:`, `tel:`, `wa.me`).
+- **Point important** : l'e-mail et le téléphone étaient écrits en dur à cinq endroits du site. Ils sont désormais regroupés dans une constante unique `CONTACT` en tête de `index.html` :
+
+```js
+const CONTACT = {
+  email: "contact@carolesessegnon.com",
+  tel: "+225 07 20 00 95 20",
+  telBrut: "2250720009520",        // pour tel: et wa.me
+  horaires: "Lundi – samedi, 9h – 18h (GMT)"
+};
+```
+
+- Le bloc Contact, les mentions légales, la réponse FAQ « Puis-je vous joindre par téléphone ou par WhatsApp ? » et le message de blocage du passeport numérique y puisent tous. **Changer le numéro ou l'e-mail à un seul endroit le change partout sur le site.**
+- Le numéro WhatsApp est le même que le numéro de téléphone. Si la Maison ouvre une ligne WhatsApp distincte, il faudra ajouter un champ séparé dans cette constante.
+- Si ces coordonnées doivent un jour être pilotées depuis le back-office, c'est cette constante qu'il faudra alimenter.
 
 ## Sans impact back-office
 

@@ -412,20 +412,41 @@ function Oval({ p, ar = '.68', ph = 'Photo produit — cadrage ovale' }) {
 
 /* ================================ data ================================ */
 const PRODUCTS = [
-  { id: 'huperano', name: 'Huperano', tagline: "Attire les regards sans jamais voler la lumière à celle qui le porte", price: 420000, cat: 'Sacs', material: "Cuir de vachette, tannage végétal", hasTeinte: true,
+  { id: 'huperano', name: 'Huperano', tagline: "Attire les regards sans jamais voler la lumière à celle qui le porte", price: 420000, cat: 'Sacs', material: "Cuir de vachette, tannage végétal",
+    variants: [
+      { label: 'Noir Ébène', hex: '#2E2724', slot: 'cs-p-huperano' },
+      { label: 'Cuir naturel', hex: '#C2A079', slot: 'cs-p-huperano-alt' },
+      { label: 'Bordeaux', hex: '#6A2430', slot: 'cs-p-huperano' }
+    ],
     story: { lead: "Une ouverture en éventail, qui part du médaillon et s'ouvre en rayons.", body: "Chaque rayon est coupé, paré puis cousu un à un : la découpe ne tolère aucune reprise, et c'est ce qui donne à la Huperano sa ligne tendue. Tenue à la main ou portée au bras, elle passe du jour au soir sans jamais changer de voix." } },
-  { id: 'radah', name: 'Radah', tagline: "Elle règne à chaque pas", price: 385000, cat: 'Pochettes', material: "Cuir bordeaux, doublure daim", hasTeinte: false,
+  { id: 'radah', name: 'Radah', tagline: "Elle règne à chaque pas", price: 385000, cat: 'Pochettes', material: "Cuir bordeaux, doublure daim",
     story: { lead: "Radah porte son nom comme une démarche : droite, calme, assumée.", body: "Le cuir enveloppe la pièce d'un seul tenant, sans couture apparente sur le dessus. À l'intérieur, la doublure daim fait le reste, en silence." } },
-  { id: 'nafi', name: 'Nafi', tagline: "Le geste juste, répété mille fois", price: 295000, cat: 'Petite maroquinerie', material: "Cuir naturel patiné à la main", hasTeinte: false,
+  { id: 'nafi', name: 'Nafi', tagline: "Le geste juste, répété mille fois", price: 295000, cat: 'Petite maroquinerie', material: "Cuir naturel patiné à la main",
     story: { lead: "Nafi est née de la répétition : le même geste, mille fois, jusqu'à ce que la mesure devienne juste.", body: "Le cuir naturel est patiné à la main avant l'assemblage, ce qui explique que deux pièces ne soient jamais tout à fait identiques. C'est celle que l'on glisse dans la main sans y penser, et que l'on garde des années." } },
-  { id: 'sikadi', name: 'Sikadi', tagline: "Un cuir qui garde la mémoire du jour", price: 510000, cat: 'Sacs', material: "Cuir grainé, ferrures bronze", hasTeinte: true,
+  { id: 'sikadi', name: 'Sikadi', tagline: "Un cuir qui garde la mémoire du jour", price: 510000, cat: 'Sacs', material: "Cuir grainé, ferrures bronze",
+    variants: [
+      { label: 'Noir Ébène', hex: '#2E2724', slot: 'cs-p-sikadi' },
+      { label: 'Cuir naturel', hex: '#C2A079', slot: 'cs-p-sikadi-alt' },
+      { label: 'Bordeaux', hex: '#6A2430', slot: 'cs-p-sikadi' }
+    ],
     story: { lead: "Le grain de Sikadi retient la lumière comme il retient les jours.", body: "Le cuir fonce, s'adoucit, prend peu à peu la trace de vos gestes ; les ferrures bronze se patinent au même rythme. C'est une pièce qui ne ressemble vraiment à rien tant qu'on ne l'a pas portée." } },
-  { id: 'ayaba', name: 'Ayaba', tagline: "Portée haut, sans jamais être levée", price: 460000, cat: 'Sacs', soon: true, material: "Cuir tressé, pièce d'atelier", hasTeinte: false,
+  { id: 'ayaba', name: 'Ayaba', tagline: "Portée haut, sans jamais être levée", price: 460000, cat: 'Sacs', soon: true, material: "Cuir tressé, pièce d'atelier",
     story: { lead: "Ayaba se porte haut, et se fabrique lentement.", body: "Le tressage se monte brin par brin sur plusieurs jours d'atelier et n'autorise aucune approximation : une seule erreur de tension se voit sur toute la pièce. C'est à ce titre une pièce d'atelier à part entière." } },
-  { id: 'wele', name: 'Wèlè', tagline: "Discrète le matin, souveraine le soir", price: 340000, cat: 'Pochettes', material: "Cuir souple, fermoir aimanté", hasTeinte: true,
+  { id: 'wele', name: 'Wèlè', tagline: "Discrète le matin, souveraine le soir", price: 340000, cat: 'Pochettes', material: "Cuir souple, fermoir aimanté",
+    variants: [
+      { label: 'Noir Ébène', hex: '#2E2724', slot: 'cs-p-wele' },
+      { label: 'Cuir naturel', hex: '#C2A079', slot: 'cs-p-wele-alt' },
+      { label: 'Bordeaux', hex: '#6A2430', slot: 'cs-p-wele' }
+    ],
     story: { lead: "Wèlè change d'heure avec vous.", body: "Glissée sous le bras le matin, elle se détache le soir d'un seul geste, son fermoir aimanté cédant sans bruit. Le cuir souple a été choisi pour cela : il se plie à la journée au lieu de la contraindre." } }
 ];
 const CATS = ['Tout', 'Sacs', 'Pochettes', 'Petite maroquinerie'];
+const CONTACT = {
+  email: "contact@carolesessegnon.com",
+  tel: "+225 07 20 00 95 20",
+  telBrut: "2250720009520",
+  horaires: "Lundi – samedi, 9h – 18h (GMT)"
+};
 const LEGAL = {
   mentions: { title: "Mentions légales", body: [
     "Texte provisoire. Éditeur du site : Maison Carole Sessegnon, Abidjan, Côte d'Ivoire. Responsable de la publication : la fondatrice.",
@@ -441,7 +462,7 @@ const LEGAL = {
   rgpd: { title: "Politique de confidentialité", body: [
     "Texte provisoire. La Maison collecte uniquement les données nécessaires au traitement des commandes et, si vous le souhaitez, à l'association d'une pièce à votre nom : prénom, nom, e-mail et pays.",
     "Texte provisoire. Les codes d'activation privés ne sont jamais exposés publiquement et ne servent qu'à la vérification d'authenticité.",
-    "Texte provisoire. Vous disposez d'un droit d'accès, de rectification et de suppression de vos données, exerçable à contact@carolesessegnon.com."
+    `Texte provisoire. Vous disposez d'un droit d'accès, de rectification et de suppression de vos données, exerçable à ${CONTACT.email}.`
   ] }
 };
 const REGLES_TENDRESSE = [
@@ -458,7 +479,7 @@ const ACC = [
 const FAQ = [
   { cat: "Contact", q: "Comment puis-je contacter la Maison Carole Sessegnon ?", a: "Chaque pièce de la Maison Carole Sessegnon est confectionnée à la main à partir de cuir sélectionné avec soin. Pour toute question sur nos créations, nos délais de fabrication ou une commande en cours, notre équipe est disponible par e-mail ou via nos réseaux sociaux. Nous nous engageons à vous répondre sous 48 heures." },
   { cat: "Contact", q: "Dans quel délai puis-je espérer recevoir une réponse ?", a: "Texte provisoire. Nous répondons sous 48 heures ouvrées, du lundi au samedi, de 9h à 19h." },
-  { cat: "Contact", q: "Puis-je vous joindre par téléphone ou par WhatsApp ?", a: "Texte provisoire. Oui, un conseiller de la Maison vous répond du lundi au samedi, de 9h à 18h (GMT), au +225 07 20 00 95 20 ou par WhatsApp." },
+  { cat: "Contact", q: "Puis-je vous joindre par téléphone ou par WhatsApp ?", a: `Texte provisoire. Oui, un conseiller de la Maison vous répond du lundi au samedi, de 9h à 18h (GMT), au ${CONTACT.tel} ou par WhatsApp.` },
   { cat: "Contact", q: "Comment suivre une demande déjà envoyée ?", a: "Texte provisoire. Indiquez votre numéro de commande dans le formulaire de contact : l'équipe retrouve votre dossier et vous répond sur le canal que vous avez choisi." },
   { cat: "Les pièces", q: "Comment puis-je en savoir plus sur le cuir utilisé dans vos créations ?", a: "Texte provisoire. Nos cuirs sont sélectionnés avec soin et tannés au végétal ; l'atelier peut vous détailler la provenance de chaque lot." },
   { cat: "Les pièces", q: "Quelles sont les couleurs disponibles ?", a: "Texte provisoire. Chaque pièce est proposée dans plusieurs coloris, par exemple Noir Ébène, Cuir naturel et Bordeaux. Les couleurs disponibles figurent sur la fiche de la pièce." },
@@ -475,18 +496,7 @@ const FAQ = [
   { cat: "Rendez-vous", q: "Puis-je modifier ou annuler mon rendez-vous ?", a: "Texte provisoire. Oui, prévenez la Maison au moins 24 heures à l'avance par e-mail ou par téléphone." }
 ];
 const FAQ_CATS = ["Contact", "Les pièces", "Commandes", "Rendez-vous"];
-const CANAUX = [
-  { k: "WHATSAPP", t: "Contactez-nous sur WhatsApp", d: "CONTACTEZ UN CONSEILLER DE LA MAISON AU : LUNDI – SAMEDI : 9H – 18H (GMT)" },
-  { k: "TELEPHONE", t: "Appelez-nous", d: "CONTACTEZ UN CONSEILLER DE LA MAISON AU : LUNDI – SAMEDI : 9H – 18H (GMT)" },
-  { k: "CHAT EN DIRECT", t: "Envoyez-nous un message", d: "CONTACTEZ UN CONSEILLER DE LA MAISON AU : LUNDI – SAMEDI : 9H – 18H (GMT)" },
-  { k: "EMAIL", t: "Écrivez-nous", d: "NOUS NOUS EFFORÇONS DE VOUS RÉPONDRE SOUS 48 HEURES (JOURS OUVRABLES)." }
-];
 const TUILES = [{ t: "Sacs", c: "Sacs" }, { t: "Pochettes", c: "Pochettes" }, { t: "Maroquineries", c: "Petite maroquinerie" }];
-const TEINTES = [
-  { label: "Noir Ébène", hex: "#2E2724" },
-  { label: "Cuir naturel", hex: "#C2A079" },
-  { label: "Bordeaux", hex: "#6A2430" }
-];
 const VILLES = ["Abidjan", "Bouaké", "Yamoussoukro"];
 const PAYS = ["Côte d'Ivoire", "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre", "Angola", "Arabie saoudite", "Argentine", "Arménie", "Australie", "Autriche", "Azerbaïdjan", "Bahamas", "Bahreïn", "Bangladesh", "Barbade", "Belgique", "Belize", "Bénin", "Bhoutan", "Biélorussie", "Birmanie", "Bolivie", "Bosnie-Herzégovine", "Botswana", "Brésil", "Brunei", "Bulgarie", "Burkina Faso", "Burundi", "Cambodge", "Cameroun", "Canada", "Cap-Vert", "Chili", "Chine", "Chypre", "Colombie", "Comores", "Congo", "Congo (RDC)", "Corée du Nord", "Corée du Sud", "Costa Rica", "Croatie", "Cuba", "Danemark", "Djibouti", "Dominique", "Égypte", "Émirats arabes unis", "Équateur", "Érythrée", "Espagne", "Estonie", "Eswatini", "États-Unis", "Éthiopie", "Fidji", "Finlande", "France", "Gabon", "Gambie", "Géorgie", "Ghana", "Grèce", "Grenade", "Guatemala", "Guinée", "Guinée-Bissau", "Guinée équatoriale", "Guyana", "Haïti", "Honduras", "Hongrie", "Inde", "Indonésie", "Irak", "Iran", "Irlande", "Islande", "Israël", "Italie", "Jamaïque", "Japon", "Jordanie", "Kazakhstan", "Kenya", "Kirghizistan", "Kiribati", "Kosovo", "Koweït", "Laos", "Lesotho", "Lettonie", "Liban", "Liberia", "Libye", "Liechtenstein", "Lituanie", "Luxembourg", "Macédoine du Nord", "Madagascar", "Malaisie", "Malawi", "Maldives", "Mali", "Malte", "Maroc", "Maurice", "Mauritanie", "Mexique", "Micronésie", "Moldavie", "Monaco", "Mongolie", "Monténégro", "Mozambique", "Namibie", "Nauru", "Népal", "Nicaragua", "Niger", "Nigeria", "Norvège", "Nouvelle-Zélande", "Oman", "Ouganda", "Ouzbékistan", "Pakistan", "Palaos", "Palestine", "Panama", "Papouasie-Nouvelle-Guinée", "Paraguay", "Pays-Bas", "Pérou", "Philippines", "Pologne", "Portugal", "Qatar", "République centrafricaine", "République dominicaine", "République tchèque", "Roumanie", "Royaume-Uni", "Russie", "Rwanda", "Saint-Marin", "Sainte-Lucie", "Salomon", "Salvador", "Samoa", "São Tomé-et-Principe", "Sénégal", "Serbie", "Seychelles", "Sierra Leone", "Singapour", "Slovaquie", "Slovénie", "Somalie", "Soudan", "Soudan du Sud", "Sri Lanka", "Suède", "Suisse", "Suriname", "Syrie", "Tadjikistan", "Tanzanie", "Tchad", "Thaïlande", "Timor oriental", "Togo", "Tonga", "Trinité-et-Tobago", "Tunisie", "Turkménistan", "Turquie", "Tuvalu", "Ukraine", "Uruguay", "Vanuatu", "Vatican", "Venezuela", "Vietnam", "Yémen", "Zambie", "Zimbabwe", "Autre"];
 const BOUTIQUES = [
@@ -513,7 +523,7 @@ function App() {
     pid: 'huperano', open: 0, cart: [{ id: 'radah', qty: 1 }], step: 1,
     pstep: 'intro', tries: 0, perr: '', assoc: null, skipped: false,
     authTab: 'connexion', authMsg: '', contactSent: false, legal: 'mentions', pwdVisible: false, loggedIn: false,
-    fav: [], faq: -1, cIdx: 0, teinte: 'Noir Ébène', q: '', savedProfile: false, cardImg: {},
+    fav: [], faq: -1, cIdx: 0, q: '', savedProfile: false, cardImg: {},
     prof: 'infos', mode: 'domicile', ville: 'Abidjan', boutique: 'Riviera CIAD',
     orderId: '#CS-2026-9482',
     factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
@@ -652,15 +662,11 @@ function App() {
     reglesTendresse: REGLES_TENDRESSE,
     faqItems: FAQ.map((it, i) => ({ cat: it.cat, q: it.q, a: it.a, open: s.faq === i, toggle: () => setS(st => ({ ...st, faq: st.faq === i ? -1 : i })) })),
     faqCats: FAQ_CATS,
-    canaux: CANAUX,
+    contact: CONTACT,
     tuiles: TUILES.map(t => ({ label: t.t, slot: 'cs-cat-' + t.c, pick: () => go('pieces', { cat: t.c }) })),
     carItems: dec.slice(s.cIdx).concat(dec.slice(0, s.cIdx)).slice(0, 4),
     carPrev: () => setS(st => ({ ...st, cIdx: (st.cIdx + dec.length - 1) % dec.length })),
     carNext: () => setS(st => ({ ...st, cIdx: (st.cIdx + 1) % dec.length })),
-    teintes: TEINTES.map(t => ({
-      label: t.label, hex: t.hex, active: s.teinte === t.label, pick: () => set({ teinte: t.label })
-    })),
-    teinte: s.teinte,
     related: dec.filter(p => p.id !== s.pid).slice(0, 4),
     panierTitle: 'Panier (' + s.cart.reduce((t, l) => t + l.qty, 0) + ')',
     clearCart: () => set({ cart: [] }),
@@ -839,7 +845,7 @@ function App() {
         setS(st => {
           const tries = st.tries + 1;
           return { ...st, tries, perr: tries >= 5
-            ? "Pour des raisons de sécurité, l'accès au passeport numérique a été temporairement suspendu après plusieurs tentatives infructueuses. Nous vous invitons à contacter la Maison à l'adresse contact@carolesessegnon.com afin de bénéficier d'une assistance."
+            ? `Pour des raisons de sécurité, l'accès au passeport numérique a été temporairement suspendu après plusieurs tentatives infructueuses. Nous vous invitons à contacter la Maison à l'adresse ${CONTACT.email} afin de bénéficier d'une assistance.`
             : "Le numéro de série et le code d'activation ne correspondent pas. Tentative " + tries + " sur 5." };
         });
       }
@@ -1008,7 +1014,7 @@ function Shell({ v }) {
         <div style={{ position: 'fixed', right: 'clamp(14px,4vw,32px)', top: 'calc(' + v.headerH + ' + clamp(10px,2vw,20px))', zIndex: 70, display: 'flex', alignItems: 'flex-start', gap: 12, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: '14px 20px', boxShadow: '0 14px 30px -10px rgba(0,0,0,.4)', animation: 'cs-in .25s ease-out', maxWidth: 'calc(100vw - 28px)' }}>
           <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1" style={{ flexShrink: 0, marginTop: 2 }}><path d="M1 5h14l-1 12H2L1 5Z" /><path d="M5.5 5V3.5a2.5 2.5 0 0 1 5 0V5" /></svg>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={{ fontSize: 14, whiteSpace: 'nowrap' }}>Ajouté au panier</span>
+            <span style={{ fontSize: 14, maxWidth: 220 }}>Cette pièce a été ajoutée au panier</span>
             <button type="button" onClick={v.goPanier} style={{ alignSelf: 'flex-start', flexShrink: 0, background: 'none', border: 0, padding: 0, color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 13, letterSpacing: '.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,.6)' }}>Voir le panier</button>
           </div>
         </div>
@@ -1445,12 +1451,14 @@ function ScPieces({ v }) {
 
 function ScProduit({ v }) {
   const c = v.current;
-  const images = [c.slot, 'cs-t1', 'cs-t2', 'cs-t3'];
+  const [variantIdx, setVariantIdx] = useState(0);
+  const variant = c.variants ? c.variants[variantIdx] : null;
+  const images = [(variant && variant.slot) || c.slot, 'cs-t1', 'cs-t2', 'cs-t3'];
   const labels = ['Photo produit principale', 'Détail 1', 'Détail 2', 'Détail 3'];
   const [imgIdx, setImgIdx] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [notifySent, setNotifySent] = useState(false);
-  useEffect(() => { setImgIdx(0); setLightbox(false); setNotifySent(false); }, [c.id]);
+  useEffect(() => { setImgIdx(0); setLightbox(false); setNotifySent(false); setVariantIdx(0); }, [c.id]);
   const submitNotify = e => { e.preventDefault(); setNotifySent(true); };
   const prevImg = () => setImgIdx(i => (i - 1 + images.length) % images.length);
   const nextImg = () => setImgIdx(i => (i + 1) % images.length);
@@ -1480,9 +1488,18 @@ function ScProduit({ v }) {
         <p style={{ margin: '18px 0 0', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(19px,2vw,23px)', lineHeight: 1.45, color: 'rgba(71,29,27,.75)', maxWidth: '30ch', textWrap: 'pretty' }}>{c.tagline}</p>
         <div style={{ width: 'min(100%,260px)', height: 1, background: 'rgba(71,29,27,.18)', margin: 'clamp(28px,3.4vw,38px) 0' }}></div>
         <p style={{ margin: 0, fontSize: 19, letterSpacing: '.06em', color: 'rgb(0,0,0)', fontVariantNumeric: 'tabular-nums' }}>{c.priceLabel}</p>
-        <p style={{ margin: '12px 0 0', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{c.material}</p>
-        {c.hasTeinte && (
-          <p style={{ margin: '10px 0 0', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Couleur — <span style={{ color: 'rgb(71,29,27)' }}>{v.teinte}</span></p>
+        {c.variants && (
+          <div style={{ marginTop: 'clamp(22px,2.8vw,30px)' }}>
+            <p style={{ margin: '0 0 14px', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Couleur — <span style={{ color: 'rgb(71,29,27)' }}>{variant.label}</span></p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {c.variants.map((vr, i) => (
+                <button key={i} type="button" onClick={() => { setVariantIdx(i); setImgIdx(0); }} aria-label={vr.label} aria-pressed={i === variantIdx} title={vr.label} style={{
+                  width: 30, height: 30, padding: 0, border: 0, cursor: 'pointer', background: vr.hex,
+                  boxShadow: i === variantIdx ? '0 0 0 2px rgb(252,249,248), 0 0 0 3px rgb(71,29,27)' : 'inset 0 0 0 1px rgba(0,0,0,.2)'
+                }}></button>
+              ))}
+            </div>
+          </div>
         )}
 
         {c.available && (
@@ -1980,7 +1997,7 @@ function ScPasseport({ v }) {
                     <>
                       <p style={{ margin: '0 0 8px', fontWeight: 600 }}>Vérification suspendue</p>
                       <p style={{ margin: '0 0 10px' }}>Pour des raisons de sécurité, l'accès au passeport numérique a été temporairement suspendu après plusieurs tentatives infructueuses.</p>
-                      <p style={{ margin: 0 }}>Nous vous invitons à contacter la Maison à l'adresse <a href="mailto:contact@carolesessegnon.com" style={{ color: 'inherit', textDecoration: 'underline' }}>contact@carolesessegnon.com</a> afin de bénéficier d'une assistance.</p>
+                      <p style={{ margin: 0 }}>Nous vous invitons à contacter la Maison à l'adresse <a href={'mailto:' + CONTACT.email} style={{ color: 'inherit', textDecoration: 'underline' }}>{CONTACT.email}</a> afin de bénéficier d'une assistance.</p>
                     </>
                   ) : <p style={{ margin: 0 }}>{v.pErr}</p>}
                 </div>
@@ -2156,20 +2173,22 @@ function ScContact({ v }) {
         )}
         <div>
           <p style={eyebrow}>Écrire</p>
-          <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>contact@carolesessegnon.com<br />+225 07 20 00 95 20</p>
+          <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>
+            <a href={'mailto:' + v.contact.email} style={{ color: 'rgb(70,70,70)', textDecoration: 'none', borderBottom: '1px solid rgba(0,0,0,.25)' }}>{v.contact.email}</a>
+          </p>
+          <p style={eyebrow}>Appeler</p>
+          <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>
+            <a href={'tel:+' + v.contact.telBrut} style={{ color: 'rgb(70,70,70)', textDecoration: 'none', borderBottom: '1px solid rgba(0,0,0,.25)' }}>{v.contact.tel}</a>
+            <br />
+            <span style={{ fontSize: 14, color: 'rgb(94,94,94)' }}>{v.contact.horaires}</span>
+          </p>
+          <p style={eyebrow}>WhatsApp</p>
+          <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>
+            <a href={'https://wa.me/' + v.contact.telBrut} target="_blank" rel="noopener noreferrer" style={{ color: 'rgb(70,70,70)', textDecoration: 'none', borderBottom: '1px solid rgba(0,0,0,.25)' }}>Écrire sur WhatsApp</a>
+          </p>
           <p style={eyebrow}>Suivez-nous</p>
           <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)' }}>Instagram — Facebook — Pinterest</p>
         </div>
-      </div>
-
-      <div style={{ marginTop: 'clamp(48px,7vw,90px)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 'clamp(16px,2vw,24px)' }}>
-        {v.canaux.map((c, i) => (
-          <div key={i} style={{ padding: 26, background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)' }}>
-            <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>{c.k}</p>
-            <p style={{ margin: '0 0 12px', fontFamily: 'var(--font-display)', fontSize: 22, color: 'rgb(71,29,27)' }}>{c.t}</p>
-            <p style={{ margin: 0, fontSize: 12, lineHeight: 1.7, letterSpacing: '.06em', color: 'rgb(94,94,94)' }}>{c.d}</p>
-          </div>
-        ))}
       </div>
 
       <div style={{ marginTop: 'clamp(32px,4vw,48px)', padding: 'clamp(24px,4vw,44px)', background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
