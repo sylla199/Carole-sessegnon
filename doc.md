@@ -134,6 +134,15 @@ const CONTACT = {
 - Le numéro WhatsApp est le même que le numéro de téléphone. Si la Maison ouvre une ligne WhatsApp distincte, il faudra ajouter un champ séparé dans cette constante.
 - Si ces coordonnées doivent un jour être pilotées depuis le back-office, c'est cette constante qu'il faudra alimenter.
 
+## 11. Checkout : coordonnées du destinataire, code postal, moyens de paiement
+
+Commit du 27/10
+
+- **Adresse de livraison** : deux nouveaux champs, **e-mail** (facultatif) et **téléphone** (obligatoire) du destinataire — distincts des coordonnées de l'acheteur saisies plus haut dans « Coordonnées ». Objectif : que le livreur puisse joindre la personne qui réceptionne le colis, même si ce n'est pas elle qui a payé (cas d'un cadeau envoyé à quelqu'un d'autre).
+- Nouveau champ **code postal** (facultatif), avec une note affichée sous le champ précisant qu'il ne concerne que les livraisons hors Côte d'Ivoire. Aucun champ « pays » n'a été ajouté : rien ne conditionne automatiquement l'affichage de cette note, c'est une indication textuelle.
+- **Moyens de paiement** : « Carte de crédit » est renommé **« Carte bancaire »** (cohérent avec le reste du site). **« Paiement en espèces » est retiré** : il ne reste que Carte bancaire et Mobile money. Si le back-office avait prévu une réconciliation pour les règlements en espèces à la livraison, elle n'a plus lieu d'être pour les nouvelles commandes.
+- **Commande sans compte** : vérifié, déjà possible aujourd'hui — aucune étape du tunnel n'exige une connexion, le bouton « Se connecter » reste une option. Rien à changer ici, mentionné pour mémoire.
+
 ## Sans impact back-office
 
 Mise en page de la fiche produit (galerie, structure, alignements, centrage des sections, bouton « Ajouter aux favoris ») et de la FAQ, y compris un bug corrigé où les questions restaient invisibles après un changement de catégorie ; contenu supplémentaire ajouté dans les quatre catégories de FAQ existantes (pas de nouvelle catégorie) ; retrait de la ligne de matière (« Cuir de vachette, tannage végétal »…) de la fiche produit — la donnée existe toujours et reste utilisée dans le panier et la commande, seul l'affichage change ; reformulation du toast d'ajout au panier (« Cette pièce a été ajoutée au panier ») ; retrait du bouton « Acheter maintenant », du sélecteur de quantité et de la ligne de repères Atelier / Numérotation / Passeport numérique sur la fiche produit ; renommage « Passeport numérique » ; corrections d'orthographe ; footer, newsletter et page La Maison.
