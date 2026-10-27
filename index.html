@@ -692,15 +692,14 @@ function App() {
     })),
     factSame: s.factSame, factOpen: !s.factSame,
     toggleFact: () => setS(st => ({ ...st, factSame: !st.factSame })),
-    pickCarte: () => set({ moyen: 'carte' }), pickMobile: () => set({ moyen: 'mobile' }), pickEspeces: () => set({ moyen: 'especes' }),
+    pickCarte: () => set({ moyen: 'carte' }), pickMobile: () => set({ moyen: 'mobile' }),
     carteRing: s.moyen === 'carte' ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgb(174,174,174)',
     mobileRing: s.moyen === 'mobile' ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgb(174,174,174)',
-    especesRing: s.moyen === 'especes' ? 'inset 0 0 0 2px rgb(71,29,27)' : 'inset 0 0 0 1px rgb(174,174,174)',
-    carteDot: 'inset 0 0 0 2px rgb(71,29,27)', mobileDot: 'inset 0 0 0 2px rgb(71,29,27)', especesDot: 'inset 0 0 0 2px rgb(71,29,27)',
-    carteOpen: s.moyen === 'carte', mobileOpen: s.moyen === 'mobile', especesOpen: s.moyen === 'especes',
+    carteDot: 'inset 0 0 0 2px rgb(71,29,27)', mobileDot: 'inset 0 0 0 2px rgb(71,29,27)',
+    carteOpen: s.moyen === 'carte', mobileOpen: s.moyen === 'mobile',
     orderNo: s.order ? s.order.no : '', orderDate: s.order ? s.order.date : '',
     orderMode: s.mode === 'retrait' ? ('Retrait en boutique — ' + s.boutique + ', ' + s.ville) : 'Livraison à votre adresse',
-    paymentLabel: ({ carte: 'Carte de crédit', mobile: 'Mobile money', especes: 'Paiement en espèces', paypal: 'PayPal' })[s.moyen] || 'Carte de crédit',
+    paymentLabel: ({ carte: 'Carte bancaire', mobile: 'Mobile money', paypal: 'PayPal' })[s.moyen] || 'Carte bancaire',
     suivreCommande: () => set({ route: 'commande', orderId: 'latest' }),
     q: s.q, setQ: e => set({ q: e.target.value }),
     results: dec.filter(p => !s.q || (p.name + ' ' + p.tagline + ' ' + p.material).toLowerCase().indexOf(s.q.toLowerCase()) >= 0),
@@ -820,7 +819,7 @@ function App() {
       if (e && e.preventDefault) e.preventDefault();
       const no = '#CS-2026-' + String(9000 + Math.floor(Math.random() * 999));
       const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-      const payLabel = ({ carte: 'Carte de crédit', mobile: 'Mobile money', especes: 'Paiement en espèces', paypal: 'PayPal' })[s.moyen] || 'Carte de crédit';
+      const payLabel = ({ carte: 'Carte bancaire', mobile: 'Mobile money', paypal: 'PayPal' })[s.moyen] || 'Carte bancaire';
       const orderLines = lines.map(l => ({ slot: l.slot, name: l.name, material: l.material, qty: l.qty, total: l.total }));
       set({ step: 3, cart: [], gift: null, order: { no, date, payment: payLabel, lines: orderLines, subtotal: sub, shipping: 0, gift: s.gift } });
       try { window.scrollTo(0, 0); } catch (x) {}
@@ -1753,6 +1752,11 @@ function ScPaiement({ v }) {
                     <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
                     <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
                   </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                    <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
+                    <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
                   <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
                   <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15s6-5 6-9A6 6 0 0 0 1 6c0 4 6 9 6 9Z" /><circle cx="7" cy="6" r="2" /></svg>
@@ -1760,6 +1764,10 @@ function ScPaiement({ v }) {
                   </button>
                   {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
                   <label style={st(LABEL)}>Plus de précision<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
+                  <div>
+                    <label style={st(LABEL)}>Code postal (facultatif)<input name="codepostal" style={st(INPUT)} /></label>
+                    <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgb(94,94,94)' }}>Uniquement pour les commandes livrées en dehors de la Côte d'Ivoire.</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -1809,7 +1817,7 @@ function ScPaiement({ v }) {
                     <span style={{ flex: '0 0 auto', position: 'relative', width: 16, height: 16, borderRadius: '50%', boxShadow: v.carteDot }}>
                       {v.carteOpen && <span style={{ position: 'absolute', left: 4, top: 4, width: 8, height: 8, borderRadius: '50%', background: 'rgb(71,29,27)' }}></span>}
                     </span>
-                    <span style={{ fontSize: 16, color: 'rgb(0,0,0)' }}>Carte de crédit</span>
+                    <span style={{ fontSize: 16, color: 'rgb(0,0,0)' }}>Carte bancaire</span>
                   </button>
                   {v.carteOpen && (
                     <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -1836,16 +1844,6 @@ function ScPaiement({ v }) {
                   {v.mobileOpen && (
                     <label style={{ ...st(LABEL), marginTop: 16, display: 'block' }}>Numéro mobile money<input name="mm" inputMode="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
                   )}
-                </div>
-
-                <div style={{ boxShadow: v.especesRing, padding: 20 }}>
-                  <button type="button" onClick={v.pickEspeces} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'none', border: 0, padding: 0, cursor: 'pointer', textAlign: 'left' }}>
-                    <span style={{ flex: '0 0 auto', position: 'relative', width: 16, height: 16, borderRadius: '50%', boxShadow: v.especesDot }}>
-                      {v.especesOpen && <span style={{ position: 'absolute', left: 4, top: 4, width: 8, height: 8, borderRadius: '50%', background: 'rgb(71,29,27)' }}></span>}
-                    </span>
-                    <span style={{ fontSize: 16, color: 'rgb(0,0,0)' }}>Paiement en espèces</span>
-                  </button>
-                  {v.especesOpen && <p style={{ margin: '16px 0 0', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Le montant sera à régler en espèces à la réception de votre commande.</p>}
                 </div>
               </div>
             </div>
