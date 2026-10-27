@@ -1671,7 +1671,7 @@ function ScPanier({ v }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
             <div>
               {v.lines.map((l, i) => (
-                <div key={i} style={{ display: 'flex', gap: 18, padding: '22px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
+                <div key={i} style={{ display: 'flex', gap: 18, alignItems: 'flex-start', padding: '22px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
                   <button type="button" onClick={l.open} aria-label={'Voir ' + l.name} style={{ flex: '0 0 84px', position: 'relative', width: 84, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px', padding: 0, background: 'none', border: 0, cursor: 'pointer' }}>
                     <ImageSlot id={l.slot} shape="circle" placeholder="Photo" />
                   </button>
@@ -2489,7 +2489,7 @@ function ScCommande({ v }) {
       <div>
         <p style={{ margin: '0 0 16px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Pièces</p>
         {o.lines.map((l, i) => (
-          <div key={i} style={{ display: 'flex', gap: 18, padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
+          <div key={i} style={{ display: 'flex', gap: 18, alignItems: 'flex-start', padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
             <div style={{ flex: '0 0 72px', position: 'relative', width: 72, aspectRatio: '.68', overflow: 'hidden', borderRadius: '50%', outline: '1px solid rgba(0,0,0,.1)', outlineOffset: '-1px' }}>
               <ImageSlot id={l.slot} shape="circle" placeholder="Photo" />
             </div>
