@@ -86,14 +86,26 @@ Commit `c9c6718` et `1b0e8a7`
 - Le message de blocage invite à écrire à contact@carolesessegnon.com.
 - Si le back-office gère le déblocage d'une saisie suspendue, la règle des 5 essais s'applique.
 
-## 8. Fiche produit : « Couleur » — affichée, mais plus sélectionnable
+## 8. Fiche produit : couleur — vraies variantes par pièce, de nouveau sélectionnable
 
-Commits `5b5f684`, `757b30c`, `4f1c981`, et un passage ultérieur non numéroté (24/10)
+Commits `5b5f684`, `757b30c`, `4f1c981`, puis remplacé le 27/10
 
-- Le libellé « Teinte » devient « Couleur » (commit `5b5f684`). À l'origine, trois pastilles cliquables permettaient de choisir la couleur.
-- Les pastilles ont ensuite été retirées à la demande de la cliente (commits `757b30c`, `4f1c981`) : la couleur n'est plus modifiable depuis la fiche produit.
-- Une ligne de rappel « Couleur — [valeur] » a été remise en lecture seule, affichée uniquement sur les pièces marquées `hasTeinte: true`.
-- **Point d'attention pour le catalogue** : il n'existe aujourd'hui aucun champ « couleur » propre à chaque pièce dans les données du site — la valeur affichée vient d'un état de démonstration partagé (toujours « Noir Ébène », quelle que soit la pièce), pas d'une donnée produit réelle. Si la couleur doit rester affichée, le back-office devra fournir un champ `couleur` par pièce (ou par variante) pour que cette ligne soit juste.
+Historique court : un sélecteur de couleur existait (commit `5b5f684`), a été retiré à la demande de la cliente (commits `757b30c`, `4f1c981`, la couleur restant affichée en texte seul), puis remis le 27/10 — cette fois avec de vraies variantes par pièce au lieu d'un état de démonstration partagé.
+
+Chaque pièce qui propose plusieurs couleurs porte maintenant un tableau `variants` :
+
+```js
+variants: [
+  { label: 'Noir Ébène',  hex: '#2E2724' },
+  { label: 'Cuir naturel', hex: '#C2A079' },
+  { label: 'Bordeaux',     hex: '#6A2430' }
+]
+```
+
+- Concerne **Huperano, Sikadi et Wèlè** (3 coloris chacune pour l'instant). **Radah, Nafi et Ayaba** n'ont pas de variante de couleur et n'affichent plus rien à cet endroit.
+- La couleur se choisit via une pastille carrée de la couleur réelle (plus de texte seul, plus de cercle) : cliquer dessus change le libellé affiché et la photo principale de la fiche.
+- **Non géré pour l'instant — à prévoir côté back-office si besoin** : le panier et la commande ne retiennent pas la couleur choisie. Le clic sur « Ajouter au panier » n'envoie que l'identifiant de la pièce et la quantité ; la couleur sélectionnée à l'écran n'est pas transmise. Si l'atelier a besoin de savoir quelle couleur préparer, il faudra ajouter un champ `variant` à la ligne de panier et le faire remonter jusqu'à la commande (même logique que le message cadeau, point 1).
+- Le prix et le stock restent communs à toutes les couleurs d'une même pièce : pas de prix ni de stock par variante à ce stade. À confirmer si c'est le fonctionnement voulu.
 
 ## 9. Formulaire de contact : pièce jointe
 
@@ -124,4 +136,4 @@ const CONTACT = {
 
 ## Sans impact back-office
 
-Mise en page de la fiche produit (galerie, structure, alignements, centrage des sections, bouton « Ajouter aux favoris ») et de la FAQ, y compris un bug corrigé où les questions restaient invisibles après un changement de catégorie ; contenu supplémentaire ajouté dans les quatre catégories de FAQ existantes (pas de nouvelle catégorie) ; toast « Ajouté au panier » ; retrait du bouton « Acheter maintenant », du sélecteur de quantité et de la ligne de repères Atelier / Numérotation / Passeport numérique sur la fiche produit ; renommage « Passeport numérique » ; corrections d'orthographe ; footer, newsletter et page La Maison.
+Mise en page de la fiche produit (galerie, structure, alignements, centrage des sections, bouton « Ajouter aux favoris ») et de la FAQ, y compris un bug corrigé où les questions restaient invisibles après un changement de catégorie ; contenu supplémentaire ajouté dans les quatre catégories de FAQ existantes (pas de nouvelle catégorie) ; retrait de la ligne de matière (« Cuir de vachette, tannage végétal »…) de la fiche produit — la donnée existe toujours et reste utilisée dans le panier et la commande, seul l'affichage change ; reformulation du toast d'ajout au panier (« Cette pièce a été ajoutée au panier ») ; retrait du bouton « Acheter maintenant », du sélecteur de quantité et de la ligne de repères Atelier / Numérotation / Passeport numérique sur la fiche produit ; renommage « Passeport numérique » ; corrections d'orthographe ; footer, newsletter et page La Maison.
