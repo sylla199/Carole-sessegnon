@@ -1262,8 +1262,12 @@ function ScAccueil({ v }) {
             <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(80,80,80)', maxWidth: '48ch' }}>Chaque pièce porte un numéro de série unique et un certificat d'origine glissé dans son coffret. Scannez son QR code pour l'associer à votre nom, retracer sa fabrication et garantir son authenticité, une première chez une Maison ivoirienne de maroquinerie.</p>
             <button type="button" className="ulink" onClick={v.goPasseport} style={{ background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 15 }}>Découvrir le passeport numérique&nbsp;&nbsp;→</button>
           </div>
-          <div style={{ flex: '0 0 auto', width: 150, margin: '0 auto' }}>
-            <ImageSlot id="cs-passeport-teaser" placeholder="Sentinelle — passeport numérique" style={{ width: 150, height: 270 }} />
+          <div style={{ flex: '0 0 auto', width: 190, margin: '0 auto', position: 'relative' }}>
+            <div style={{ position: 'absolute', inset: '-24px', borderRadius: '50%', background: 'radial-gradient(circle at 50% 38%, rgba(71,29,27,.12), rgba(71,29,27,0) 68%)' }}></div>
+            <div style={{ position: 'relative' }}>
+              <ImageSlot id="cs-passeport-teaser" placeholder="Sentinelle — passeport numérique" style={{ width: 190, height: 342 }} />
+            </div>
+            <div style={{ width: 96, height: 16, margin: '-8px auto 0', borderRadius: '50%', background: 'radial-gradient(ellipse at center, rgba(71,29,27,.24), rgba(71,29,27,0) 72%)' }}></div>
           </div>
         </div>
       </div>
