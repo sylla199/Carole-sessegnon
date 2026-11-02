@@ -1059,11 +1059,11 @@ function Shell({ v }) {
       </div>
 
       {v.showCartToast && (
-        <div style={{ position: 'fixed', right: 'clamp(14px,4vw,32px)', top: 'calc(' + v.headerH + ' + clamp(10px,2vw,20px))', zIndex: 70, display: 'flex', alignItems: 'flex-start', gap: 12, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: '14px 20px', boxShadow: '0 14px 30px -10px rgba(0,0,0,.4)', animation: 'cs-in .25s ease-out', maxWidth: 'calc(100vw - 28px)' }}>
+        <div style={{ position: 'fixed', right: 'clamp(14px,4vw,32px)', top: 'calc(' + v.headerH + ' + clamp(10px,2vw,20px))', zIndex: 70, display: 'flex', alignItems: 'flex-start', gap: 12, background: 'var(--surface-cream)', color: 'rgb(71,29,27)', padding: '14px 20px', boxShadow: 'inset 0 0 0 1px rgba(71,29,27,.15), 0 14px 30px -10px rgba(0,0,0,.25)', animation: 'cs-in .25s ease-out', maxWidth: 'calc(100vw - 28px)' }}>
           <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1" style={{ flexShrink: 0, marginTop: 2 }}><path d="M1 5h14l-1 12H2L1 5Z" /><path d="M5.5 5V3.5a2.5 2.5 0 0 1 5 0V5" /></svg>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <span style={{ fontSize: 14, maxWidth: 220 }}>Cette pièce a été ajoutée au panier</span>
-            <button type="button" onClick={v.goPanier} style={{ alignSelf: 'flex-start', flexShrink: 0, background: 'none', border: 0, padding: 0, color: 'rgb(255,255,255)', cursor: 'pointer', fontSize: 13, letterSpacing: '.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,.6)' }}>Voir le panier</button>
+            <button type="button" onClick={v.goPanier} style={{ alignSelf: 'flex-start', flexShrink: 0, background: 'none', boxShadow: 'inset 0 0 0 1px rgb(71,29,27)', padding: '8px 16px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 12, letterSpacing: '.08em', textTransform: 'uppercase' }}>Voir le panier</button>
           </div>
         </div>
       )}
