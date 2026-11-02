@@ -141,7 +141,7 @@ Commit du 27/10
 - **Adresse de livraison** : deux nouveaux champs, **e-mail** (facultatif) et **téléphone** (obligatoire) du destinataire — distincts des coordonnées de l'acheteur saisies plus haut dans « Coordonnées ». Objectif : que le livreur puisse joindre la personne qui réceptionne le colis, même si ce n'est pas elle qui a payé (cas d'un cadeau envoyé à quelqu'un d'autre).
 - Nouveau champ **code postal** (facultatif), avec une note affichée sous le champ précisant qu'il ne concerne que les livraisons hors Côte d'Ivoire. Aucun champ « pays » n'a été ajouté : rien ne conditionne automatiquement l'affichage de cette note, c'est une indication textuelle.
 - **Moyens de paiement** : « Carte de crédit » est renommé **« Carte bancaire »** (cohérent avec le reste du site). **« Paiement en espèces » est retiré** : il ne reste que Carte bancaire et Mobile money. Si le back-office avait prévu une réconciliation pour les règlements en espèces à la livraison, elle n'a plus lieu d'être pour les nouvelles commandes.
-- **Commande sans compte** : vérifié, déjà possible aujourd'hui — aucune étape du tunnel n'exige une connexion, le bouton « Se connecter » reste une option. Rien à changer ici, mentionné pour mémoire.
+- **Commande sans compte** : vérifié, déjà possible aujourd'hui — aucune étape du tunnel n'exige une connexion, le bouton « Se connecter » reste une option. Rien à changer ici, mentionné pour mémoire. ⚠️ **Depuis le 02/11, ce point est encadré par un choix explicite à l'entrée du paiement — voir point 13.**
 
 ## 12. Bannière de cookies
 
@@ -184,6 +184,16 @@ Dans le panier, le client dispose de deux niveaux :
 ### Reste à faire
 
 Rien n'est encore enregistré : comme le reste du site, la commande ne vit que dans la page. Le back-office devra stocker `gift` par ligne de commande et le faire remonter sur le bon de préparation, pour que l'atelier glisse la bonne carte dans chaque écrin.
+
+## 13. Panier : pop-up « Se connecter / Créer un compte / Continuer en tant qu'invité »
+
+Commit du 02/11
+
+- Quand un visiteur **non connecté** clique sur « Passer au paiement » depuis le panier, un pop-up s'affiche désormais avant d'accéder au paiement, avec trois choix : « Se connecter », « Créer un compte » ou « Continuer en tant qu'invité ».
+- « Se connecter » et « Créer un compte » renvoient vers l'écran de connexion/inscription déjà existant sur le site.
+- « Continuer en tant qu'invité » ferme le pop-up et poursuit normalement vers le paiement : **le mode invité reste pleinement disponible**, ce pop-up est un choix explicite, pas un blocage.
+- Un visiteur déjà connecté ne voit pas ce pop-up : il accède directement au paiement, comme avant.
+- Aucun nouveau champ de données : ce pop-up ne change rien à ce que reçoit le back-office, seulement le parcours affiché avant d'y arriver.
 
 ## Sans impact back-office
 
