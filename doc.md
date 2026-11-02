@@ -212,6 +212,20 @@ Quatre champs ajoutés à l'adresse de livraison, en plus de ceux déjà listés
 - Le champ **Ville** n'existait pas non plus ; il est désormais obligatoire, à la suite de « Plus de précision ».
 - Le retrait en boutique (« En magasin ») n'a volontairement pas été réintroduit : la livraison à domicile reste le seul mode, conformément à la décision prise au point 2.
 
+## 15. Livraison : « à moi-même / à quelqu'un d'autre », et adresses enregistrées dans l'espace client
+
+Commit du 02/11
+
+- **Choix du destinataire** : en haut du bloc « Adresse de livraison », le client choisit désormais « Je livre à moi-même » ou « Je livre à quelqu'un d'autre ».
+  - Avec « à moi-même » : la civilité, le prénom/nom du destinataire, son e-mail et son téléphone (et le second numéro) ne sont plus demandés — on réutilise les coordonnées déjà saisies plus haut, dans « Coordonnées » (celles de l'acheteur).
+  - Avec « à quelqu'un d'autre » : tous ces champs réapparaissent, inchangés par rapport au point 11.
+  - Le back-office doit donc prévoir que, pour certaines commandes, le nom/contact du destinataire soit absent de la ligne de livraison : dans ce cas, c'est l'acheteur lui-même qui réceptionne, ses coordonnées déjà connues (`email`/`tel` de l'étape « Coordonnées ») font foi.
+
+- **Nouvel onglet « Mes adresses »** dans l'espace client (menu Mon compte, après « Mes pièces ») : liste des adresses nommées du client (nom de l'adresse, prénom, nom, adresse, ville, téléphone), avec suppression et ajout d'une nouvelle adresse via un petit formulaire.
+  - Ceci répond directement à la remarque du point 14 : donner un nom à une adresse n'avait de sens que si elle pouvait être gérée dans la durée.
+  - **Toujours en maquette** : les adresses ajoutées ou supprimées ne vivent que dans la page (deux adresses de démonstration au chargement, « Maison » et « Bureau »). Rien n'est encore relié au formulaire de livraison du tunnel de commande (sélectionner une adresse enregistrée au moment de commander n'est pas encore possible) ni enregistré côté serveur.
+  - À prévoir côté back-office : une table d'adresses par client (nom, destinataire, rue, ville, code postal, téléphone), et à terme la possibilité de les proposer au moment de la commande.
+
 ## Sans impact back-office
 
 Mise en page de la fiche produit (galerie, structure, alignements, centrage des sections, bouton « Ajouter aux favoris ») et de la FAQ, y compris un bug corrigé où les questions restaient invisibles après un changement de catégorie ; contenu supplémentaire ajouté dans les quatre catégories de FAQ existantes (pas de nouvelle catégorie) ; retrait de la ligne de matière (« Cuir de vachette, tannage végétal »…) de la fiche produit — la donnée existe toujours et reste utilisée dans le panier et la commande, seul l'affichage change ; reformulation du toast d'ajout au panier (« Cette pièce a été ajoutée au panier ») ; retrait du bouton « Acheter maintenant », du sélecteur de quantité et de la ligne de repères Atelier / Numérotation / Passeport numérique sur la fiche produit ; renommage « Passeport numérique » ; corrections d'orthographe ; footer, newsletter et page La Maison ; correction d'un bug d'affichage où la photo de la pièce s'étirait dans le panier et sur la page de détail de commande dès qu'une carte cadeau était ajoutée (l'image était étirée par la hauteur du bloc cadeau à côté d'elle — purement visuel, aucune donnée concernée) ; police des titres (« --font-display ») passée brièvement de Bodoni Moda à Celias puis revenue à Bodoni Moda sur demande de la cliente — un seul réglage dans `typography.css`, aucune donnée concernée ; ajout d'une section « Le passeport numérique » sur la page d'accueil (juste après le Coffret Signature), à la demande de la cliente pour mettre en avant cette fonctionnalité — texte et lien vers la page existante uniquement, aucune nouvelle donnée.
