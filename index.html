@@ -227,7 +227,8 @@ const PH = {
   sentinelleFemme: 'assets/photos/sentinelle-femme.png',
   sentinelleHomme: 'assets/photos/sentinelle-homme.png',
   lifestyleCoupleVoyage: 'assets/photos/lifestyle-couple-voyage.png',
-  portraitCarole: 'assets/photos/image-carole.jpeg'
+  portraitCarole: 'assets/photos/image-carole.jpeg',
+  contactCloche: 'assets/photos/contact-service-cloche.jpg'
 };
 const VIDEOS = {
   'cs-hardware-flatlay': 'assets/photos/hardware-flatlay.mp4'
@@ -254,7 +255,8 @@ const PHOTOS = {
   'cs-maison-sentinelle-homme': PH.sentinelleHomme,
   'cs-maison-voir-pieces': PH.lifestyleCoupleVoyage,
   'cs-passeport-piece': PH.studio,
-  'cs-profil-piece': PH.studio
+  'cs-profil-piece': PH.studio,
+  'cs-contact-hero': PH.contactCloche
 };
 function photoFor(id) {
   if (!id) return null;
@@ -2244,10 +2246,21 @@ function ScContact({ v }) {
   const eyebrow = { margin: '0 0 10px', fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' };
   const [fileName, setFileName] = useState('');
   const fileInputRef = useRef(null);
+  const heroImgRef = useHeroParallax(0.06, { scale: 1.1 });
   return (
-    <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
-      <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Contact</p>
-      <h1 style={{ margin: '0 0 36px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,5vw,52px)', color: 'rgb(71,29,27)' }}>Écrire à la Maison</h1>
+    <section>
+      <div style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(28px,4vw,40px)', maxWidth: 1200, margin: '0 auto' }}>
+        <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Contact</p>
+        <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,5vw,52px)', color: 'rgb(71,29,27)' }}>Écrire à la Maison</h1>
+      </div>
+      <div style={{ padding: '0 clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
+        <div data-parallax-hero style={{ position: 'relative', aspectRatio: '3.6', overflow: 'hidden' }}>
+          <div ref={heroImgRef} style={{ position: 'absolute', inset: 0 }}>
+            <ImageSlot id="cs-contact-hero" placeholder="Contact — image" />
+          </div>
+        </div>
+      </div>
+      <div style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap: 'clamp(28px,4vw,72px)', alignItems: 'start' }}>
         {v.contactSent && (
           <div style={{ animation: 'cs-in .3s ease-out' }}>
@@ -2327,6 +2340,7 @@ function ScContact({ v }) {
       <div style={{ marginTop: 'clamp(48px,7vw,90px)', maxWidth: 900, marginLeft: 'auto', marginRight: 'auto', textAlign: 'center' }}>
         <p style={{ margin: 0, fontSize: 16, color: 'rgb(70,70,70)' }}>Une question fréquente ?</p>
         <button type="button" className="ulink" onClick={v.goFaq} style={{ marginTop: 10, background: 'none', border: 0, padding: '0 0 5px', color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 15 }}>Voir toutes les questions&nbsp;&nbsp;→</button>
+      </div>
       </div>
     </section>
   );
