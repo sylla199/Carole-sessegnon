@@ -2249,11 +2249,11 @@ function ScContact({ v }) {
   const heroImgRef = useHeroParallax(0.06, { scale: 1.1 });
   return (
     <section>
-      <div style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(28px,4vw,40px)', maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(28px,4vw,40px)', maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
         <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Contact</p>
         <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(30px,5vw,52px)', color: 'rgb(71,29,27)' }}>Écrire à la Maison</h1>
       </div>
-      <div style={{ padding: '0 clamp(20px,5vw,140px)', maxWidth: 1640, margin: '0 auto' }}>
+      <div style={{ padding: '0 clamp(20px,5vw,140px)', maxWidth: 1200, margin: '0 auto' }}>
         <div data-parallax-hero style={{ position: 'relative', aspectRatio: '3.6', overflow: 'hidden' }}>
           <div ref={heroImgRef} style={{ position: 'absolute', inset: 0 }}>
             <ImageSlot id="cs-contact-hero" placeholder="Contact — image" />
