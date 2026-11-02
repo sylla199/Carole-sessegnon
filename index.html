@@ -228,7 +228,8 @@ const PH = {
   sentinelleHomme: 'assets/photos/sentinelle-homme.png',
   lifestyleCoupleVoyage: 'assets/photos/lifestyle-couple-voyage.png',
   portraitCarole: 'assets/photos/image-carole.jpeg',
-  contactCloche: 'assets/photos/contact-service-cloche.jpg'
+  contactCloche: 'assets/photos/contact-service-cloche.jpg',
+  cleConnexion: 'assets/photos/connexion-cle.jpg'
 };
 const VIDEOS = {
   'cs-hardware-flatlay': 'assets/photos/hardware-flatlay.mp4'
@@ -256,7 +257,8 @@ const PHOTOS = {
   'cs-maison-voir-pieces': PH.lifestyleCoupleVoyage,
   'cs-passeport-piece': PH.studio,
   'cs-profil-piece': PH.studio,
-  'cs-contact-hero': PH.contactCloche
+  'cs-contact-hero': PH.contactCloche,
+  'cs-login-gate-cle': PH.cleConnexion
 };
 function photoFor(id) {
   if (!id) return null;
@@ -281,7 +283,7 @@ function LottiePlayer({ src, label }) {
   return <div ref={ref} role="img" aria-label={label} style={{ width: '100%', height: '100%' }}></div>;
 }
 
-function ImageSlot({ id, shape = 'rect', placeholder = 'Image', style }) {
+function ImageSlot({ id, shape = 'rect', placeholder = 'Image', style, objectPosition }) {
   const hasSize = style && (style.width || style.height);
   const box = hasSize
     ? { position: 'relative', ...style }
@@ -306,7 +308,7 @@ function ImageSlot({ id, shape = 'rect', placeholder = 'Image', style }) {
   if (src) {
     return (
       <div style={{ ...box, overflow: 'hidden', borderRadius: shape === 'circle' ? '50%' : 0 }}>
-        <img src={src} alt={placeholder} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <img src={src} alt={placeholder} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: objectPosition || 'center', display: 'block' }} />
       </div>
     );
   }
@@ -532,7 +534,7 @@ function App() {
     orderId: '#CS-2026-9482',
     factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
     secCat: true, secDispo: true, secPrix: true, cartBump: 0, cartToast: 0, gift: null, gifts: {}, giftOpen: false, giftTarget: null, giftKind: 'message', giftMsg: '', giftTo: '',
-    headerH: 112, scrolled: false
+    headerH: 112, scrolled: false, loginGate: false
   });
 
   useEffect(() => {
@@ -788,7 +790,12 @@ function App() {
     heroOffset: s.route === 'accueil' ? '-' + s.headerH + 'px' : '0',
     goAccueil: () => go('accueil'), goMaison: () => go('maison'),
     goPieces: () => go('pieces'), goPanier: () => go('panier'),
-    goPaiement: () => go('paiement', { step: 1 }),
+    goPaiement: () => s.loggedIn ? go('paiement', { step: 1 }) : setS(p => ({ ...p, loginGate: true })),
+    loginGateOpen: s.loginGate,
+    closeLoginGate: () => setS(p => ({ ...p, loginGate: false })),
+    loginGateConnexion: () => { setS(p => ({ ...p, loginGate: false })); go('connexion', { authTab: 'connexion' }); },
+    loginGateInscription: () => { setS(p => ({ ...p, loginGate: false })); go('connexion', { authTab: 'inscription' }); },
+    loginGateGuest: () => { setS(p => ({ ...p, loginGate: false })); go('paiement', { step: 1 }); },
     goPasseport: () => go('passeport'), goContact: () => go('contact'),
     goEntretien: () => go('entretien'),
     goFaq: () => go('faq'),
@@ -1063,6 +1070,32 @@ function Shell({ v }) {
           <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1"><path d="M1 5h14l-1 12H2L1 5Z" /><path d="M5.5 5V3.5a2.5 2.5 0 0 1 5 0V5" /></svg>
           <span style={{ fontSize: 14 }}>Cette pièce a été ajoutée au panier</span>
           <Button variant="secondary" size="sm" onClick={v.goPanier} style={{ fontSize: 12, letterSpacing: '.08em', textTransform: 'uppercase', padding: '10px 22px' }}>Voir le panier</Button>
+        </div>
+      )}
+
+      {v.loginGateOpen && (
+        <div onClick={v.closeLoginGate} role="presentation" style={{ position: 'fixed', inset: 0, zIndex: 95, background: 'rgba(0,0,0,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, animation: 'cs-in .2s ease-out' }}>
+          <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Se connecter pour continuer" style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', width: 'min(920px,100%)', maxHeight: '100%', overflow: 'hidden', borderRadius: 18, boxShadow: '0 30px 60px -20px rgba(0,0,0,.4)' }}>
+            <button type="button" aria-label="Fermer" onClick={v.closeLoginGate} style={{ position: 'absolute', top: 18, right: 18, zIndex: 2, background: 'none', border: 0, padding: 6, cursor: 'pointer', color: 'rgb(71,29,27)' }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M1 1l16 16M17 1L1 17" /></svg>
+            </button>
+            <div style={{ flex: '1 1 340px', minHeight: 380, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(28px,4vw,48px)', display: 'flex', flexDirection: 'column', gap: 'clamp(24px,4vw,40px)' }}>
+              <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,2.6vw,28px)', lineHeight: 1.3, maxWidth: '16ch' }}>Pour finaliser votre commande, veuillez vous connecter</h2>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap-reverse' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: '1 1 180px' }}>
+                  <button type="button" onClick={v.loginGateConnexion} style={{ borderRadius: 999, padding: '16px 24px', background: 'var(--surface-cream)', border: 0, color: 'rgb(71,29,27)', fontFamily: 'var(--font-display)', fontSize: 17, cursor: 'pointer' }}>Se connecter</button>
+                  <button type="button" onClick={v.loginGateInscription} style={{ borderRadius: 999, padding: '16px 24px', background: 'none', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.6)', color: 'rgb(255,255,255)', fontFamily: 'var(--font-display)', fontSize: 17, cursor: 'pointer' }}>Créer un compte</button>
+                </div>
+                <div style={{ flex: '0 1 220px', aspectRatio: '1.05', overflow: 'hidden' }}>
+                  <ImageSlot id="cs-login-gate-cle" placeholder="Clé — connexion" objectPosition="left center" style={{ width: '100%', height: '100%' }} />
+                </div>
+              </div>
+            </div>
+            <div style={{ flex: '1 1 280px', minHeight: 380, background: 'var(--surface-cream)', color: 'rgb(71,29,27)', padding: 'clamp(28px,4vw,48px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 28, textAlign: 'center' }}>
+              <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,2.6vw,28px)', lineHeight: 1.3 }}>Ou continuez en tant qu'invité</h2>
+              <button type="button" onClick={v.loginGateGuest} style={{ borderRadius: 999, padding: '16px 28px', background: 'none', boxShadow: 'inset 0 0 0 1px rgb(71,29,27)', color: 'rgb(71,29,27)', fontFamily: 'var(--font-display)', fontSize: 17, cursor: 'pointer' }}>Continuer en tant qu'invité</button>
+            </div>
+          </div>
         </div>
       )}
 
