@@ -1910,7 +1910,6 @@ function ScPaiement({ v }) {
                     <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
                     <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
                   </div>
-                  <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
                     <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
                     <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
@@ -1921,6 +1920,7 @@ function ScPaiement({ v }) {
                     <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
                   )}
                   <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
+                  <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
                   <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
                   <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
                     <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15s6-5 6-9A6 6 0 0 0 1 6c0 4 6 9 6 9Z" /><circle cx="7" cy="6" r="2" /></svg>
@@ -1928,11 +1928,11 @@ function ScPaiement({ v }) {
                   </button>
                   {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
                   <label style={st(LABEL)}>Plus de précision<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
-                  <label style={st(LABEL)}>Ville<input name="ville" required placeholder="Abidjan" style={st(INPUT)} /></label>
                   <div>
                     <label style={st(LABEL)}>Code postal (facultatif)<input name="codepostal" style={st(INPUT)} /></label>
                     <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgb(94,94,94)' }}>Uniquement pour les commandes livrées en dehors de la Côte d'Ivoire.</p>
                   </div>
+                  <label style={st(LABEL)}>Ville<input name="ville" required placeholder="Abidjan" style={st(INPUT)} /></label>
                   <label style={st(LABEL)}>Pays/Région
                     <select name="pays" defaultValue="Côte d'Ivoire" style={st(INPUT)}>
                       <option>Côte d'Ivoire</option>
