@@ -535,7 +535,11 @@ function App() {
     orderId: '#CS-2026-9482',
     factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
     secCat: true, secDispo: true, secPrix: true, cartBump: 0, cartToast: 0, gift: null, gifts: {}, giftOpen: false, giftTarget: null, giftKind: 'message', giftMsg: '', giftTo: '',
-    headerH: 112, scrolled: false, loginGate: false
+    headerH: 112, scrolled: false, loginGate: false,
+    addresses: [
+      { id: 1, label: 'Maison', prenom: 'Awa', nom: 'Koné', adresse: 'Rue F17', ville: 'Abidjan', codepostal: '', tel: '+225 07 00 00 00 00' },
+      { id: 2, label: 'Bureau', prenom: 'Awa', nom: 'Koné', adresse: 'Avenue Chardy, Le Plateau', ville: 'Abidjan', codepostal: '', tel: '+225 07 00 00 00 00' }
+    ]
   });
 
   useEffect(() => {
@@ -696,12 +700,15 @@ function App() {
     related: dec.filter(p => p.id !== s.pid).slice(0, 4),
     panierTitle: 'Panier (' + s.cart.reduce((t, l) => t + l.qty, 0) + ')',
     clearCart: () => set({ cart: [] }),
-    profInfos: s.prof === 'infos', profCmd: s.prof === 'commandes', profPieces: s.prof === 'pieces',
-    profTabs: [{ key: 'infos', label: 'Informations' }, { key: 'commandes', label: 'Mes commandes' }, { key: 'pieces', label: 'Mes pièces' }].map(t => ({
+    profInfos: s.prof === 'infos', profCmd: s.prof === 'commandes', profPieces: s.prof === 'pieces', profAdr: s.prof === 'adresses',
+    profTabs: [{ key: 'infos', label: 'Informations' }, { key: 'commandes', label: 'Mes commandes' }, { key: 'pieces', label: 'Mes pièces' }, { key: 'adresses', label: 'Mes adresses' }].map(t => ({
       label: t.label, pick: () => set({ prof: t.key }),
       color: s.prof === t.key ? 'rgb(71,29,27)' : 'rgb(70,70,70)',
       bg: s.prof === t.key ? 'rgb(255,251,248)' : 'transparent', ring: s.prof === t.key ? 'inset 0 0 0 1px rgba(0,0,0,.08)' : 'none'
     })),
+    addresses: s.addresses,
+    removeAddress: id => set({ addresses: s.addresses.filter(a => a.id !== id) }),
+    addAddress: a => set({ addresses: [...s.addresses, { ...a, id: Date.now() }] }),
     saveLabel: s.savedProfile ? 'Enregistré' : 'Enregistrer',
     saveProfile: () => { set({ savedProfile: true }); setTimeout(() => set({ savedProfile: false }), 1800); },
     logout: () => go('connexion', { loggedIn: false }),
@@ -1857,6 +1864,7 @@ function ScPanier({ v }) {
 function ScPaiement({ v }) {
   const step = { paddingBottom: 6 };
   const [showPhone2, setShowPhone2] = useState(false);
+  const [pourQui, setPourQui] = useState('moi');
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,5vw,48px)', color: 'rgb(71,29,27)' }}>Commande</h1>
@@ -1899,27 +1907,39 @@ function ScPaiement({ v }) {
               <div>
                 <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Adresse de livraison</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <label style={st(LABEL)}>Civilité (facultatif)
-                    <select name="civilite" defaultValue="" style={st(INPUT)}>
-                      <option value="">Ne pas préciser</option>
-                      <option value="Madame">Madame</option>
-                      <option value="Monsieur">Monsieur</option>
-                    </select>
-                  </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                    <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
-                    <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+                  <div role="radiogroup" aria-label="Destinataire de la livraison" style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                    {[{ k: 'moi', l: 'Je livre à moi-même' }, { k: 'autre', l: "Je livre à quelqu'un d'autre" }].map(o => (
+                      <button key={o.k} type="button" role="radio" aria-checked={pourQui === o.k} onClick={() => setPourQui(o.k)}
+                        style={{ flex: '1 1 160px', padding: '12px 14px', background: pourQui === o.k ? 'rgba(71,29,27,.06)' : 'none', cursor: 'pointer', border: 0,
+                          boxShadow: 'inset 0 0 0 ' + (pourQui === o.k ? '2px rgb(71,29,27)' : '1px rgba(0,0,0,.2)'),
+                          color: pourQui === o.k ? 'rgb(71,29,27)' : 'rgb(94,94,94)', fontSize: 14 }}>{o.l}</button>
+                    ))}
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                    <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
-                    <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
-                  </div>
-                  {showPhone2 ? (
-                    <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
-                  ) : (
-                    <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
+                  {pourQui === 'autre' && (
+                    <Fragment>
+                      <label style={st(LABEL)}>Civilité (facultatif)
+                        <select name="civilite" defaultValue="" style={st(INPUT)}>
+                          <option value="">Ne pas préciser</option>
+                          <option value="Madame">Madame</option>
+                          <option value="Monsieur">Monsieur</option>
+                        </select>
+                      </label>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                        <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                        <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                      </div>
+                      {showPhone2 ? (
+                        <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                      ) : (
+                        <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
+                      )}
+                      <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
+                    </Fragment>
                   )}
-                  <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
                   <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
                   <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
                   <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
@@ -2481,6 +2501,14 @@ function ScConnexion({ v }) {
 
 function ScProfil({ v }) {
   const FIELD = "margin-top:8px;width:100%;height:60px;padding:16px 20px;background:var(--surface-page);border:0;box-shadow:inset 0 0 0 1px var(--color-secondary-50);color:var(--ink);font-size:18px";
+  const [addrOpen, setAddrOpen] = useState(false);
+  const handleAddAddress = e => {
+    e.preventDefault();
+    const f = e.target;
+    v.addAddress({ label: f.label.value, prenom: f.prenom.value, nom: f.nom.value, adresse: f.adresse.value, ville: f.ville.value, codepostal: f.codepostal.value, tel: f.tel.value });
+    f.reset();
+    setAddrOpen(false);
+  };
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
       <p style={{ margin: '0 0 8px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Mon compte</p>
@@ -2543,6 +2571,47 @@ function ScProfil({ v }) {
                 <button type="button" onClick={v.goPasseport} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Passeport numérique</button>
               </div>
               <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
+            </div>
+          )}
+          {v.profAdr && (
+            <div>
+              <h2 style={{ margin: '0 0 22px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(22px,3vw,30px)', color: 'rgb(71,29,27)' }}>Mes adresses</h2>
+              <p style={{ margin: '0 0 26px', fontSize: 16, lineHeight: 1.7, color: 'rgb(70,70,70)', maxWidth: '56ch' }}>Vos adresses enregistrées, pour aller plus vite à la prochaine commande.</p>
+              {v.addresses.length === 0 && <p style={{ margin: '0 0 20px', fontSize: 15, color: 'rgb(94,94,94)' }}>Aucune adresse enregistrée pour l'instant.</p>}
+              {v.addresses.map(a => (
+                <div key={a.id} style={{ display: 'flex', gap: 18, justifyContent: 'space-between', flexWrap: 'wrap', padding: '20px 0', borderTop: '1px solid rgba(0,0,0,.15)' }}>
+                  <div>
+                    <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 19, color: 'rgb(71,29,27)' }}>{a.label}</p>
+                    <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{a.prenom} {a.nom}</p>
+                    <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{a.adresse}, {a.ville}</p>
+                    <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{a.tel}</p>
+                  </div>
+                  <button type="button" onClick={() => v.removeAddress(a.id)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(155,24,33)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(155,24,33)' }}>Supprimer</button>
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
+
+              {addrOpen ? (
+                <form onSubmit={handleAddAddress} style={{ marginTop: 26, display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 420 }}>
+                  <label style={st(LABEL)}>Nom de l'adresse<input name="label" required placeholder="Maison, Bureau…" style={st(FIELD)} /></label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                    <label style={st(LABEL)}>Prénom<input name="prenom" required style={st(FIELD)} /></label>
+                    <label style={st(LABEL)}>Nom<input name="nom" required style={st(FIELD)} /></label>
+                  </div>
+                  <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(FIELD)} /></label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                    <label style={st(LABEL)}>Code postal (facultatif)<input name="codepostal" style={st(FIELD)} /></label>
+                    <label style={st(LABEL)}>Ville<input name="ville" required placeholder="Abidjan" style={st(FIELD)} /></label>
+                  </div>
+                  <label style={st(LABEL)}>Téléphone<input name="tel" type="tel" required placeholder="+225 07 00 00 00 00" style={st(FIELD)} /></label>
+                  <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <Button type="submit" variant="primary" style={v.btnUpper.style}>Enregistrer l'adresse</Button>
+                    <button type="button" onClick={() => setAddrOpen(false)} style={{ background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Annuler</button>
+                  </div>
+                </form>
+              ) : (
+                <Button variant="secondary" onClick={() => setAddrOpen(true)} style={{ marginTop: 26, ...v.btnUpper.style }}>Ajouter une adresse</Button>
+              )}
             </div>
           )}
         </div>
