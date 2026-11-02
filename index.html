@@ -1869,7 +1869,6 @@ function ScPaiement({ v }) {
   const [showPhone2, setShowPhone2] = useState(false);
   const [pourQui, setPourQui] = useState('moi');
   const [selectedAddr, setSelectedAddr] = useState(null);
-  const sel = v.addresses.find(a => a.id === selectedAddr) || null;
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,5vw,48px)', color: 'rgb(71,29,27)' }}>Commande</h1>
@@ -1939,68 +1938,77 @@ function ScPaiement({ v }) {
                   {v.loggedIn && v.addresses.length > 0 && (
                     <div>
                       <p style={{ margin: '0 0 10px', fontSize: 13, color: 'rgb(94,94,94)' }}>Utiliser une adresse enregistrée</p>
-                      <div role="radiogroup" aria-label="Adresse enregistrée" style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                      <div>
                         {v.addresses.map(a => (
-                          <button key={a.id} type="button" role="radio" aria-checked={selectedAddr === a.id} onClick={() => setSelectedAddr(a.id)}
-                            style={{ padding: '10px 16px', background: selectedAddr === a.id ? 'rgba(71,29,27,.06)' : 'none', cursor: 'pointer', border: 0,
-                              boxShadow: 'inset 0 0 0 ' + (selectedAddr === a.id ? '2px rgb(71,29,27)' : '1px rgba(0,0,0,.2)'),
-                              color: selectedAddr === a.id ? 'rgb(71,29,27)' : 'rgb(94,94,94)', fontSize: 14 }}>{a.label}</button>
+                          <button key={a.id} type="button" aria-pressed={selectedAddr === a.id} onClick={() => setSelectedAddr(a.id)}
+                            style={{ textAlign: 'left', display: 'block', width: '100%', background: selectedAddr === a.id ? 'rgba(71,29,27,.06)' : 'none',
+                              boxShadow: selectedAddr === a.id ? 'inset 0 0 0 1px rgb(71,29,27)' : 'none',
+                              border: 0, borderTop: '1px solid rgba(0,0,0,.15)', padding: '20px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
+                            <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 19, color: 'rgb(71,29,27)' }}>{a.label}</p>
+                            <p style={{ margin: '10px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{a.prenom} {a.nom}</p>
+                            <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{a.adresse}, {a.ville}</p>
+                            <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{a.tel}</p>
+                          </button>
                         ))}
-                        <button type="button" role="radio" aria-checked={selectedAddr === null} onClick={() => setSelectedAddr(null)}
-                          style={{ padding: '10px 16px', background: selectedAddr === null ? 'rgba(71,29,27,.06)' : 'none', cursor: 'pointer', border: 0,
-                            boxShadow: 'inset 0 0 0 ' + (selectedAddr === null ? '2px rgb(71,29,27)' : '1px rgba(0,0,0,.2)'),
-                            color: selectedAddr === null ? 'rgb(71,29,27)' : 'rgb(94,94,94)', fontSize: 14 }}>Nouvelle adresse</button>
+                        <button type="button" aria-pressed={selectedAddr === null} onClick={() => setSelectedAddr(null)}
+                          style={{ textAlign: 'left', display: 'block', width: '100%', background: selectedAddr === null ? 'rgba(71,29,27,.06)' : 'none',
+                            boxShadow: selectedAddr === null ? 'inset 0 0 0 1px rgb(71,29,27)' : 'none',
+                            border: 0, borderTop: '1px solid rgba(0,0,0,.15)', padding: '18px 16px', cursor: 'pointer', fontFamily: 'inherit',
+                            color: selectedAddr === null ? 'rgb(71,29,27)' : 'rgb(94,94,94)', fontSize: 15 }}>+ Nouvelle adresse</button>
+                        <div style={{ borderTop: '1px solid rgba(0,0,0,.15)' }}></div>
                       </div>
                     </div>
                   )}
-                  <div key={selectedAddr || 'new'} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    {pourQui === 'autre' && (
-                      <Fragment>
-                        <label style={st(LABEL)}>Civilité (facultatif)
-                          <select name="civilite" defaultValue="" style={st(INPUT)}>
-                            <option value="">Ne pas préciser</option>
-                            <option value="Madame">Madame</option>
-                            <option value="Monsieur">Monsieur</option>
-                          </select>
-                        </label>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                          <label style={st(LABEL)}>Prénoms<input name="prenom" required defaultValue={sel ? sel.prenom : ''} style={st(INPUT)} /></label>
-                          <label style={st(LABEL)}>Nom<input name="nom" required defaultValue={sel ? sel.nom : ''} style={st(INPUT)} /></label>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                          <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
-                          <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required defaultValue={sel ? sel.tel : ''} placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
-                        </div>
-                        {showPhone2 ? (
-                          <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
-                        ) : (
-                          <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
-                        )}
-                        <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
-                      </Fragment>
-                    )}
-                    <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" defaultValue={sel ? sel.label : ''} placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
-                    <label style={st(LABEL)}>Adresse<input name="adresse" required defaultValue={sel ? sel.adresse : ''} placeholder="RUE F17" style={st(INPUT)} /></label>
-                    <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
-                      <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15s6-5 6-9A6 6 0 0 0 1 6c0 4 6 9 6 9Z" /><circle cx="7" cy="6" r="2" /></svg>
-                      Utiliser ma position
-                    </button>
-                    {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
-                    <label style={st(LABEL)}>Plus de précision<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
-                    <div>
-                      <label style={st(LABEL)}>Code postal (facultatif)<input name="codepostal" defaultValue={sel ? sel.codepostal : ''} style={st(INPUT)} /></label>
-                      <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgb(94,94,94)' }}>Uniquement pour les commandes livrées en dehors de la Côte d'Ivoire.</p>
-                    </div>
-                    <label style={st(LABEL)}>Ville<input name="ville" required defaultValue={sel ? sel.ville : ''} placeholder="Abidjan" style={st(INPUT)} /></label>
-                    <label style={st(LABEL)}>Pays/Région
-                      <select name="pays" defaultValue="Côte d'Ivoire" style={st(INPUT)}>
-                        <option>Côte d'Ivoire</option>
-                        <option>Sénégal</option>
-                        <option>France</option>
-                        <option>Autre</option>
-                      </select>
-                    </label>
-                  </div>
+                  {(selectedAddr === null || !v.loggedIn || v.addresses.length === 0) && (
+                    <Fragment>
+                      {pourQui === 'autre' && (
+                        <Fragment>
+                          <label style={st(LABEL)}>Civilité (facultatif)
+                            <select name="civilite" defaultValue="" style={st(INPUT)}>
+                              <option value="">Ne pas préciser</option>
+                              <option value="Madame">Madame</option>
+                              <option value="Monsieur">Monsieur</option>
+                            </select>
+                          </label>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                            <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
+                            <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                            <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
+                            <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                          </div>
+                          {showPhone2 ? (
+                            <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                          ) : (
+                            <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
+                          )}
+                          <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
+                        </Fragment>
+                      )}
+                      <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
+                      <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
+                        <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15s6-5 6-9A6 6 0 0 0 1 6c0 4 6 9 6 9Z" /><circle cx="7" cy="6" r="2" /></svg>
+                        Utiliser ma position
+                      </button>
+                      {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
+                      <label style={st(LABEL)}>Plus de précision<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
+                      <div>
+                        <label style={st(LABEL)}>Code postal (facultatif)<input name="codepostal" style={st(INPUT)} /></label>
+                        <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgb(94,94,94)' }}>Uniquement pour les commandes livrées en dehors de la Côte d'Ivoire.</p>
+                      </div>
+                      <label style={st(LABEL)}>Ville<input name="ville" required placeholder="Abidjan" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Pays/Région
+                        <select name="pays" defaultValue="Côte d'Ivoire" style={st(INPUT)}>
+                          <option>Côte d'Ivoire</option>
+                          <option>Sénégal</option>
+                          <option>France</option>
+                          <option>Autre</option>
+                        </select>
+                      </label>
+                    </Fragment>
+                  )}
                 </div>
               </div>
             )}
