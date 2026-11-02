@@ -1,6 +1,6 @@
 # Modifications front impactant le back-office
 
-Période : 22 – 27 octobre 2026
+Période : 22 octobre – 2 novembre 2026
 
 Seules les modifications qui touchent des données à gérer côté back-office sont listées. Les ajustements de mise en page et de texte ne sont pas concernés.
 
@@ -194,6 +194,23 @@ Commit du 02/11
 - « Continuer en tant qu'invité » ferme le pop-up et poursuit normalement vers le paiement : **le mode invité reste pleinement disponible**, ce pop-up est un choix explicite, pas un blocage.
 - Un visiteur déjà connecté ne voit pas ce pop-up : il accède directement au paiement, comme avant.
 - Aucun nouveau champ de données : ce pop-up ne change rien à ce que reçoit le back-office, seulement le parcours affiché avant d'y arriver.
+
+## 14. Adresse de livraison : nouveaux champs (nom de l'adresse, second téléphone, ville, pays)
+
+Commit du 02/11
+
+Quatre champs ajoutés à l'adresse de livraison, en plus de ceux déjà listés au point 11 :
+
+| Champ | Type | Règle |
+|---|---|---|
+| `adresse_nom` | texte | facultatif — nom donné à l'adresse par le client (ex. « Maison », « Bureau ») |
+| `tel_livraison2` | texte | facultatif — second numéro de téléphone du destinataire, révélé par le lien « Ajouter un numéro » |
+| `ville` | texte | **obligatoire** |
+| `pays` | liste | **obligatoire** — Côte d'Ivoire par défaut ; options actuelles : Côte d'Ivoire, Sénégal, France, Autre |
+
+- Le champ **Pays/Région** est nouveau : jusqu'ici aucun champ pays n'existait (point 11 précisait justement qu'aucun champ pays n'était nécessaire). La liste d'options ci-dessus est un point de départ, à confirmer/compléter côté back-office selon les pays réellement livrés.
+- Le champ **Ville** n'existait pas non plus ; il est désormais obligatoire, à la suite de « Plus de précision ».
+- Le retrait en boutique (« En magasin ») n'a volontairement pas été réintroduit : la livraison à domicile reste le seul mode, conformément à la décision prise au point 2.
 
 ## Sans impact back-office
 
