@@ -231,9 +231,10 @@ Commit du 02/11
 Commit du 02/11
 
 - **Coordonnées (e-mail, téléphone)** à l'étape 1 du paiement : pour un visiteur **connecté**, ces deux champs ne sont plus des champs de saisie — ils affichent en lecture seule l'e-mail et le téléphone du compte, avec un lien « Modifier » qui renvoie vers Mon compte → Informations. Un visiteur non connecté continue de les saisir normalement.
-- **Sélection d'une adresse enregistrée** : complète directement le point 15 (« rien n'est encore relié au formulaire de livraison »). Un visiteur connecté voit désormais, dans le bloc « Adresse de livraison », ses adresses enregistrées (celles du point 15) sous forme de choix rapide, plus une option « Nouvelle adresse ». Sélectionner une adresse préremplit nom de l'adresse, rue, code postal, ville, et — si « Je livre à quelqu'un d'autre » est coché — le prénom, nom et téléphone du destinataire enregistrés avec cette adresse.
-- Pour le back-office, ceci ne change pas les champs envoyés avec la commande (toujours ceux des points 11 et 14) : seule la manière de les remplir change, à partir d'une adresse déjà connue plutôt que d'une saisie à chaque fois.
-- Ce preremplissage n'est pas encore sauvegardé automatiquement : si le client modifie un champ après avoir choisi une adresse enregistrée, l'adresse enregistrée elle-même n'est pas mise à jour (il faudrait passer par « Mes adresses » pour ça).
+- **Sélection d'une adresse enregistrée** : complète directement le point 15 (« rien n'est encore relié au formulaire de livraison »). Un visiteur connecté voit désormais, dans le bloc « Adresse de livraison », ses adresses enregistrées (celles du point 15) sous la même forme de carte que dans « Mes adresses » (nom de l'adresse, destinataire, rue et ville, téléphone), cliquables pour les choisir, plus une carte « + Nouvelle adresse ».
+- **Dès qu'une adresse enregistrée est sélectionnée, tous les champs de saisie disparaissent** (civilité, prénom/nom et téléphone du destinataire le cas échéant, nom de l'adresse, rue, complément, code postal, ville, pays) : seule la carte choisie reste affichée, rien à ressaisir. Les champs ne réapparaissent (vides) que si « + Nouvelle adresse » est sélectionnée.
+- Pour le back-office, ceci ne change pas les champs envoyés avec la commande (toujours ceux des points 11 et 14) : seule la manière de les renseigner change, à partir d'une adresse déjà connue plutôt que d'une saisie à chaque fois. Techniquement, le contenu de l'adresse choisie devra être transmis avec la commande puisqu'il n'y a plus de champs visibles à lire pour le reconstituer.
+- La carte sélectionnée n'est pas modifiable en place : pour corriger une adresse enregistrée, il faut passer par « Mes adresses ».
 
 ## Sans impact back-office
 
