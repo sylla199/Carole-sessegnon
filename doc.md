@@ -223,8 +223,17 @@ Commit du 02/11
 
 - **Nouvel onglet « Mes adresses »** dans l'espace client (menu Mon compte, après « Mes pièces ») : liste des adresses nommées du client (nom de l'adresse, prénom, nom, adresse, ville, téléphone), avec suppression et ajout d'une nouvelle adresse via un petit formulaire.
   - Ceci répond directement à la remarque du point 14 : donner un nom à une adresse n'avait de sens que si elle pouvait être gérée dans la durée.
-  - **Toujours en maquette** : les adresses ajoutées ou supprimées ne vivent que dans la page (deux adresses de démonstration au chargement, « Maison » et « Bureau »). Rien n'est encore relié au formulaire de livraison du tunnel de commande (sélectionner une adresse enregistrée au moment de commander n'est pas encore possible) ni enregistré côté serveur.
-  - À prévoir côté back-office : une table d'adresses par client (nom, destinataire, rue, ville, code postal, téléphone), et à terme la possibilité de les proposer au moment de la commande.
+  - **Toujours en maquette** : les adresses ajoutées ou supprimées ne vivent que dans la page (deux adresses de démonstration au chargement, « Maison » et « Bureau »). Rien n'est encore enregistré côté serveur.
+  - À prévoir côté back-office : une table d'adresses par client (nom, destinataire, rue, ville, code postal, téléphone).
+
+## 16. Checkout connecté : coordonnées en lecture seule et sélection d'une adresse enregistrée
+
+Commit du 02/11
+
+- **Coordonnées (e-mail, téléphone)** à l'étape 1 du paiement : pour un visiteur **connecté**, ces deux champs ne sont plus des champs de saisie — ils affichent en lecture seule l'e-mail et le téléphone du compte, avec un lien « Modifier » qui renvoie vers Mon compte → Informations. Un visiteur non connecté continue de les saisir normalement.
+- **Sélection d'une adresse enregistrée** : complète directement le point 15 (« rien n'est encore relié au formulaire de livraison »). Un visiteur connecté voit désormais, dans le bloc « Adresse de livraison », ses adresses enregistrées (celles du point 15) sous forme de choix rapide, plus une option « Nouvelle adresse ». Sélectionner une adresse préremplit nom de l'adresse, rue, code postal, ville, et — si « Je livre à quelqu'un d'autre » est coché — le prénom, nom et téléphone du destinataire enregistrés avec cette adresse.
+- Pour le back-office, ceci ne change pas les champs envoyés avec la commande (toujours ceux des points 11 et 14) : seule la manière de les remplir change, à partir d'une adresse déjà connue plutôt que d'une saisie à chaque fois.
+- Ce preremplissage n'est pas encore sauvegardé automatiquement : si le client modifie un champ après avoir choisi une adresse enregistrée, l'adresse enregistrée elle-même n'est pas mise à jour (il faudrait passer par « Mes adresses » pour ça).
 
 ## Sans impact back-office
 
