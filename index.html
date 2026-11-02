@@ -1856,6 +1856,7 @@ function ScPanier({ v }) {
 
 function ScPaiement({ v }) {
   const step = { paddingBottom: 6 };
+  const [showPhone2, setShowPhone2] = useState(false);
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,5vw,48px)', color: 'rgb(71,29,27)' }}>Commande</h1>
@@ -1907,10 +1908,16 @@ function ScPaiement({ v }) {
                     <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
                     <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
                   </div>
+                  <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
                     <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
                     <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
                   </div>
+                  {showPhone2 ? (
+                    <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                  ) : (
+                    <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
+                  )}
                   <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
                   <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
                   <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
@@ -1919,10 +1926,19 @@ function ScPaiement({ v }) {
                   </button>
                   {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
                   <label style={st(LABEL)}>Plus de précision<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
+                  <label style={st(LABEL)}>Ville<input name="ville" required placeholder="Abidjan" style={st(INPUT)} /></label>
                   <div>
                     <label style={st(LABEL)}>Code postal (facultatif)<input name="codepostal" style={st(INPUT)} /></label>
                     <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgb(94,94,94)' }}>Uniquement pour les commandes livrées en dehors de la Côte d'Ivoire.</p>
                   </div>
+                  <label style={st(LABEL)}>Pays/Région
+                    <select name="pays" defaultValue="Côte d'Ivoire" style={st(INPUT)}>
+                      <option>Côte d'Ivoire</option>
+                      <option>Sénégal</option>
+                      <option>France</option>
+                      <option>Autre</option>
+                    </select>
+                  </label>
                 </div>
               </div>
             )}
