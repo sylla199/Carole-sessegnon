@@ -1869,6 +1869,7 @@ function ScPaiement({ v }) {
   const [showPhone2, setShowPhone2] = useState(false);
   const [pourQui, setPourQui] = useState('moi');
   const [selectedAddr, setSelectedAddr] = useState(null);
+  const showFields = selectedAddr === null || !v.loggedIn || v.addresses.length === 0;
   return (
     <section style={{ padding: 'clamp(40px,7vw,80px) clamp(20px,5vw,140px) clamp(56px,9vw,110px)', maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ margin: '0 0 26px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(28px,5vw,48px)', color: 'rgb(71,29,27)' }}>Commande</h1>
@@ -1935,6 +1936,31 @@ function ScPaiement({ v }) {
                           color: pourQui === o.k ? 'rgb(71,29,27)' : 'rgb(94,94,94)', fontSize: 14 }}>{o.l}</button>
                     ))}
                   </div>
+                  {showFields && pourQui === 'autre' && (
+                    <Fragment>
+                      <label style={st(LABEL)}>Civilité (facultatif)
+                        <select name="civilite" defaultValue="" style={st(INPUT)}>
+                          <option value="">Ne pas préciser</option>
+                          <option value="Madame">Madame</option>
+                          <option value="Monsieur">Monsieur</option>
+                        </select>
+                      </label>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                        <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                        <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                      </div>
+                      {showPhone2 ? (
+                        <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                      ) : (
+                        <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
+                      )}
+                      <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
+                    </Fragment>
+                  )}
                   {v.loggedIn && v.addresses.length > 0 && (
                     <div>
                       <p style={{ margin: '0 0 10px', fontSize: 13, color: 'rgb(94,94,94)' }}>Utiliser une adresse enregistrée</p>
@@ -1962,33 +1988,8 @@ function ScPaiement({ v }) {
                       </div>
                     </div>
                   )}
-                  {(selectedAddr === null || !v.loggedIn || v.addresses.length === 0) && (
+                  {showFields && (
                     <Fragment>
-                      {pourQui === 'autre' && (
-                        <Fragment>
-                          <label style={st(LABEL)}>Civilité (facultatif)
-                            <select name="civilite" defaultValue="" style={st(INPUT)}>
-                              <option value="">Ne pas préciser</option>
-                              <option value="Madame">Madame</option>
-                              <option value="Monsieur">Monsieur</option>
-                            </select>
-                          </label>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                            <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
-                            <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
-                          </div>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                            <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
-                            <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
-                          </div>
-                          {showPhone2 ? (
-                            <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
-                          ) : (
-                            <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
-                          )}
-                          <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
-                        </Fragment>
-                      )}
                       <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
                       <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
                       <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
