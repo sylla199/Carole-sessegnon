@@ -216,7 +216,7 @@ Quatre champs ajoutés à l'adresse de livraison, en plus de ceux déjà listés
 
 Commit du 02/11
 
-- **Choix du destinataire** : en haut du bloc « Adresse de livraison », le client choisit désormais « Je livre à moi-même » ou « Je livre à quelqu'un d'autre ».
+- **Choix du destinataire** : en haut du bloc « Adresse de livraison », le client choisit désormais « Je livre à moi-même » ou « Je livre à quelqu'un d'autre ». ⚠️ **Depuis le 16/11, ce choix n'existe plus du tout — voir point 18.**
   - Avec « à moi-même » : la civilité, le prénom/nom du destinataire, son e-mail et son téléphone (et le second numéro) ne sont plus demandés — on réutilise les coordonnées déjà saisies plus haut, dans « Coordonnées » (celles de l'acheteur). ⚠️ **Depuis le 16/11, ce point n'est plus vrai pour la civilité et le prénom/nom — voir point 17.**
   - Avec « à quelqu'un d'autre » : tous ces champs réapparaissent, inchangés par rapport au point 11. ⚠️ **Depuis le 16/11, l'e-mail du destinataire n'est plus demandé — voir point 17.**
   - Le back-office doit donc prévoir que, pour certaines commandes, le nom/contact du destinataire soit absent de la ligne de livraison : dans ce cas, c'est l'acheteur lui-même qui réceptionne, ses coordonnées déjà connues (`email`/`tel` de l'étape « Coordonnées ») font foi.
@@ -259,9 +259,20 @@ Ce qui change pour les données reçues :
 
 **Point d'attention pour le back-office** : pour reconstituer le numéro complet, il faut désormais concaténer `indicatif` + `tel_livraison`, et non plus lire `tel_livraison` seul.
 
-Le choix « Je livre à moi-même / à quelqu'un d'autre » (point 15) reste affiché, mais ne change plus que l'affichage du second numéro de téléphone facultatif et de la note « pour que le livreur puisse joindre le destinataire » : la civilité, le prénom/nom et le téléphone sont désormais communs aux deux cas.
+Le choix « Je livre à moi-même / à quelqu'un d'autre » (point 15) reste affiché, mais ne change plus que l'affichage du second numéro de téléphone facultatif et de la note « pour que le livreur puisse joindre le destinataire » : la civilité, le prénom/nom et le téléphone sont désormais communs aux deux cas. ⚠️ **Depuis le 16/11 (toujours le même jour), ce paragraphe n'est plus vrai : voir point 18, ce choix est retiré.**
 
 La sélection d'une adresse enregistrée (point 16) n'est pas affectée dans son principe : elle masque toujours l'ensemble de ces champs, carte choisie ou « + Nouvelle adresse ».
+
+## 18. Livraison : le choix « à moi-même / à quelqu'un d'autre » est retiré, « Mode de réception » devient une ligne d'info
+
+Commit du 16/11
+
+**Ceci annule la première puce du point 15 et le dernier paragraphe du point 17.**
+
+- Le choix « Je livre à moi-même / Je livre à quelqu'un d'autre » n'existe plus du tout sur la page, à la demande de la cliente. Depuis le point 17, la civilité, le prénom/nom et le téléphone du destinataire sont déjà demandés dans tous les cas : ce choix ne servait donc plus qu'à révéler le second numéro de téléphone facultatif.
+- Le lien **« Ajouter un numéro »** (second numéro de téléphone, champ `tel_livraison2`) reste disponible, mais **affiché pour toutes les commandes**, juste après le champ Numéro de téléphone — plus besoin de choisir « à quelqu'un d'autre » pour le faire apparaître.
+- **Aucun champ ne disparaît côté données** : `civilite`, `prenom`, `nom`, `tel_livraison`, `tel_livraison2` restent exactement ceux du point 17. Seul le chemin pour y arriver dans l'interface change.
+- **« Mode de réception » devient une simple ligne d'information**, affichée à droite du titre (« Livraison à votre adresse · À partir de 2 000 FCFA »), sans encadré ni effet de sélection : avec un seul mode de livraison disponible (le retrait en boutique ayant été retiré, point 2), l'ancien encadré donnait à tort l'impression d'un choix possible. Changement d'habillage uniquement, aucun champ de données concerné.
 
 ## Sans impact back-office
 

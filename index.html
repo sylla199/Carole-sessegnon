@@ -1879,7 +1879,6 @@ function ScPanier({ v }) {
 function ScPaiement({ v }) {
   const step = { paddingBottom: 6 };
   const [showPhone2, setShowPhone2] = useState(false);
-  const [pourQui, setPourQui] = useState('moi');
   const [selectedAddr, setSelectedAddr] = useState(null);
   const showFields = selectedAddr === null || !v.loggedIn || v.addresses.length === 0;
   return (
@@ -1928,38 +1927,15 @@ function ScPaiement({ v }) {
               )}
             </div>
 
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 12 }}>
-                <p style={{ margin: 0, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Mode de réception</p>
-                <div role="radiogroup" aria-label="Destinataire de la livraison" style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                  {[{ k: 'moi', l: 'Moi-même' }, { k: 'autre', l: "Quelqu'un d'autre" }].map(o => (
-                    <button key={o.k} type="button" role="radio" aria-checked={pourQui === o.k} onClick={() => setPourQui(o.k)}
-                      style={{ padding: '6px 12px', background: pourQui === o.k ? 'rgba(71,29,27,.06)' : 'none', cursor: 'pointer', border: 0, whiteSpace: 'nowrap',
-                        boxShadow: 'inset 0 0 0 ' + (pourQui === o.k ? '2px rgb(71,29,27)' : '1px rgba(0,0,0,.2)'),
-                        color: pourQui === o.k ? 'rgb(71,29,27)' : 'rgb(94,94,94)', fontSize: 12 }}>{o.l}</button>
-                  ))}
-                </div>
-              </div>
-              <div style={{ textAlign: 'left', padding: 18, background: 'none', boxShadow: v.domicileRing }}>
-                <span style={{ display: 'block', fontSize: 15, color: 'rgb(0,0,0)' }}>Livraison à votre adresse</span>
-                <span style={{ display: 'block', marginTop: 6, fontSize: 13, color: 'rgb(94,94,94)' }}>À partir de 2 000 FCFA</span>
-              </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+              <p style={{ margin: 0, fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Mode de réception</p>
+              <p style={{ margin: 0, fontSize: 14, color: 'rgb(70,70,70)', textAlign: 'right' }}>Livraison à votre adresse · À partir de 2 000 FCFA</p>
             </div>
 
             {v.modeDomicile && (
               <div>
                 <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Adresse de livraison</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {showFields && pourQui === 'autre' && (
-                    <Fragment>
-                      {showPhone2 ? (
-                        <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
-                      ) : (
-                        <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
-                      )}
-                      <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
-                    </Fragment>
-                  )}
                   {v.loggedIn && v.addresses.length > 0 && (
                     <div>
                       <p style={{ margin: '0 0 10px', fontSize: 13, color: 'rgb(94,94,94)' }}>Utiliser une adresse enregistrée</p>
@@ -2027,6 +2003,12 @@ function ScPaiement({ v }) {
                         </label>
                         <label style={st(LABEL)}>Numéro de téléphone<input name="tel_livraison" type="tel" required placeholder="07 00 00 00 00" style={st(INPUT)} /></label>
                       </div>
+                      {showPhone2 ? (
+                        <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                      ) : (
+                        <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
+                      )}
+                      <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Pour que le livreur puisse joindre le destinataire si besoin.</p>
                     </Fragment>
                   )}
                 </div>
