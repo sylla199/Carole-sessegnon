@@ -1,6 +1,6 @@
 # Modifications front impactant le back-office
 
-Période : 22 octobre – 2 novembre 2026
+Période : 22 octobre – 16 novembre 2026
 
 Seules les modifications qui touchent des données à gérer côté back-office sont listées. Les ajustements de mise en page et de texte ne sont pas concernés.
 
@@ -166,10 +166,10 @@ Chaque ligne de commande porte un champ `gift`, soit `null`, soit :
 |---|---|---|
 | `gift.kind` | `"message"` ou `"vierge"` | `"vierge"` = carte vierge, à remplir à la main par le client |
 | `gift.message` | texte | 250 caractères maximum ; **vide** quand `kind` vaut `"vierge"` |
-| `gift.to` | texte | prénom du destinataire, facultatif, 60 caractères maximum |
 
 - **Une seule carte par ligne**, quelle que soit la quantité. Une ligne à 2 exemplaires reçoit une carte, pas deux.
 - L'ancien champ `gift` au niveau de la commande n'est plus la source : il ne faut plus le lire.
+- ⚠️ **Depuis le 16/11, le champ `gift.to` (prénom du destinataire) est retiré** : le champ de saisie correspondant a été supprimé du formulaire à la demande de la cliente. Si le back-office le lisait, il faut l'enlever — il ne sera plus jamais rempli.
 
 ### Point important : la règle d'héritage ne concerne pas le back-office
 
@@ -238,4 +238,4 @@ Commit du 02/11
 
 ## Sans impact back-office
 
-Mise en page de la fiche produit (galerie, structure, alignements, centrage des sections, bouton « Ajouter aux favoris ») et de la FAQ, y compris un bug corrigé où les questions restaient invisibles après un changement de catégorie ; contenu supplémentaire ajouté dans les quatre catégories de FAQ existantes (pas de nouvelle catégorie) ; retrait de la ligne de matière (« Cuir de vachette, tannage végétal »…) de la fiche produit — la donnée existe toujours et reste utilisée dans le panier et la commande, seul l'affichage change ; reformulation du toast d'ajout au panier (« Cette pièce a été ajoutée au panier ») ; retrait du bouton « Acheter maintenant », du sélecteur de quantité et de la ligne de repères Atelier / Numérotation / Passeport numérique sur la fiche produit ; renommage « Passeport numérique » ; corrections d'orthographe ; footer, newsletter et page La Maison ; correction d'un bug d'affichage où la photo de la pièce s'étirait dans le panier et sur la page de détail de commande dès qu'une carte cadeau était ajoutée (l'image était étirée par la hauteur du bloc cadeau à côté d'elle — purement visuel, aucune donnée concernée) ; police des titres (« --font-display ») passée brièvement de Bodoni Moda à Celias puis revenue à Bodoni Moda sur demande de la cliente — un seul réglage dans `typography.css`, aucune donnée concernée ; ajout d'une section « Le passeport numérique » sur la page d'accueil (juste après le Coffret Signature), à la demande de la cliente pour mettre en avant cette fonctionnalité — texte et lien vers la page existante uniquement, aucune nouvelle donnée.
+Mise en page de la fiche produit (galerie, structure, alignements, centrage des sections, bouton « Ajouter aux favoris ») et de la FAQ, y compris un bug corrigé où les questions restaient invisibles après un changement de catégorie ; contenu supplémentaire ajouté dans les quatre catégories de FAQ existantes (pas de nouvelle catégorie) ; retrait de la ligne de matière (« Cuir de vachette, tannage végétal »…) de la fiche produit — la donnée existe toujours et reste utilisée dans le panier et la commande, seul l'affichage change ; reformulation du toast d'ajout au panier (« Cette pièce a été ajoutée au panier ») ; retrait du bouton « Acheter maintenant », du sélecteur de quantité et de la ligne de repères Atelier / Numérotation / Passeport numérique sur la fiche produit ; renommage « Passeport numérique » ; corrections d'orthographe ; footer, newsletter et page La Maison ; correction d'un bug d'affichage où la photo de la pièce s'étirait dans le panier et sur la page de détail de commande dès qu'une carte cadeau était ajoutée (l'image était étirée par la hauteur du bloc cadeau à côté d'elle — purement visuel, aucune donnée concernée) ; police des titres (« --font-display ») passée brièvement de Bodoni Moda à Celias puis revenue à Bodoni Moda sur demande de la cliente — un seul réglage dans `typography.css`, aucune donnée concernée ; ajout d'une section « Le passeport numérique » sur la page d'accueil (juste après le Coffret Signature), à la demande de la cliente pour mettre en avant cette fonctionnalité — texte et lien vers la page existante uniquement, aucune nouvelle donnée ; nouveau texte pour cette même section (16/11) ; nouveau texte pour chacun des deux cas de la carte cadeau (« Message » / « Carte vierge »), simple reformulation.
