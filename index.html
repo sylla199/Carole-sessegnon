@@ -2071,7 +2071,11 @@ function ScPaiement({ v }) {
         <form onSubmit={v.submitPaiement} onInvalidCapture={frInvalid} onInputCapture={frClear} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
           <div>
             <div>
-              <p style={{ margin: '0 0 16px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Comment souhaitez-vous payer ?</p>
+              <p style={{ margin: '0 0 10px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Comment souhaitez-vous payer ?</p>
+              <p style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 16px', fontSize: 13, color: 'rgb(94,94,94)' }}>
+                <svg width="12" height="14" viewBox="0 0 12 14" fill="none" stroke="currentColor" strokeWidth="1"><rect x="1" y="6" width="10" height="7" rx="1" /><path d="M3 6V4a3 3 0 0 1 6 0v2" /></svg>
+                Connexion chiffrée (HTTPS). Aucune donnée bancaire n'est conservée par la Maison.
+              </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div style={{ boxShadow: v.carteRing, padding: 20 }}>
                   <button type="button" onClick={v.pickCarte} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'none', border: 0, padding: 0, cursor: 'pointer', textAlign: 'left' }}>
@@ -2079,12 +2083,13 @@ function ScPaiement({ v }) {
                       {v.carteOpen && <span style={{ position: 'absolute', left: 4, top: 4, width: 8, height: 8, borderRadius: '50%', background: 'rgb(71,29,27)' }}></span>}
                     </span>
                     <span style={{ fontSize: 16, color: 'rgb(0,0,0)' }}>Carte bancaire</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 13, color: 'rgb(94,94,94)' }}>Visa · Mastercard</span>
                   </button>
                   {v.carteOpen && (
                     <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                        <label style={st(LABEL)}>Nom du titulaire<input name="cardnom" placeholder="Fols" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
-                        <label style={st(LABEL)}>Prénoms du titulaire<input name="cardprenom" placeholder="Biran" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
+                        <label style={st(LABEL)}>Nom du titulaire<input name="cardnom" placeholder="Kouassi" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
+                        <label style={st(LABEL)}>Prénoms du titulaire<input name="cardprenom" placeholder="Jean" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
                       </div>
                       <label style={st(LABEL)}>Numéro de la carte<input name="carte" inputMode="numeric" placeholder="0000 0000 0000 0000" style={st(INPUT.replace('--color-secondary-50', 'rgb(174,174,174)'))} /></label>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,140px),1fr))', gap: 16 }}>
@@ -2114,7 +2119,6 @@ function ScPaiement({ v }) {
               </Button>
               <Button variant="primary" onClick={v.submitPaiement} style={v.confirmBtn.style}>Confirmer et passer au paiement</Button>
             </div>
-            <p style={{ margin: '18px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>Connexion chiffrée (HTTPS). Aucune donnée bancaire n'est conservée par la Maison.</p>
           </div>
           <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(20px,3vw,32px)' }}>
             <p style={{ margin: '0 0 20px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Votre commande</p>
