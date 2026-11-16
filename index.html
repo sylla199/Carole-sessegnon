@@ -118,6 +118,8 @@
     .cs-profile-grid{grid-template-columns:1fr !important}
     .cs-faq-grid{grid-template-columns:1fr !important}
     .cs-pieces-grid{grid-template-columns:repeat(2,1fr) !important;gap:20px 12px !important}
+    .cs-cookie-banner{padding:14px 16px !important}
+    .cs-cookie-banner p{font-size:13px !important}
   }
 </style>
 </head>
@@ -192,6 +194,16 @@ function IntroSeal({ onDone }) {
 }
 
 /* ---------- inline-style-string parser: keeps DS style strings verbatim ---------- */
+/* messages de validation en français, posés sur un <form> via onInvalidCapture/onInputCapture
+   (le message par défaut du navigateur, "Please fill out this field.", est en anglais) */
+function frInvalid(e) {
+  const el = e.target;
+  if (!el.validity) return;
+  if (el.validity.valueMissing) el.setCustomValidity('Merci de compléter ce champ.');
+  else if (el.validity.typeMismatch && el.type === 'email') el.setCustomValidity("Merci d'indiquer une adresse e-mail valide.");
+  else el.setCustomValidity('Merci de vérifier ce champ.');
+}
+function frClear(e) { if (e.target.setCustomValidity) e.target.setCustomValidity(''); }
 function st(str){
   const o = {};
   String(str).split(';').forEach(decl => {
@@ -326,7 +338,7 @@ function ImageSlot({ id, shape = 'rect', placeholder = 'Image', style, objectPos
   );
 }
 
-function Button({ variant = 'primary', size = 'md', disabled = false, className, style, onClick, type, children }) {
+function Button({ variant = 'primary', size = 'md', disabled = false, className, style, onClick, type, children, 'aria-label': ariaLabel }) {
   const sizes = { md: { padding: '20px 30px', font: 18 }, sm: { padding: '14px 24px', font: 16 } };
   const sz = sizes[size] || sizes.md;
   const base = {
@@ -343,7 +355,7 @@ function Button({ variant = 'primary', size = 'md', disabled = false, className,
     outlineLight: { backgroundColor: 'transparent', color: 'var(--ink-on-dark)', boxShadow: 'inset 0 0 0 2px var(--ink-on-dark)' }
   };
   return (
-    <button className={className} disabled={disabled} onClick={onClick} type={type || 'button'}
+    <button className={className} disabled={disabled} onClick={onClick} type={type || 'button'} aria-label={ariaLabel}
       style={{ ...base, ...variants[variant], ...style }}>
       {children ?? 'Bouton'}
     </button>
@@ -541,7 +553,7 @@ function App() {
     fav: [], faq: -1, cIdx: 0, q: '', savedProfile: false, cardImg: {},
     prof: 'infos', mode: 'domicile', ville: 'Abidjan', boutique: 'Riviera CIAD',
     orderId: '#CS-2026-9482',
-    factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
+    factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false, livraisonData: {},
     secCat: true, secDispo: true, secPrix: true, cartBump: 0, cartToast: 0, gift: null, gifts: {}, giftOpen: false, giftTarget: null, giftKind: 'message', giftMsg: '',
     headerH: 112, scrolled: false, loginGate: false,
     addresses: [
@@ -886,7 +898,13 @@ function App() {
     isStep1: s.step === 1, isStep2: s.step === 2, isStep3: s.step === 3,
     step1Color: stepC(1), step2Color: stepC(2), step3Color: stepC(3),
     step1Line: stepL(1), step2Line: stepL(2), step3Line: stepL(3),
-    submitLivraison: e => { e.preventDefault(); set({ step: 2 }); try { window.scrollTo(0, 0); } catch (x) {} },
+    submitLivraison: e => {
+      e.preventDefault();
+      /* on garde ce qui a été saisi, pour qu'un retour en arrière ne reparte pas d'un formulaire vide */
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      setS(st => ({ ...st, livraisonData: data, step: 2 }));
+      try { window.scrollTo(0, 0); } catch (x) {}
+    },
     submitPaiement: e => {
       if (e && e.preventDefault) e.preventDefault();
       const no = '#CS-2026-' + String(9000 + Math.floor(Math.random() * 999));
@@ -1126,7 +1144,7 @@ function Shell({ v }) {
       )}
 
       {!v.cookieChoice && (
-        <div role="region" aria-label="Gestion des cookies" style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 95, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(18px,3vw,26px) clamp(16px,4vw,40px)', boxShadow: '0 -14px 30px -10px rgba(0,0,0,.35)', animation: 'cs-in .25s ease-out' }}>
+        <div role="region" aria-label="Gestion des cookies" className="cs-cookie-banner" style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 95, background: 'rgb(71,29,27)', color: 'rgb(255,255,255)', padding: 'clamp(18px,3vw,26px) clamp(16px,4vw,40px)', boxShadow: '0 -14px 30px -10px rgba(0,0,0,.35)', animation: 'cs-in .25s ease-out' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, maxWidth: 640, color: 'rgba(255,255,255,.9)' }}>
               Ce site utilise des cookies pour améliorer votre expérience. Vous pouvez les accepter ou les refuser.
@@ -1878,7 +1896,7 @@ function ScPanier({ v }) {
 
 function ScPaiement({ v }) {
   const step = { paddingBottom: 6 };
-  const [showPhone2, setShowPhone2] = useState(false);
+  const [showPhone2, setShowPhone2] = useState(!!v.s.livraisonData.tel_livraison2);
   const [selectedAddr, setSelectedAddr] = useState(null);
   const showFields = selectedAddr === null || !v.loggedIn || v.addresses.length === 0;
   return (
@@ -1901,7 +1919,7 @@ function ScPaiement({ v }) {
               <Button variant="secondary" onClick={v.goConnexion} style={{ ...v.btnUpper.style, flexShrink: 0 }}>Se connecter</Button>
             </div>
           )}
-        <form onSubmit={v.submitLivraison} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
+        <form onSubmit={v.submitLivraison} onInvalidCapture={frInvalid} onInputCapture={frClear} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
             <div>
               <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Coordonnées</p>
@@ -1921,8 +1939,8 @@ function ScPaiement({ v }) {
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <label style={st(LABEL)}>Adresse e-mail<input name="email" type="email" required placeholder="exemple@domain.com" style={st(INPUT)} /></label>
-                  <label style={st(LABEL)}>Téléphone<input name="tel" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                  <label style={st(LABEL)}>Adresse e-mail<input name="email" type="email" required defaultValue={v.s.livraisonData.email || ''} placeholder="exemple@domain.com" style={st(INPUT)} /></label>
+                  <label style={st(LABEL)}>Téléphone<input name="tel" type="tel" required defaultValue={v.s.livraisonData.tel || ''} placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
                 </div>
               )}
             </div>
@@ -1966,7 +1984,7 @@ function ScPaiement({ v }) {
                   {showFields && (
                     <Fragment>
                       <label style={st(LABEL)}>Pays/Région
-                        <select name="pays" defaultValue="Côte d'Ivoire" style={st(INPUT)}>
+                        <select name="pays" defaultValue={v.s.livraisonData.pays || "Côte d'Ivoire"} style={st(INPUT)}>
                           <option>Côte d'Ivoire</option>
                           <option>Sénégal</option>
                           <option>France</option>
@@ -1974,37 +1992,37 @@ function ScPaiement({ v }) {
                         </select>
                       </label>
                       <label style={st(LABEL)}>Civilité (facultatif)
-                        <select name="civilite" defaultValue="" style={st(INPUT)}>
+                        <select name="civilite" defaultValue={v.s.livraisonData.civilite || ''} style={st(INPUT)}>
                           <option value="">Ne pas préciser</option>
                           <option value="Madame">Madame</option>
                           <option value="Monsieur">Monsieur</option>
                         </select>
                       </label>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                        <label style={st(LABEL)}>Prénom<input name="prenom" required style={st(INPUT)} /></label>
-                        <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Prénom<input name="prenom" required defaultValue={v.s.livraisonData.prenom || ''} style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Nom<input name="nom" required defaultValue={v.s.livraisonData.nom || ''} style={st(INPUT)} /></label>
                       </div>
-                      <label style={st(LABEL)}>Entreprise (facultatif)<input name="entreprise" style={st(INPUT)} /></label>
-                      <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
-                      <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Entreprise (facultatif)<input name="entreprise" defaultValue={v.s.livraisonData.entreprise || ''} style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" defaultValue={v.s.livraisonData.adresse_nom || ''} placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Adresse<input name="adresse" required defaultValue={v.s.livraisonData.adresse || ''} placeholder="RUE F17" style={st(INPUT)} /></label>
                       <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
                         <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15s6-5 6-9A6 6 0 0 0 1 6c0 4 6 9 6 9Z" /><circle cx="7" cy="6" r="2" /></svg>
                         Utiliser ma position
                       </button>
                       {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
-                      <label style={st(LABEL)}>Plus de précision (Appartement, suite, etc.) — facultatif<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
-                      <label style={st(LABEL)}>Ville<input name="ville" required placeholder="Abidjan" style={st(INPUT)} /></label>
-                      <label style={st(LABEL)}>Code postal<input name="codepostal" required style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Plus de précision (Appartement, suite, etc.) — facultatif<input name="precision" defaultValue={v.s.livraisonData.precision || ''} placeholder="RUE F17" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Ville<input name="ville" required defaultValue={v.s.livraisonData.ville || ''} placeholder="Abidjan" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Code postal<input name="codepostal" required defaultValue={v.s.livraisonData.codepostal || ''} style={st(INPUT)} /></label>
                       <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 16 }}>
                         <label style={st(LABEL)}>Indicatif
-                          <select name="indicatif" defaultValue="+225" style={st(INPUT)}>
+                          <select name="indicatif" defaultValue={v.s.livraisonData.indicatif || '+225'} style={st(INPUT)}>
                             {INDICATIFS.map((o, i) => <option key={i} value={o.code}>{o.code || 'Autre'}</option>)}
                           </select>
                         </label>
-                        <label style={st(LABEL)}>Numéro de téléphone<input name="tel_livraison" type="tel" required placeholder="07 00 00 00 00" style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Numéro de téléphone<input name="tel_livraison" type="tel" required defaultValue={v.s.livraisonData.tel_livraison || ''} placeholder="07 00 00 00 00" style={st(INPUT)} /></label>
                       </div>
                       {showPhone2 ? (
-                        <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" defaultValue={v.s.livraisonData.tel_livraison2 || ''} placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
                       ) : (
                         <button type="button" onClick={() => setShowPhone2(true)} style={{ alignSelf: 'flex-start', background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>Ajouter un numéro</button>
                       )}
@@ -2025,17 +2043,17 @@ function ScPaiement({ v }) {
                   <p style={{ margin: '0 0 12px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Adresse de facturation</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                      <label style={st(LABEL)}>Prénoms<input name="factprenom" style={st(INPUT)} /></label>
-                      <label style={st(LABEL)}>Nom<input name="factnom" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Prénoms<input name="factprenom" defaultValue={v.s.livraisonData.factprenom || ''} style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Nom<input name="factnom" defaultValue={v.s.livraisonData.factnom || ''} style={st(INPUT)} /></label>
                     </div>
-                    <label style={st(LABEL)}>Adresse e-mail<input name="factemail" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
-                    <label style={st(LABEL)}>Téléphone<input name="facttel" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
+                    <label style={st(LABEL)}>Adresse e-mail<input name="factemail" type="email" defaultValue={v.s.livraisonData.factemail || ''} placeholder="exemple@domain.com" style={st(INPUT)} /></label>
+                    <label style={st(LABEL)}>Téléphone<input name="facttel" type="tel" defaultValue={v.s.livraisonData.facttel || ''} placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
                   </div>
                 </div>
               )}
             </div>
 
-            <Button type="submit" variant="primary" style={v.btnBlock.style}>Confirmer et passer au paiement</Button>
+            <Button type="submit" variant="primary" style={v.btnBlock.style}>Continuer vers le paiement</Button>
           </div>
           <div style={{ background: 'rgb(255,251,248)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.08)', padding: 'clamp(20px,3vw,32px)' }}>
             <p style={{ margin: '0 0 20px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Votre commande</p>
@@ -2050,7 +2068,7 @@ function ScPaiement({ v }) {
       )}
 
       {v.isStep2 && (
-        <form onSubmit={v.submitPaiement} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
+        <form onSubmit={v.submitPaiement} onInvalidCapture={frInvalid} onInputCapture={frClear} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,300px),1fr))', gap: 'clamp(28px,4vw,64px)', alignItems: 'start' }}>
           <div>
             <div>
               <p style={{ margin: '0 0 16px', fontSize: 12, letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Comment souhaitez-vous payer ?</p>
@@ -2091,7 +2109,7 @@ function ScPaiement({ v }) {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginTop: 26 }}>
-              <Button variant="secondary" onClick={v.backStep1} style={v.backBtn.style}>
+              <Button variant="secondary" onClick={v.backStep1} aria-label="Revenir à l'étape Livraison" style={v.backBtn.style}>
                 <svg width="20" height="14" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M19 7H1M7 1 1 7l6 6" /></svg>
               </Button>
               <Button variant="primary" onClick={v.submitPaiement} style={v.confirmBtn.style}>Confirmer et passer au paiement</Button>
