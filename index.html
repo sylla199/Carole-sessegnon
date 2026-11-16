@@ -535,7 +535,7 @@ function App() {
     prof: 'infos', mode: 'domicile', ville: 'Abidjan', boutique: 'Riviera CIAD',
     orderId: '#CS-2026-9482',
     factSame: true, moyen: 'carte', order: null, fDispo: 'Tout', fPrix: 600000, showTop: false, newsOk: false, locNote: false,
-    secCat: true, secDispo: true, secPrix: true, cartBump: 0, cartToast: 0, gift: null, gifts: {}, giftOpen: false, giftTarget: null, giftKind: 'message', giftMsg: '', giftTo: '',
+    secCat: true, secDispo: true, secPrix: true, cartBump: 0, cartToast: 0, gift: null, gifts: {}, giftOpen: false, giftTarget: null, giftKind: 'message', giftMsg: '',
     headerH: 112, scrolled: false, loginGate: false,
     addresses: [
       { id: 1, label: 'Maison', prenom: 'Awa', nom: 'Koné', adresse: 'Rue F17', ville: 'Abidjan', codepostal: '', tel: '+225 07 00 00 00 00' },
@@ -840,19 +840,17 @@ function App() {
       const cur = target ? st.gifts[target] : st.gift;
       const c = cur && cur.kind !== 'none' ? cur : null;
       return { ...st, giftOpen: true, giftTarget: target || null,
-        giftKind: c ? c.kind : 'message', giftMsg: c && c.message ? c.message : '', giftTo: c && c.to ? c.to : '' };
+        giftKind: c ? c.kind : 'message', giftMsg: c && c.message ? c.message : '' };
     }),
     closeGift: () => set({ giftOpen: false }),
     setGiftKind: k => set({ giftKind: k }),
     setGiftMsg: e => set({ giftMsg: e.target.value.slice(0, 250) }),
-    setGiftTo: e => set({ giftTo: e.target.value.slice(0, 60) }),
     saveGift: e => {
       if (e && e.preventDefault) e.preventDefault();
       setS(st => {
         const msg = st.giftMsg.trim();
-        const to = st.giftTo.trim();
-        const g = st.giftKind === 'vierge' ? { kind: 'vierge', message: '', to }
-          : (msg ? { kind: 'message', message: msg, to } : null);
+        const g = st.giftKind === 'vierge' ? { kind: 'vierge', message: '' }
+          : (msg ? { kind: 'message', message: msg } : null);
         if (st.giftTarget) {
           const gifts = Object.assign({}, st.gifts);
           if (g) gifts[st.giftTarget] = g; else delete gifts[st.giftTarget];
@@ -1762,7 +1760,6 @@ function ScPanier({ v }) {
                         <div style={{ padding: '10px 12px', background: 'rgba(71,29,27,.04)', fontSize: 13, lineHeight: 1.6 }}>
                           <p style={{ margin: 0, color: 'rgb(71,29,27)' }}>
                             {l.giftOwn ? 'Offerte — carte personnalisée' : 'Offerte — carte du panier'}
-                            {l.gift.to ? ' · pour ' + l.gift.to : ''}
                           </p>
                           {l.gift.kind === 'message'
                             ? <p style={{ margin: '4px 0 0', fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {l.gift.message} »</p>
@@ -1803,7 +1800,7 @@ function ScPanier({ v }) {
                   <p style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 18, color: 'rgb(71,29,27)' }}>Le plaisir d'offrir</p>
                   {v.s.gift ? (
                     <>
-                      <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>S'applique aux pièces sans message propre{v.s.gift.to ? ' · pour ' + v.s.gift.to : ''}</p>
+                      <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgb(94,94,94)' }}>S'applique aux pièces sans message propre</p>
                       {v.s.gift.kind === 'message'
                         ? <p style={{ margin: '8px 0 0', fontSize: 14, lineHeight: 1.6, fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {v.s.gift.message} »</p>
                         : <p style={{ margin: '8px 0 0', fontSize: 14, color: 'rgb(70,70,70)' }}>Carte vierge</p>}
@@ -1833,13 +1830,11 @@ function ScPanier({ v }) {
                             color: v.s.giftKind === o.k ? 'rgb(71,29,27)' : 'rgb(94,94,94)', fontSize: 14 }}>{o.l}</button>
                       ))}
                     </div>
-                    <label style={{ display: 'block', fontSize: 13, color: 'rgb(94,94,94)' }}>Prénom du destinataire (facultatif)
-                      <input type="text" value={v.s.giftTo} onChange={v.setGiftTo} style={{ display: 'block', marginTop: 8, width: '100%', height: 48, padding: '0 14px', background: 'rgb(255,255,255)', border: 0, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)', fontSize: 16, color: 'rgb(0,0,0)' }} />
-                    </label>
                     {v.s.giftKind === 'vierge' ? (
-                      <p style={{ margin: '18px 0 0', padding: 14, background: 'rgb(255,255,255)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Une carte vierge sera glissée dans l'écrin, pour que vous y écriviez vous-même.</p>
+                      <p style={{ margin: 0, padding: 14, background: 'rgb(255,255,255)', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)', fontSize: 14, lineHeight: 1.6, color: 'rgb(94,94,94)' }}>Une carte vierge accompagnera votre commande, pour vous permettre d'y inscrire vos propres mots.</p>
                     ) : (
-                    <label style={{ display: 'block', marginTop: 18, fontSize: 13, color: 'rgb(94,94,94)' }}>Votre message
+                    <label style={{ display: 'block', fontSize: 13, color: 'rgb(94,94,94)' }}>Votre message
+                      <p style={{ margin: '4px 0 12px', fontSize: 13, color: 'rgb(94,94,94)' }}>Quelques mots pour accompagner votre attention.</p>
                       <textarea autoFocus rows={5} value={v.s.giftMsg} onChange={v.setGiftMsg} maxLength={250} style={{ display: 'block', marginTop: 8, width: '100%', padding: 14, background: 'rgb(255,255,255)', border: 0, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)', fontSize: 16, lineHeight: 1.6, color: 'rgb(0,0,0)', resize: 'vertical', fontFamily: 'inherit' }} />
                     </label>
                     )}
@@ -2142,7 +2137,7 @@ function ScPaiement({ v }) {
                 <p style={{ margin: '0 0 12px', fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgb(94,94,94)' }}>Cartes cadeau</p>
                 {v.orderGifts.map((l, i) => (
                   <div key={i} style={{ marginTop: i ? 14 : 0 }}>
-                    <p style={{ margin: 0, fontSize: 14, color: 'rgb(71,29,27)' }}>{l.name}{l.gift.to ? ' · pour ' + l.gift.to : ''}</p>
+                    <p style={{ margin: 0, fontSize: 14, color: 'rgb(71,29,27)' }}>{l.name}</p>
                     {l.gift.kind === 'message'
                       ? <p style={{ margin: '4px 0 0', fontSize: 14, lineHeight: 1.6, fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {l.gift.message} »</p>
                       : <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>Carte vierge</p>}
@@ -2705,7 +2700,7 @@ function ScCommande({ v }) {
               <p style={{ margin: '6px 0 0', fontSize: 14, color: 'rgb(94,94,94)' }}>{l.material} — qté {l.qty}</p>
               {l.gift && (
                 <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(71,29,27,.04)', fontSize: 13, lineHeight: 1.6 }}>
-                  <p style={{ margin: 0, color: 'rgb(71,29,27)' }}>Offerte{l.gift.to ? ' · pour ' + l.gift.to : ''}</p>
+                  <p style={{ margin: 0, color: 'rgb(71,29,27)' }}>Offerte</p>
                   {l.gift.kind === 'message'
                     ? <p style={{ margin: '4px 0 0', fontStyle: 'italic', color: 'rgb(70,70,70)', overflowWrap: 'anywhere' }}>« {l.gift.message} »</p>
                     : <p style={{ margin: '4px 0 0', color: 'rgb(94,94,94)' }}>Carte vierge</p>}
