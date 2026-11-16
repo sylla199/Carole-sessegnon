@@ -1998,7 +1998,7 @@ function ScPaiement({ v }) {
                       <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 16 }}>
                         <label style={st(LABEL)}>Indicatif
                           <select name="indicatif" defaultValue="+225" style={st(INPUT)}>
-                            {INDICATIFS.map((o, i) => <option key={i} value={o.code}>{o.pays}{o.code ? ' (' + o.code + ')' : ''}</option>)}
+                            {INDICATIFS.map((o, i) => <option key={i} value={o.code}>{o.code || 'Autre'}</option>)}
                           </select>
                         </label>
                         <label style={st(LABEL)}>Numéro de téléphone<input name="tel_livraison" type="tel" required placeholder="07 00 00 00 00" style={st(INPUT)} /></label>
