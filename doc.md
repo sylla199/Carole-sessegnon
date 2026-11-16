@@ -139,7 +139,7 @@ const CONTACT = {
 Commit du 27/10
 
 - **Adresse de livraison** : deux nouveaux champs, **e-mail** (facultatif) et **téléphone** (obligatoire) du destinataire — distincts des coordonnées de l'acheteur saisies plus haut dans « Coordonnées ». Objectif : que le livreur puisse joindre la personne qui réceptionne le colis, même si ce n'est pas elle qui a payé (cas d'un cadeau envoyé à quelqu'un d'autre).
-- Nouveau champ **code postal** (facultatif), avec une note affichée sous le champ précisant qu'il ne concerne que les livraisons hors Côte d'Ivoire. Aucun champ « pays » n'a été ajouté : rien ne conditionne automatiquement l'affichage de cette note, c'est une indication textuelle.
+- Nouveau champ **code postal** (facultatif), avec une note affichée sous le champ précisant qu'il ne concerne que les livraisons hors Côte d'Ivoire. Aucun champ « pays » n'a été ajouté : rien ne conditionne automatiquement l'affichage de cette note, c'est une indication textuelle. ⚠️ **Depuis le 16/11, ce champ devient obligatoire pour toutes les livraisons — voir point 17.**
 - **Moyens de paiement** : « Carte de crédit » est renommé **« Carte bancaire »** (cohérent avec le reste du site). **« Paiement en espèces » est retiré** : il ne reste que Carte bancaire et Mobile money. Si le back-office avait prévu une réconciliation pour les règlements en espèces à la livraison, elle n'a plus lieu d'être pour les nouvelles commandes.
 - **Commande sans compte** : vérifié, déjà possible aujourd'hui — aucune étape du tunnel n'exige une connexion, le bouton « Se connecter » reste une option. Rien à changer ici, mentionné pour mémoire. ⚠️ **Depuis le 02/11, ce point est encadré par un choix explicite à l'entrée du paiement — voir point 13.**
 
@@ -217,8 +217,8 @@ Quatre champs ajoutés à l'adresse de livraison, en plus de ceux déjà listés
 Commit du 02/11
 
 - **Choix du destinataire** : en haut du bloc « Adresse de livraison », le client choisit désormais « Je livre à moi-même » ou « Je livre à quelqu'un d'autre ».
-  - Avec « à moi-même » : la civilité, le prénom/nom du destinataire, son e-mail et son téléphone (et le second numéro) ne sont plus demandés — on réutilise les coordonnées déjà saisies plus haut, dans « Coordonnées » (celles de l'acheteur).
-  - Avec « à quelqu'un d'autre » : tous ces champs réapparaissent, inchangés par rapport au point 11.
+  - Avec « à moi-même » : la civilité, le prénom/nom du destinataire, son e-mail et son téléphone (et le second numéro) ne sont plus demandés — on réutilise les coordonnées déjà saisies plus haut, dans « Coordonnées » (celles de l'acheteur). ⚠️ **Depuis le 16/11, ce point n'est plus vrai pour la civilité et le prénom/nom — voir point 17.**
+  - Avec « à quelqu'un d'autre » : tous ces champs réapparaissent, inchangés par rapport au point 11. ⚠️ **Depuis le 16/11, l'e-mail du destinataire n'est plus demandé — voir point 17.**
   - Le back-office doit donc prévoir que, pour certaines commandes, le nom/contact du destinataire soit absent de la ligne de livraison : dans ce cas, c'est l'acheteur lui-même qui réceptionne, ses coordonnées déjà connues (`email`/`tel` de l'étape « Coordonnées ») font foi.
 
 - **Nouvel onglet « Mes adresses »** dans l'espace client (menu Mon compte, après « Mes pièces ») : liste des adresses nommées du client (nom de l'adresse, prénom, nom, adresse, ville, téléphone), avec suppression et ajout d'une nouvelle adresse via un petit formulaire.
@@ -235,6 +235,33 @@ Commit du 02/11
 - **Dès qu'une adresse enregistrée est sélectionnée, tous les champs de saisie disparaissent** (civilité, prénom/nom et téléphone du destinataire le cas échéant, nom de l'adresse, rue, complément, code postal, ville, pays) : seule la carte choisie reste affichée, rien à ressaisir. Les champs ne réapparaissent (vides) que si « + Nouvelle adresse » est sélectionnée.
 - Pour le back-office, ceci ne change pas les champs envoyés avec la commande (toujours ceux des points 11 et 14) : seule la manière de les renseigner change, à partir d'une adresse déjà connue plutôt que d'une saisie à chaque fois. Techniquement, le contenu de l'adresse choisie devra être transmis avec la commande puisqu'il n'y a plus de champs visibles à lire pour le reconstituer.
 - La carte sélectionnée n'est pas modifiable en place : pour corriger une adresse enregistrée, il faut passer par « Mes adresses ».
+
+## 17. Livraison : champs réorganisés selon le croquis de la cliente, téléphone scindé en indicatif + numéro
+
+Commit du 16/11
+
+À la demande de la cliente (croquis manuscrit transmis par photo), le bloc « Adresse de livraison » est réorganisé et complété. **Ceci modifie ce que décrivaient les points 11, 14 et 15** pour les commandes livrées à partir de maintenant.
+
+Nouvel ordre d'affichage : Pays/Région, Civilité, Prénom/Nom, Entreprise, Nom de l'adresse (facultatif), Adresse, Plus de précision, Ville, Code postal, Indicatif + Numéro de téléphone.
+
+Ce qui change pour les données reçues :
+
+| Champ | Changement |
+|---|---|
+| `pays` | Déplacé en tête du bloc (le champ lui-même ne change pas, voir point 14) |
+| `civilite` | **Désormais demandée dans tous les cas**, y compris « Je livre à moi-même » — annule ce que disait le point 15 sur ce point |
+| `prenom` / `nom` | Idem : demandés dans tous les cas, plus seulement pour « à quelqu'un d'autre » |
+| `entreprise` | **Nouveau champ**, texte, facultatif |
+| `email_livraison` | **Retiré.** Le site ne redemande plus l'e-mail du destinataire ; l'e-mail de l'acheteur (saisi dans « Coordonnées ») reste la seule adresse e-mail de la commande |
+| `codepostal` | **Devient obligatoire.** La note « uniquement pour les commandes hors Côte d'Ivoire » (point 11) est retirée : le champ est désormais demandé pour toutes les livraisons, y compris en Côte d'Ivoire |
+| `indicatif` | **Nouveau champ**, liste : Côte d'Ivoire (+225), Sénégal (+221), France (+33), Autre. Valeur par défaut +225 |
+| `tel_livraison` | **Ne contient plus que le numéro local** (ex. « 07 00 00 00 00 ») — l'indicatif est désormais dans le champ `indicatif` séparé, alors qu'il était inclus dans ce même champ auparavant (ex. « +225 07 00 00 00 00 ») |
+
+**Point d'attention pour le back-office** : pour reconstituer le numéro complet, il faut désormais concaténer `indicatif` + `tel_livraison`, et non plus lire `tel_livraison` seul.
+
+Le choix « Je livre à moi-même / à quelqu'un d'autre » (point 15) reste affiché, mais ne change plus que l'affichage du second numéro de téléphone facultatif et de la note « pour que le livreur puisse joindre le destinataire » : la civilité, le prénom/nom et le téléphone sont désormais communs aux deux cas.
+
+La sélection d'une adresse enregistrée (point 16) n'est pas affectée dans son principe : elle masque toujours l'ensemble de ces champs, carte choisie ou « + Nouvelle adresse ».
 
 ## Sans impact back-office
 

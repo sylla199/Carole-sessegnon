@@ -21,6 +21,7 @@
   input,select,textarea,button{font-family:var(--font-body);font-size:16px}
   input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:1px solid rgb(71,29,27);outline-offset:2px}
   @keyframes cs-spin{to{transform:rotate(360deg)}}
+  @keyframes cs-fab-fade{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
   @keyframes cs-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   @keyframes cs-slide{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
   .fx-dim{transition:opacity .15s cubic-bezier(.2,0,0,1)}
@@ -507,6 +508,12 @@ const FAQ_CATS = ["Contact", "Les pièces", "Commandes", "Rendez-vous"];
 const TUILES = [{ t: "Sacs", c: "Sacs" }, { t: "Pochettes", c: "Pochettes" }, { t: "Maroquineries", c: "Petite maroquinerie" }];
 const VILLES = ["Abidjan", "Bouaké", "Yamoussoukro"];
 const PAYS = ["Côte d'Ivoire", "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre", "Angola", "Arabie saoudite", "Argentine", "Arménie", "Australie", "Autriche", "Azerbaïdjan", "Bahamas", "Bahreïn", "Bangladesh", "Barbade", "Belgique", "Belize", "Bénin", "Bhoutan", "Biélorussie", "Birmanie", "Bolivie", "Bosnie-Herzégovine", "Botswana", "Brésil", "Brunei", "Bulgarie", "Burkina Faso", "Burundi", "Cambodge", "Cameroun", "Canada", "Cap-Vert", "Chili", "Chine", "Chypre", "Colombie", "Comores", "Congo", "Congo (RDC)", "Corée du Nord", "Corée du Sud", "Costa Rica", "Croatie", "Cuba", "Danemark", "Djibouti", "Dominique", "Égypte", "Émirats arabes unis", "Équateur", "Érythrée", "Espagne", "Estonie", "Eswatini", "États-Unis", "Éthiopie", "Fidji", "Finlande", "France", "Gabon", "Gambie", "Géorgie", "Ghana", "Grèce", "Grenade", "Guatemala", "Guinée", "Guinée-Bissau", "Guinée équatoriale", "Guyana", "Haïti", "Honduras", "Hongrie", "Inde", "Indonésie", "Irak", "Iran", "Irlande", "Islande", "Israël", "Italie", "Jamaïque", "Japon", "Jordanie", "Kazakhstan", "Kenya", "Kirghizistan", "Kiribati", "Kosovo", "Koweït", "Laos", "Lesotho", "Lettonie", "Liban", "Liberia", "Libye", "Liechtenstein", "Lituanie", "Luxembourg", "Macédoine du Nord", "Madagascar", "Malaisie", "Malawi", "Maldives", "Mali", "Malte", "Maroc", "Maurice", "Mauritanie", "Mexique", "Micronésie", "Moldavie", "Monaco", "Mongolie", "Monténégro", "Mozambique", "Namibie", "Nauru", "Népal", "Nicaragua", "Niger", "Nigeria", "Norvège", "Nouvelle-Zélande", "Oman", "Ouganda", "Ouzbékistan", "Pakistan", "Palaos", "Palestine", "Panama", "Papouasie-Nouvelle-Guinée", "Paraguay", "Pays-Bas", "Pérou", "Philippines", "Pologne", "Portugal", "Qatar", "République centrafricaine", "République dominicaine", "République tchèque", "Roumanie", "Royaume-Uni", "Russie", "Rwanda", "Saint-Marin", "Sainte-Lucie", "Salomon", "Salvador", "Samoa", "São Tomé-et-Principe", "Sénégal", "Serbie", "Seychelles", "Sierra Leone", "Singapour", "Slovaquie", "Slovénie", "Somalie", "Soudan", "Soudan du Sud", "Sri Lanka", "Suède", "Suisse", "Suriname", "Syrie", "Tadjikistan", "Tanzanie", "Tchad", "Thaïlande", "Timor oriental", "Togo", "Tonga", "Trinité-et-Tobago", "Tunisie", "Turkménistan", "Turquie", "Tuvalu", "Ukraine", "Uruguay", "Vanuatu", "Vatican", "Venezuela", "Vietnam", "Yémen", "Zambie", "Zimbabwe", "Autre"];
+const INDICATIFS = [
+  { pays: "Côte d'Ivoire", code: "+225" },
+  { pays: "Sénégal", code: "+221" },
+  { pays: "France", code: "+33" },
+  { pays: "Autre", code: "" }
+];
 const BOUTIQUES = [
   { name: "Riviera CIAD", phone: "+225 00 00 00 00 00", adresse: "École libanaise" },
   { name: "Plateau — atelier", phone: "+225 00 00 00 00 01", adresse: "Rue du Commerce" },
@@ -968,6 +975,11 @@ function App() {
 /* ================================ Shell ================================ */
 function Shell({ v }) {
   const iconBtn = { display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, background: 'none', border: 0, color: 'inherit', cursor: 'pointer', padding: 0 };
+  const [fabLogo, setFabLogo] = useState(false);
+  useEffect(() => {
+    const id = setInterval(() => setFabLogo(x => !x), 1000);
+    return () => clearInterval(id);
+  }, []);
   return (
     <div style={{ minHeight: '100vh', background: 'rgb(252,249,248)', fontFamily: 'var(--font-body)', color: 'rgb(0,0,0)', WebkitFontSmoothing: 'antialiased', marginTop: v.heroOffset }}>
 
@@ -1070,7 +1082,11 @@ function Shell({ v }) {
           </button>
         )}
         <button type="button" className="fx-bordeaux fx-press" aria-label="Discuter avec la Maison" onClick={v.goContact} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, borderRadius: '50%', background: 'rgb(71,29,27)', border: 0, color: 'rgb(255,255,255)', cursor: 'pointer', boxShadow: '0 12px 24px -8px rgba(0,0,0,.32)' }}>
-          <svg width="22" height="20" viewBox="0 0 22 20" fill="none" stroke="currentColor" strokeWidth="1"><path d="M21 9.5c0 4.4-4.5 8-10 8-1.2 0-2.4-.2-3.4-.5L1 19l1.6-3.8A7.4 7.4 0 0 1 1 9.5c0-4.4 4.5-8 10-8s10 3.6 10 8Z" /></svg>
+          {fabLogo ? (
+            <img src="assets/CS-LOGOMARK.svg" alt="" style={{ width: 22, height: 'auto', filter: 'brightness(0) invert(1)', animation: 'cs-fab-fade .25s ease-out' }} />
+          ) : (
+            <svg width="22" height="20" viewBox="0 0 22 20" fill="none" stroke="currentColor" strokeWidth="1" style={{ animation: 'cs-fab-fade .25s ease-out' }}><path d="M21 9.5c0 4.4-4.5 8-10 8-1.2 0-2.4-.2-3.4-.5L1 19l1.6-3.8A7.4 7.4 0 0 1 1 9.5c0-4.4 4.5-8 10-8s10 3.6 10 8Z" /></svg>
+          )}
         </button>
       </div>
 
@@ -1934,21 +1950,6 @@ function ScPaiement({ v }) {
                   </div>
                   {showFields && pourQui === 'autre' && (
                     <Fragment>
-                      <label style={st(LABEL)}>Civilité (facultatif)
-                        <select name="civilite" defaultValue="" style={st(INPUT)}>
-                          <option value="">Ne pas préciser</option>
-                          <option value="Madame">Madame</option>
-                          <option value="Monsieur">Monsieur</option>
-                        </select>
-                      </label>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                        <label style={st(LABEL)}>Prénoms<input name="prenom" required style={st(INPUT)} /></label>
-                        <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
-                        <label style={st(LABEL)}>E-mail<input name="email_livraison" type="email" placeholder="exemple@domain.com" style={st(INPUT)} /></label>
-                        <label style={st(LABEL)}>Téléphone<input name="tel_livraison" type="tel" required placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
-                      </div>
                       {showPhone2 ? (
                         <label style={st(LABEL)}>Second numéro de téléphone<input name="tel_livraison2" type="tel" placeholder="+225 07 00 00 00 00" style={st(INPUT)} /></label>
                       ) : (
@@ -1986,19 +1987,6 @@ function ScPaiement({ v }) {
                   )}
                   {showFields && (
                     <Fragment>
-                      <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
-                      <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
-                      <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
-                        <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15s6-5 6-9A6 6 0 0 0 1 6c0 4 6 9 6 9Z" /><circle cx="7" cy="6" r="2" /></svg>
-                        Utiliser ma position
-                      </button>
-                      {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
-                      <label style={st(LABEL)}>Plus de précision<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
-                      <div>
-                        <label style={st(LABEL)}>Code postal (facultatif)<input name="codepostal" style={st(INPUT)} /></label>
-                        <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgb(94,94,94)' }}>Uniquement pour les commandes livrées en dehors de la Côte d'Ivoire.</p>
-                      </div>
-                      <label style={st(LABEL)}>Ville<input name="ville" required placeholder="Abidjan" style={st(INPUT)} /></label>
                       <label style={st(LABEL)}>Pays/Région
                         <select name="pays" defaultValue="Côte d'Ivoire" style={st(INPUT)}>
                           <option>Côte d'Ivoire</option>
@@ -2007,6 +1995,36 @@ function ScPaiement({ v }) {
                           <option>Autre</option>
                         </select>
                       </label>
+                      <label style={st(LABEL)}>Civilité (facultatif)
+                        <select name="civilite" defaultValue="" style={st(INPUT)}>
+                          <option value="">Ne pas préciser</option>
+                          <option value="Madame">Madame</option>
+                          <option value="Monsieur">Monsieur</option>
+                        </select>
+                      </label>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,150px),1fr))', gap: 16 }}>
+                        <label style={st(LABEL)}>Prénom<input name="prenom" required style={st(INPUT)} /></label>
+                        <label style={st(LABEL)}>Nom<input name="nom" required style={st(INPUT)} /></label>
+                      </div>
+                      <label style={st(LABEL)}>Entreprise (facultatif)<input name="entreprise" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Nom de l'adresse de livraison (facultatif)<input name="adresse_nom" placeholder="Maison, Bureau…" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Adresse<input name="adresse" required placeholder="RUE F17" style={st(INPUT)} /></label>
+                      <button type="button" onClick={v.useLocation} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, color: 'rgb(71,29,27)', cursor: 'pointer', fontSize: 14, borderBottom: '1px solid rgb(71,29,27)' }}>
+                        <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" strokeWidth="1"><path d="M7 15s6-5 6-9A6 6 0 0 0 1 6c0 4 6 9 6 9Z" /><circle cx="7" cy="6" r="2" /></svg>
+                        Utiliser ma position
+                      </button>
+                      {v.s.locNote && <p style={{ margin: 0, fontSize: 13, color: 'rgb(94,94,94)' }}>Démonstration — la géolocalisation n'est pas branchée.</p>}
+                      <label style={st(LABEL)}>Plus de précision (Appartement, suite, etc.) — facultatif<input name="precision" placeholder="RUE F17" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Ville<input name="ville" required placeholder="Abidjan" style={st(INPUT)} /></label>
+                      <label style={st(LABEL)}>Code postal<input name="codepostal" required style={st(INPUT)} /></label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 16 }}>
+                        <label style={st(LABEL)}>Indicatif
+                          <select name="indicatif" defaultValue="+225" style={st(INPUT)}>
+                            {INDICATIFS.map((o, i) => <option key={i} value={o.code}>{o.pays}{o.code ? ' (' + o.code + ')' : ''}</option>)}
+                          </select>
+                        </label>
+                        <label style={st(LABEL)}>Numéro de téléphone<input name="tel_livraison" type="tel" required placeholder="07 00 00 00 00" style={st(INPUT)} /></label>
+                      </div>
                     </Fragment>
                   )}
                 </div>
